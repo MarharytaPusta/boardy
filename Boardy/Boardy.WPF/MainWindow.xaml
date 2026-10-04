@@ -5,8 +5,53 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Boardy.WPF"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="Boardy" Height="350" Width="450">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
+        <TextBlock Grid.Row="0"
+                   Text="Score Logger Demo"
+                   FontSize="24"
+                   FontWeight="Bold"
+                   HorizontalAlignment="Center"
+                   Margin="0,0,0,20"/>
+
+        <StackPanel Grid.Row="1"
+                    Margin="0,5">
+            <TextBlock Text="Player name"/>
+            <TextBox x:Name="PlayerNameTextBox"
+                     Text="Player1"
+                     Height="30"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="2"
+                    Margin="0,5">
+            <TextBlock Text="Points"/>
+            <TextBox x:Name="PointsTextBox"
+                     Text="10"
+                     Height="30"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="3"
+                    Margin="0,5">
+            <TextBlock Text="Penalty"/>
+            <TextBox x:Name="PenaltyTextBox"
+                     Text="2"
+                     Height="30"/>
+        </StackPanel>
+
+        <Button Grid.Row="4"
+                Content="Calculate Score"
+                Width="150"
+                Height="40"
+                HorizontalAlignment="Center"
+                Margin="0,20,0,0"
+                Click="Button_Click"/>
     </Grid>
 </Window>
