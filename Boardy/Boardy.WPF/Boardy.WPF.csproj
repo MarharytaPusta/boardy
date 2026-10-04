@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Boardy.Application\Boardy.Application.csproj" />
+    <ProjectReference Include="..\Boardy.Domain\Boardy.Domain.csproj" />
+    <ProjectReference Include="..\Boardy.Infrastructure\Boardy.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
