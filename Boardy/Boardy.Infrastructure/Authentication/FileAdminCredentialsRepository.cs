@@ -1,4 +1,5 @@
 ﻿using Boardy.Domain.Authentication;
+using Microsoft.Extensions.Logging;
 using System.Text.Json;
 
 namespace Boardy.Infrastructure.Authentication;

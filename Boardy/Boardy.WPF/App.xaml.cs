@@ -30,7 +30,11 @@ namespace Boardy.WPF
 
             var services = new ServiceCollection();
 
-           
+            services.AddLogging(loggingBuilder =>
+            {
+                loggingBuilder.AddSerilog(dispose: true);
+            });
+
             services.AddSingleton<IPasswordHasher, PasswordHasher>();
             services.AddSingleton<IAdminCredentialsRepository, FileAdminCredentialsRepository>();
 
