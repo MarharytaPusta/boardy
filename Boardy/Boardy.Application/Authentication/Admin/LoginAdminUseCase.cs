@@ -24,12 +24,15 @@ public class LoginAdminUseCase
 
         if (!isPasswordValid) 
         {
+            _logger.LogWarning("Uncorrect password entered");
             return new LoginAdminResult
             {
                 IsSuccess = false,
                 ErrorMessage = "Неправильний пароль адміністратора."
             };
         }
+
+        _logger.LogInformation("Admin login success");
 
         return new LoginAdminResult { IsSuccess = true };
     }
