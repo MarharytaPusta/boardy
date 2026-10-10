@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Boardy.Application.Authentication.Admin;
 
-namespace Boardy.Application.Authentication.Admin
+public class LoginAdminRequest
 {
-    internal class LoginAdminRequest
-    {
-    }
+    public string Password { get; set; } = string.Empty;
 }

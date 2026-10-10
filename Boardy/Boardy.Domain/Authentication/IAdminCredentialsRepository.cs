@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Boardy.Domain.Authentication;
 
-namespace Boardy.Domain.Authentication
+public interface IAdminCredentialsRepository
 {
-    internal interface IAdminCredentialsRepository
-    {
-    }
+    Task<AdminSettings> GetSettingsAsync();
+    Task SaveSettingAsync(AdminSettings settings);
 }

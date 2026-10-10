@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Boardy.Application.Authentication.Admin;
 
-namespace Boardy.Application.Authentication.Admin
+public class LoginAdminResult
 {
-    internal class LoginAdminResult
-    {
-    }
+    public bool IsSuccess { get; set; }
+    public string? ErrorMessage { get; set; }
 }

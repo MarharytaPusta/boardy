@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Boardy.Domain.Authentication;
 
-namespace Boardy.Domain.Authentication
+public class AdminSettings
 {
-    internal class AdminSettings
-    {
-    }
+    public string PasswordHash { get; set; } = string.Empty;
 }
