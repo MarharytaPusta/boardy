@@ -17,15 +17,15 @@ public class LogoutAdminUseCase
     {
         try
         {
-            _logger.LogInformation("Ініційовано процес виходу з режиму адміністратора");
-            _logger.LogInformation("Вихід з режиму адміністратора успішно завершено");
+            _logger.LogInformation("The process of exiting administrator mode has started.");
+            _logger.LogInformation("\r\nThe process of exiting administrator mode has been successfully completed");
 
             return Task.FromResult(LogoutAdminResult.Success());
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Сталася помилка під час виходу з режиму адміністратора");
-            return Task.FromResult(LogoutAdminResult.Failure("Не вдалося виконати вихід через внутрішню помилку"));
+            _logger.LogError(ex, "\r\nAn error occurred while exiting administrator mode");
+            return Task.FromResult(LogoutAdminResult.Failure("Failed to log out due to an internal error"));
         }
     }
 }

@@ -51,8 +51,8 @@ public partial class HomeViewModel : ObservableObject
             {
                 Title = "Вхід для адміністратора",
                 Content = loginControl,
-                Width = 800,  // Встановіть ширину
-                Height = 450, // Встановіть висоту
+                Width = 800,
+                Height = 450,
                 WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen
             };
 
