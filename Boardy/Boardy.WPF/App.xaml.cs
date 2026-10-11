@@ -13,7 +13,7 @@ namespace Boardy.WPF
     public partial class App : System.Windows.Application
     {
 
-        public static IServiceProvider ServiceProvider { get; private set; }
+        public static IServiceProvider ServiceProvider { get; private set; } = null!;
 
         public App()
         {
@@ -39,8 +39,10 @@ namespace Boardy.WPF
             services.AddSingleton<IAdminCredentialsRepository, FileAdminCredentialsRepository>();
 
             services.AddTransient<LoginAdminUseCase>();
+            services.AddTransient<ChangeAdminPasswordUseCase>();
 
             services.AddTransient<AdminLoginViewModel>();
+            services.AddTransient<AdminChangePasswordViewModel>();
 
             ServiceProvider = services.BuildServiceProvider();
         }
