@@ -51,17 +51,25 @@
                                FontSize="14"
                                HorizontalAlignment="Center"
                                Margin="0,0,0,10"/>
-                    <Button Content="Вхід" 
-                            Command="{Binding LoginCommand}" 
+                     <Button Content="Вхід" 
+                             Command="{Binding LoginCommand}" 
                             CommandParameter="{Binding ElementName=AdminPasswordBox}"
                             Background="#FF6363" 
                             Foreground="White" 
                             FontSize="18" 
                             Padding="0,10" 
-                            Width="200" 
+                             Width="200" 
+                             BorderThickness="0"
+                             Cursor="Hand"/>
+                    <Button Content="Змінити пароль"
+                            Click="ChangePasswordButton_Click"
+                            Background="Transparent"
+                            Foreground="#4A4B9B"
+                            FontSize="14"
+                            Padding="0,8"
+                            Margin="0,8,0,0"
                             BorderThickness="0"
-                            Cursor="Hand"/>
-                    
+                            Cursor="Hand" />
                 </StackPanel>
             </Border>
             

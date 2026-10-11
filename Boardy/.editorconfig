@@ -22,6 +22,7 @@ csharp_style_expression_bodied_lambdas = true:silent
 csharp_style_expression_bodied_local_functions = false:silent
 dotnet_diagnostic.S1135.severity = suggestion
 dotnet_diagnostic.S125.severity = none
+dotnet_diagnostic.S1075.severity = none
 
 # Xml files
 [*.xml]
