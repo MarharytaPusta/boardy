@@ -5,6 +5,7 @@ using Boardy.Application.Authentication.Admin;
 using Boardy.Domain.Authentication;
 using Boardy.Infrastructure.Authentication;
 using Boardy.WPF.Authentication;
+using Boardy.WPF.Home;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
@@ -26,8 +27,6 @@ namespace Boardy.WPF
         }
         protected override void OnStartup(StartupEventArgs e)
         {
-            base.OnStartup(e);
-
             var services = new ServiceCollection();
 
             services.AddLogging(loggingBuilder =>
@@ -44,7 +43,14 @@ namespace Boardy.WPF
             services.AddTransient<AdminLoginViewModel>();
             services.AddTransient<AdminChangePasswordViewModel>();
 
+            services.AddTransient<LogoutAdminUseCase>();
+            services.AddTransient<HomeViewModel>();
+
+            services.AddSingleton<Boardy.Application.Authentication.Admin.UserSession>();
+
             ServiceProvider = services.BuildServiceProvider();
+
+            base.OnStartup(e);
         }
         protected override void OnExit(ExitEventArgs e)
         {

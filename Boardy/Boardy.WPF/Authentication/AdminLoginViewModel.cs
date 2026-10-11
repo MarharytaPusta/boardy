@@ -36,7 +36,15 @@ public partial class AdminLoginViewModel : ObservableObject
             passwordBox.Clear();
 
             _logger.LogInformation("Move to administrator panel");
-            // Add code to move to the next screen 
+
+            foreach (System.Windows.Window window in System.Windows.Application.Current.Windows)
+            {
+                if (window.IsActive)
+                {
+                    window.DialogResult = true;
+                    break;
+                }
+            }
         }
         else
         {
@@ -49,6 +57,14 @@ public partial class AdminLoginViewModel : ObservableObject
     private void GoBack()
     {
         _logger.LogInformation("Button 'Назад' clicked. Move to main menu");
-        // Add code to move to the previous screen
+
+        foreach (System.Windows.Window window in System.Windows.Application.Current.Windows)
+        {
+            if (window.IsActive)
+            {
+                window.Close();
+                break;
+            }
+        }
     }
 }
