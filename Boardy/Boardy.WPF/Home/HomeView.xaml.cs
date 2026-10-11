@@ -10,18 +10,18 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
-namespace Boardy.WPF.Home
-{
-    /// <summary>
-    /// Interaction logic for HomeView.xaml
-    /// </summary>
-    public partial class HomeView : Window
-    {
-        public HomeView()
-        {
-            InitializeComponent();
+namespace Boardy.WPF.Home;
 
-            DataContext = App.ServiceProvider.GetRequiredService<HomeViewModel>();
-        }
+/// <summary>
+/// Interaction logic for HomeView.xaml
+/// </summary>
+public partial class HomeView : UserControl
+{
+    public HomeView()
+    {
+        InitializeComponent();
+
+        DataContext = App.ServiceProvider.GetRequiredService<HomeViewModel>();
     }
+
 }
