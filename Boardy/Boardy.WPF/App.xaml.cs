@@ -44,6 +44,8 @@ namespace Boardy.WPF
             services.AddTransient<LogoutAdminUseCase>();
             services.AddTransient<HomeViewModel>();
 
+            services.AddSingleton<Boardy.Application.Authentication.Admin.UserSession>();
+
             ServiceProvider = services.BuildServiceProvider();
 
             base.OnStartup(e);

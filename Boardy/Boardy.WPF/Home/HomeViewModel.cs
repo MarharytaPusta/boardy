@@ -8,17 +8,26 @@ namespace Boardy.WPF.Home;
 public partial class HomeViewModel : ObservableObject
 {
     private readonly LogoutAdminUseCase _logoutUseCase;
+    private readonly UserSession _userSession;
 
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(AdminButtonText))]
-    private bool _isAdminMode = false;
+    public bool IsAdminMode
+    {
+        get => _userSession.IsAdminMode;
+        set
+        {
+            _userSession.IsAdminMode = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(AdminButtonText));
+        }
+    }
 
     public string AdminButtonText => IsAdminMode ? "Вийти з режиму адміністратора" : "Режим адміністратора";
 
 
-    public HomeViewModel(LogoutAdminUseCase logoutUseCase)
+    public HomeViewModel(LogoutAdminUseCase logoutUseCase, UserSession userSession)
     {
         _logoutUseCase = logoutUseCase;
+        _userSession = userSession;
     }
 
     [RelayCommand]

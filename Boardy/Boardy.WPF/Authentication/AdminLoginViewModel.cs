@@ -41,7 +41,7 @@ public partial class AdminLoginViewModel : ObservableObject
             {
                 if (window.IsActive)
                 {
-                    window.DialogResult = true; // Це автоматично закриє вікно і поверне true
+                    window.DialogResult = true;
                     break;
                 }
             }
