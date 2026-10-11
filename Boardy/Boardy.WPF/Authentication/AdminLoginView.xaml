@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Boardy.WPF.Authentication"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800"
              Background="#9597FF">
     <Grid>
         <Button Content="Назад"
@@ -62,7 +61,7 @@
                              BorderThickness="0"
                              Cursor="Hand"/>
                     <Button Content="Змінити пароль"
-                            Click="ChangePasswordButton_Click"
+                            Command="{Binding GoToChangePasswordCommand}"
                             Background="Transparent"
                             Foreground="#4A4B9B"
                             FontSize="14"

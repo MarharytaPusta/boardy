@@ -16,10 +16,5 @@ namespace Boardy.WPF.Authentication
 
             DataContext = App.ServiceProvider.GetRequiredService<AdminLoginViewModel>();
         }
-
-        private void ChangePasswordButton_Click(object sender, RoutedEventArgs e)
-        {
-            NavigationService.GetNavigationService(this)?.Navigate(new AdminChangePasswordView());
-        }
     }
 }

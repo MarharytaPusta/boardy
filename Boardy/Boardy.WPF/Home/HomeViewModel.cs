@@ -1,6 +1,9 @@
 ﻿using Boardy.Application.Authentication.Admin;
+using Boardy.WPF.Authentication;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 
 namespace Boardy.WPF.Home;
@@ -43,27 +46,8 @@ public partial class HomeViewModel : ObservableObject
         }
         else
         {
-            var mainWindow = System.Windows.Application.Current.MainWindow;
-            mainWindow?.Hide();
-
-            var loginControl = new Boardy.WPF.Authentication.AdminLoginView();
-            var window = new System.Windows.Window
-            {
-                Title = "Вхід для адміністратора",
-                Content = loginControl,
-                Width = 800,
-                Height = 450,
-                WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen
-            };
-
-            bool ? dialogResult = window.ShowDialog();
-
-            if (dialogResult == true)
-            {
-                IsAdminMode = true;
-            }
-
-            mainWindow?.Show();
+            var loginViewModel = App.ServiceProvider.GetRequiredService<AdminLoginViewModel>();
+            WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(loginViewModel));
         }
     }
 }

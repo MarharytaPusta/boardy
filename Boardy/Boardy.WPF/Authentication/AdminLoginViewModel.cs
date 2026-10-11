@@ -1,6 +1,9 @@
 ﻿using Boardy.Application.Authentication.Admin;
+using Boardy.WPF.Home;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Windows.Controls;
 
@@ -37,14 +40,9 @@ public partial class AdminLoginViewModel : ObservableObject
 
             _logger.LogInformation("Move to administrator panel");
 
-            foreach (System.Windows.Window window in System.Windows.Application.Current.Windows)
-            {
-                if (window.IsActive)
-                {
-                    window.DialogResult = true;
-                    break;
-                }
-            }
+            var homeViewModel = App.ServiceProvider.GetRequiredService<HomeViewModel>();
+            homeViewModel.IsAdminMode = true;
+            WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(homeViewModel));
         }
         else
         {
@@ -58,13 +56,16 @@ public partial class AdminLoginViewModel : ObservableObject
     {
         _logger.LogInformation("Button 'Назад' clicked. Move to main menu");
 
-        foreach (System.Windows.Window window in System.Windows.Application.Current.Windows)
-        {
-            if (window.IsActive)
-            {
-                window.Close();
-                break;
-            }
-        }
+        var homeViewModel = App.ServiceProvider.GetRequiredService<HomeViewModel>();
+        WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(homeViewModel));
+    }
+
+    [RelayCommand]
+    private void GoToChangePassword()
+    {
+        _logger.LogInformation("Button 'Змінити пароль' clicked. Move to change password screen");
+
+        var changePasswordVm = App.ServiceProvider.GetRequiredService<AdminChangePasswordViewModel>();
+        WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(changePasswordVm));
     }
 }

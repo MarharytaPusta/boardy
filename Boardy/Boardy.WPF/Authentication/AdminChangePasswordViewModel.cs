@@ -1,6 +1,8 @@
 using Boardy.Application.Authentication.Admin;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Boardy.WPF.Authentication;
@@ -47,5 +49,14 @@ public partial class AdminChangePasswordViewModel : ObservableObject
         view.CurrentPasswordBox.Clear();
         view.NewPasswordBox.Clear();
         view.ConfirmPasswordBox.Clear();
+
+        GoBack();
+    }
+
+    [RelayCommand]
+    private void GoBack()
+    {
+        var loginViewModel = App.ServiceProvider.GetRequiredService<AdminLoginViewModel>();
+        WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(loginViewModel));
     }
 }

@@ -37,6 +37,8 @@ namespace Boardy.WPF
             services.AddSingleton<IPasswordHasher, PasswordHasher>();
             services.AddSingleton<IAdminCredentialsRepository, FileAdminCredentialsRepository>();
 
+            services.AddSingleton<MainViewModel>();
+
             services.AddTransient<LoginAdminUseCase>();
             services.AddTransient<ChangeAdminPasswordUseCase>();
 
