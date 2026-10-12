@@ -50,7 +50,11 @@ public partial class AdminChangePasswordViewModel : ObservableObject
         view.NewPasswordBox.Clear();
         view.ConfirmPasswordBox.Clear();
 
-        GoBack();
+        if (result.IsSuccess)
+        {
+            GoBack();
+        }
+
     }
 
     [RelayCommand]
