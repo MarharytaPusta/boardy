@@ -1,4 +1,5 @@
 ﻿using Boardy.Domain.Authentication;
+using Boardy.Domain.Shared;
 using Microsoft.Extensions.Logging;
 
 namespace Boardy.Application.Authentication.Admin;
@@ -16,13 +17,13 @@ public class LoginAdminUseCase
         _logger = logger;
     }
 
-    public async Task<LoginAdminResult> ExecuteAsync(LoginAdminRequest request)
+    public async Task<Result> ExecuteAsync(LoginAdminRequest request)
     {
         var settings = await _repository.GetSettingsAsync();
 
         if (string.IsNullOrWhiteSpace(request.Password)) 
         {
-            return new LoginAdminResult { IsSuccess = false, ErrorMessage = "Пароль не може бути порожнім." };
+            return Result.Failure("Пароль не може бути порожнім.");
         }
 
         bool isPasswordValid = _hasher.Verify(request.Password, settings.PasswordHash);
@@ -30,15 +31,11 @@ public class LoginAdminUseCase
         if (!isPasswordValid) 
         {
             _logger.LogWarning("Uncorrect password entered");
-            return new LoginAdminResult
-            {
-                IsSuccess = false,
-                ErrorMessage = "Неправильний пароль адміністратора."
-            };
+            return Result.Failure("Неправильний пароль адміністратора.");
         }
 
         _logger.LogInformation("Admin login success");
 
-        return new LoginAdminResult { IsSuccess = true };
+        return Result.Success();
     }
 }
