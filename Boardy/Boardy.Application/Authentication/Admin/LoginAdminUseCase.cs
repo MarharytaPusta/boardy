@@ -20,6 +20,11 @@ public class LoginAdminUseCase
     {
         var settings = await _repository.GetSettingsAsync();
 
+        if (string.IsNullOrWhiteSpace(request.Password)) 
+        {
+            return new LoginAdminResult { IsSuccess = false, ErrorMessage = "Пароль не може бути порожнім." };
+        }
+
         bool isPasswordValid = _hasher.Verify(request.Password, settings.PasswordHash);
 
         if (!isPasswordValid) 
