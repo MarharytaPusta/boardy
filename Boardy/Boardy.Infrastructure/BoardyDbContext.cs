@@ -8,5 +8,7 @@ namespace Boardy.Infrastructure
         public BoardyDbContext(DbContextOptions<BoardyDbContext> options) : base(options) { }
 
         public DbSet<Result> Results { get; set; }
+
+        public DbSet<Player> Players { get; set; }
     }
 }
