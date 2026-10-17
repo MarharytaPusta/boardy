@@ -13,8 +13,9 @@ public class LoginAdminUseCaseTests
         var mockRepo = new Mock<IAdminCredentialsRepository>();
         var mockHasher = new Mock<IPasswordHasher>();
         var mockLogger = new Mock<ILogger<LoginAdminUseCase>>();
+        var mockSession = new Mock<IUserSession>();
 
-        string inputPassword = "CorrectPassword123";
+    string inputPassword = "CorrectPassword123";
         string dbHash = "hashed_version_of_password";
 
         mockRepo.Setup(r => r.GetSettingsAsync())
@@ -23,7 +24,7 @@ public class LoginAdminUseCaseTests
         mockHasher.Setup(h => h.Verify(inputPassword, dbHash))
             .Returns(true);
 
-        var useCase = new LoginAdminUseCase(mockRepo.Object, mockHasher.Object, mockLogger.Object);
+        var useCase = new LoginAdminUseCase(mockRepo.Object, mockHasher.Object, mockLogger.Object, mockSession.Object);
         var request = new LoginAdminRequest { Password = inputPassword };
 
         var result = await useCase.ExecuteAsync(request);
@@ -38,6 +39,7 @@ public class LoginAdminUseCaseTests
         var mockRepo = new Mock<IAdminCredentialsRepository>();
         var mockHasher = new Mock<IPasswordHasher>();
         var mockLogger = new Mock<ILogger<LoginAdminUseCase>>();
+        var mockSession = new Mock<IUserSession>();
 
         string inputPassword = "WrongPassword";
         string dbHash = "hashed_version_of_password";
@@ -48,7 +50,7 @@ public class LoginAdminUseCaseTests
         mockHasher.Setup(h => h.Verify(inputPassword, dbHash))
             .Returns(false);
 
-        var useCase = new LoginAdminUseCase(mockRepo.Object, mockHasher.Object, mockLogger.Object);
+        var useCase = new LoginAdminUseCase(mockRepo.Object, mockHasher.Object, mockLogger.Object, mockSession.Object);
         var request = new LoginAdminRequest { Password = inputPassword };
 
         var result = await useCase.ExecuteAsync(request);

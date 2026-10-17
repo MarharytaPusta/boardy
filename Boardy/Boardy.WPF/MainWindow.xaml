@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:home="clr-namespace:Boardy.WPF.Home"
         xmlns:auth="clr-namespace:Boardy.WPF.Authentication"
+        xmlns:player="clr-namespace:Boardy.WPF.Player"
         Title="Boardy" Height="600" Width="800" WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
@@ -14,6 +15,9 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type auth:AdminChangePasswordViewModel}">
             <auth:AdminChangePasswordView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type player:CreatePlayerViewModel}">
+            <player:CreatePlayerView />
         </DataTemplate>
     </Window.Resources>
 
