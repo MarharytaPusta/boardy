@@ -46,12 +46,4 @@ public partial class HomeViewModel : ObservableObject
             WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(loginViewModel));
         }
     }
-
-
-    [RelayCommand]
-    private void NavigateToCreatePlayer()
-    {
-        var createPlayerViewModel = App.ServiceProvider.GetRequiredService<CreatePlayerViewModel>();
-        WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(createPlayerViewModel));
-    }
 }
