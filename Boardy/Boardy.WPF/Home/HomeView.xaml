@@ -34,6 +34,16 @@
                 Padding="10,10"
                 BorderThickness="0"/>
 
+
+
+            <Button Content="Додати гравця" 
+                Command="{Binding NavigateToCreatePlayerCommand}"
+                Background="#FF8A80" 
+                Foreground="White" 
+                FontSize="28" 
+                FontWeight="DemiBold"
+                Padding="10,10"
+                BorderThickness="0"/>
         </StackPanel>
     </Grid>
 </UserControl>

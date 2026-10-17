@@ -1,5 +1,6 @@
 ﻿using Boardy.Application.Authentication.Admin;
 using Boardy.WPF.Authentication;
+using Boardy.WPF.Player;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -44,5 +45,13 @@ public partial class HomeViewModel : ObservableObject
             var loginViewModel = App.ServiceProvider.GetRequiredService<AdminLoginViewModel>();
             WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(loginViewModel));
         }
+    }
+
+
+    [RelayCommand]
+    private void NavigateToCreatePlayer()
+    {
+        var createPlayerViewModel = App.ServiceProvider.GetRequiredService<CreatePlayerViewModel>();
+        WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(createPlayerViewModel));
     }
 }
