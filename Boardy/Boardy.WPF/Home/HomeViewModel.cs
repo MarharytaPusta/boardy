@@ -11,26 +11,25 @@ namespace Boardy.WPF.Home;
 public partial class HomeViewModel : ObservableObject
 {
     private readonly LogoutAdminUseCase _logoutUseCase;
-    private readonly UserSession _userSession;
+    private readonly IUserSession _userSession;
 
-    public bool IsAdminMode
-    {
-        get => _userSession.IsAdminMode;
-        set
-        {
-            _userSession.IsAdminMode = value;
-            OnPropertyChanged();
-            OnPropertyChanged(nameof(AdminButtonText));
-        }
-    }
-
+    public bool IsAdminMode => _userSession.IsAdminMode;
+      
     public string AdminButtonText => IsAdminMode ? "Вийти з режиму адміністратора" : "Режим адміністратора";
 
 
-    public HomeViewModel(LogoutAdminUseCase logoutUseCase, UserSession userSession)
+    public HomeViewModel(LogoutAdminUseCase logoutUseCase, IUserSession userSession)
     {
         _logoutUseCase = logoutUseCase;
         _userSession = userSession;
+
+        _userSession.OnAdminStateChanged += UpdateState;
+    }
+
+    private void UpdateState()
+    {
+        OnPropertyChanged(nameof(IsAdminMode));
+        OnPropertyChanged(nameof(AdminButtonText));
     }
 
     [RelayCommand]
@@ -38,11 +37,7 @@ public partial class HomeViewModel : ObservableObject
     {
         if (IsAdminMode)
         {
-            var result = await _logoutUseCase.ExecuteAsync();
-            if (result.IsSuccess)
-            {
-                IsAdminMode = false;
-            }
+            await _logoutUseCase.ExecuteAsync();
         }
         else
         {

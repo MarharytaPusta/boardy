@@ -9,12 +9,14 @@ public class LoginAdminUseCase
     private readonly IAdminCredentialsRepository _repository;
     private readonly IPasswordHasher _hasher;
     private readonly ILogger<LoginAdminUseCase> _logger;
+    private readonly IUserSession _session;
 
-    public LoginAdminUseCase(IAdminCredentialsRepository repository, IPasswordHasher hasher, ILogger<LoginAdminUseCase> logger)
+    public LoginAdminUseCase(IAdminCredentialsRepository repository, IPasswordHasher hasher, ILogger<LoginAdminUseCase> logger, IUserSession session)
     {
         _repository = repository;
         _hasher = hasher;
         _logger = logger;
+        _session = session;
     }
 
     public async Task<Result> ExecuteAsync(LoginAdminRequest request)
@@ -36,6 +38,7 @@ public class LoginAdminUseCase
 
         _logger.LogInformation("Admin login success");
 
+        _session.SetAdminMode(true);
         return Result.Success();
     }
 }
