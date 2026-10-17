@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Boardy.Application.Player
+﻿namespace Boardy.Application.Player
 {
-    internal class CreatePlayerRequest
-    {
-    }
+    public record CreatePlayerRequest(string Name);
 }

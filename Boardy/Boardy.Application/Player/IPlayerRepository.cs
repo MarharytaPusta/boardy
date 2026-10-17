@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Boardy.Application.Player
 {
-    internal class IPlayerRepository
+    public interface IPlayerRepository
     {
+        Task AddAsync(Domain.Entities.Player player);
     }
 }

@@ -1,12 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Boardy.Application.Player;
+using Boardy.Domain.Entities;
 
 namespace Boardy.Infrastructure.Repositories
 {
-    internal class PlayerRepository
+    public class PlayerRepository : IPlayerRepository
     {
+        private readonly BoardyDbContext _context;
+
+        public PlayerRepository(BoardyDbContext context)
+        {
+            _context = context;
+        }
+
+        public async Task AddAsync(Domain.Entities.Player player)
+        {
+            await _context.Players.AddAsync(player);
+            await _context.SaveChangesAsync();
+        }
     }
 }
