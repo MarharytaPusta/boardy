@@ -1,5 +1,4 @@
 ﻿using Boardy.Domain.Entities;
-using System;
 using Xunit;
 
 namespace Boardy.Domain.Tests.Entities
