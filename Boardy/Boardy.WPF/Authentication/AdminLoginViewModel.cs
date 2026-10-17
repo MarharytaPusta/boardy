@@ -41,7 +41,6 @@ public partial class AdminLoginViewModel : ObservableObject
             _logger.LogInformation("Move to administrator panel");
 
             var homeViewModel = App.ServiceProvider.GetRequiredService<HomeViewModel>();
-            homeViewModel.IsAdminMode = true;
             WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(homeViewModel));
         }
         else
