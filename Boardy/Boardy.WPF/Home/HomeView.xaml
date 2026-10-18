@@ -27,6 +27,7 @@
                 BorderThickness="0"/>
 
             <Button Content="Усі гравці" 
+                Command="{Binding NavigateToPlayersCommand}"
                 Background="#FF8A80" 
                 Foreground="White" 
                 FontSize="28" 
