@@ -34,6 +34,14 @@ public partial class HomeViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private async Task NavigateToPlayersAsync()
+    {
+        var playersViewModel = App.ServiceProvider.GetRequiredService<PlayersViewModel>();
+        await playersViewModel.LoadPlayersAsync();
+        WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(playersViewModel));
+    }
+
+    [RelayCommand]
     private async Task AdminActionAsync()
     {
         if (IsAdminMode)

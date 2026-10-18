@@ -64,7 +64,7 @@ public partial class CreatePlayerViewModel : ObservableObject
     [RelayCommand]
     private void GoBack()
     {
-        var homeViewModel = App.ServiceProvider.GetRequiredService<HomeViewModel>();
-        WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(homeViewModel));
+        var playersViewModel = App.ServiceProvider.GetRequiredService<PlayersViewModel>();
+        WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(playersViewModel));
     }
 }

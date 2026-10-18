@@ -68,8 +68,10 @@ namespace Boardy.WPF
 
             services.AddScoped<IPlayerRepository, PlayerRepository>();
             services.AddTransient<CreatePlayerUseCase>();
+            services.AddTransient<GetAllPlayers>();
 
             services.AddTransient<CreatePlayerViewModel>();
+            services.AddTransient<PlayersViewModel>();
 
             services.AddSingleton<IUserSession, UserSession>();
 

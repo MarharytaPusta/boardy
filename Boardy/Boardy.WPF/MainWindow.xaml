@@ -19,6 +19,9 @@
         <DataTemplate DataType="{x:Type player:CreatePlayerViewModel}">
             <player:CreatePlayerView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type player:PlayersViewModel}">
+            <player:PlayersView />
+        </DataTemplate>
     </Window.Resources>
 
     <ContentControl Content="{Binding CurrentViewModel}" />
