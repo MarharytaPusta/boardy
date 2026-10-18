@@ -49,6 +49,14 @@ public partial class PlayersViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void NavigateToEditPlayer(PlayerListItem player)
+    {
+        var editPlayerViewModel = App.ServiceProvider.GetRequiredService<EditPlayerViewModel>();
+        editPlayerViewModel.SetPlayer(player);
+        WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(editPlayerViewModel));
+    }
+
+    [RelayCommand]
     private void GoBack()
     {
         var homeViewModel = App.ServiceProvider.GetRequiredService<HomeViewModel>();

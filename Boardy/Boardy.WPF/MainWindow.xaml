@@ -22,6 +22,9 @@
         <DataTemplate DataType="{x:Type player:PlayersViewModel}">
             <player:PlayersView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type player:EditPlayerViewModel}">
+            <player:EditPlayerView />
+        </DataTemplate>
     </Window.Resources>
 
     <ContentControl Content="{Binding CurrentViewModel}" />
