@@ -1,5 +1,6 @@
 ﻿using Boardy.Application.Authentication.Admin;
 using Boardy.WPF.Authentication;
+using Boardy.WPF.Player;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;

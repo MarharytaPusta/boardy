@@ -1,13 +1,20 @@
-﻿using System.Configuration;
-using System.Data;
-using System.Windows;
-using Boardy.Application.Authentication.Admin;
+﻿using Boardy.Application.Authentication.Admin;
+using Boardy.Application.Player;
 using Boardy.Domain.Authentication;
+using Boardy.Infrastructure;
 using Boardy.Infrastructure.Authentication;
+using Boardy.Infrastructure.Repositories;
 using Boardy.WPF.Authentication;
 using Boardy.WPF.Home;
+using Boardy.WPF.Player;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using System.Configuration;
+using System.Data;
+using System.IO;
+using System.Windows;
 
 namespace Boardy.WPF
 {
@@ -29,6 +36,17 @@ namespace Boardy.WPF
         {
             var services = new ServiceCollection();
 
+            IConfigurationRoot configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
+
+            services.AddDbContext<BoardyDbContext>(options =>
+            {
+                var connectionString = configuration.GetConnectionString("DefaultConnection");
+                options.UseNpgsql(connectionString);
+            });
+
             services.AddLogging(loggingBuilder =>
             {
                 loggingBuilder.AddSerilog(dispose: true);
@@ -47,6 +65,11 @@ namespace Boardy.WPF
 
             services.AddTransient<LogoutAdminUseCase>();
             services.AddTransient<HomeViewModel>();
+
+            services.AddScoped<IPlayerRepository, PlayerRepository>();
+            services.AddTransient<CreatePlayerUseCase>();
+
+            services.AddTransient<CreatePlayerViewModel>();
 
             services.AddSingleton<IUserSession, UserSession>();
 

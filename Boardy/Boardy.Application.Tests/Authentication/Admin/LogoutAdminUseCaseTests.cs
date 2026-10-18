@@ -10,8 +10,9 @@ public class LogoutAdminUseCaseTests
     [Fact]
     public async Task ExecuteAsync_Always_ReturnsSuccess()
     {
-        var mockLogger = new Mock<ILogger<LogoutAdminUseCase>>();
-        var useCase = new LogoutAdminUseCase(mockLogger.Object);
+        var _mockLogger = new Mock<ILogger<LogoutAdminUseCase>>();
+        var _mockSession = new Mock<IUserSession>();
+        var useCase = new LogoutAdminUseCase(_mockLogger.Object, _mockSession.Object);
 
         var result = await useCase.ExecuteAsync();
 
