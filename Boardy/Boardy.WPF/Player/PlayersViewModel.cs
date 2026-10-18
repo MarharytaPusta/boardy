@@ -83,7 +83,7 @@ public partial class PlayersViewModel : ObservableObject
 
         bool isConfirmed = _dialogService.Confirm(
             "Видалення гравця",
-            $"Ви дійсно хочете назавжди видалити гравця {player.Name}?");
+            $"Ви дійсно хочете назавжди видалити {player.Name}?");
 
         if (isConfirmed)
         {
