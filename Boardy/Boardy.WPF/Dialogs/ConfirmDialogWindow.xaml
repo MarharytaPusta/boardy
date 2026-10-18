@@ -5,7 +5,6 @@
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
 
-    <!-- Тінь і заокруглені кути для краси -->
     <Border Background="White" CornerRadius="12" Margin="10">
         <Border.Effect>
             <DropShadowEffect BlurRadius="15" ShadowDepth="2" Opacity="0.3"/>
