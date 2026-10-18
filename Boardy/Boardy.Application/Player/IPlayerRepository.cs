@@ -10,5 +10,6 @@ namespace Boardy.Application.Player
         Task<IEnumerable<Domain.Entities.Player>> GetAllAsync();
         Task<Domain.Entities.Player?> GetByIdAsync(Guid playerId);
         Task UpdateAsync(Domain.Entities.Player player);
+        Task DeleteAsync(Domain.Entities.Player player);
     }
 }
