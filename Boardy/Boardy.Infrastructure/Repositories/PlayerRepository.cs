@@ -37,5 +37,11 @@ namespace Boardy.Infrastructure.Repositories
             _context.Players.Update(player);
             await _context.SaveChangesAsync();
         }
+
+        public async Task DeleteAsync(Domain.Entities.Player player)
+        {
+            _context.Players.Remove(player);
+            await _context.SaveChangesAsync();
+        }
     }
 }

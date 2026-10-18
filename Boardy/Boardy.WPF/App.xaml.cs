@@ -1,5 +1,6 @@
 ﻿using Boardy.Application.Authentication.Admin;
 using Boardy.Application.Player;
+using Boardy.Application.Shared;
 using Boardy.Domain.Authentication;
 using Boardy.Infrastructure;
 using Boardy.Infrastructure.Authentication;
@@ -7,6 +8,7 @@ using Boardy.Infrastructure.Repositories;
 using Boardy.WPF.Authentication;
 using Boardy.WPF.Home;
 using Boardy.WPF.Player;
+using Boardy.WPF.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -71,11 +73,15 @@ namespace Boardy.WPF
             services.AddTransient<GetAllPlayers>();
             services.AddTransient<UpdatePlayerUseCase>();
 
+            services.AddTransient<DeletePlayerUseCase>();
+
             services.AddTransient<CreatePlayerViewModel>();
             services.AddTransient<PlayersViewModel>();
             services.AddTransient<EditPlayerViewModel>();
 
             services.AddSingleton<IUserSession, UserSession>();
+
+            services.AddSingleton<IDialogService, DialogService>();
 
             ServiceProvider = services.BuildServiceProvider();
 
