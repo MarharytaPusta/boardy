@@ -30,7 +30,7 @@ public class DeletePlayerUseCase
             return Result.Failure("Гравця не знайдено.");
         }
 
-        await _playerRepository.UpdateAsync(player);
+        await _playerRepository.DeleteAsync(player);
 
         _logger.LogInformation("Player with ID {PlayerId} was deleted", player.Id);
         return Result.Success();
