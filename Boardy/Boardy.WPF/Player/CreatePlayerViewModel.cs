@@ -48,7 +48,7 @@ public partial class CreatePlayerViewModel : ObservableObject
             var request = new CreatePlayerRequest(PlayerName);
             await _createPlayerUseCase.ExecuteAsync(request);
 
-            GoBack();
+            await GoBackAsync();
         }
         catch (ArgumentException)
         {
@@ -62,9 +62,10 @@ public partial class CreatePlayerViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void GoBack()
+    private async Task GoBackAsync()
     {
         var playersViewModel = App.ServiceProvider.GetRequiredService<PlayersViewModel>();
+        await playersViewModel.LoadPlayersAsync();
         WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(playersViewModel));
     }
 }
