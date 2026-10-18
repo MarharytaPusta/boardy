@@ -91,6 +91,14 @@
                                                   FontWeight="DemiBold"
                                                   MinWidth="130"
                                                   Padding="10,6"/>
+                                        <MenuItem Header="Видалити"
+                                                  Command="{Binding Tag.DeletePlayerCommand, RelativeSource={RelativeSource AncestorType=MenuItem}}"
+                                                  CommandParameter="{Binding}"
+                                                  Foreground="Black"
+                                                  FontSize="16"
+                                                  FontWeight="DemiBold"
+                                                  MinWidth="130"
+                                                  Padding="10,6"/>
                                     </MenuItem>
                                 </Menu>
                             </Grid>
