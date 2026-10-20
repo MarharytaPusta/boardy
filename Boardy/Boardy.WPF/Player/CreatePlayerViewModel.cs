@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 
@@ -12,6 +13,8 @@ namespace Boardy.WPF.Player;
 public partial class CreatePlayerViewModel : ObservableObject
 {
     private readonly CreatePlayerUseCase _createPlayerUseCase;
+    private readonly ILogger<CreatePlayerViewModel> _logger;
+
 
     [ObservableProperty]
     private string _playerName = string.Empty;
@@ -19,9 +22,10 @@ public partial class CreatePlayerViewModel : ObservableObject
     [ObservableProperty]
     private string _errorMessage = string.Empty;
 
-    public CreatePlayerViewModel(CreatePlayerUseCase createPlayerUseCase)
+    public CreatePlayerViewModel(CreatePlayerUseCase createPlayerUseCase, ILogger<CreatePlayerViewModel> logger)
     {
         _createPlayerUseCase = createPlayerUseCase;
+        _logger = logger;
     }
 
     partial void OnPlayerNameChanged(string value)
@@ -39,6 +43,7 @@ public partial class CreatePlayerViewModel : ObservableObject
 
         if (EmptyField())
         {
+            _logger.LogWarning("Invalid input: user attempted to create a player with an empty name");
             ErrorMessage = "Ім'я не може бути порожнім";
             return;
         }
@@ -50,8 +55,9 @@ public partial class CreatePlayerViewModel : ObservableObject
 
             await GoBackAsync();
         }
-        catch (ArgumentException)
+        catch (ArgumentException ex)
         {
+            _logger.LogWarning(ex, "Invalid input: domain entity rejected the player name '{PlayerName}'.", PlayerName);
             ErrorMessage = "Введено некоректне ім'я гравця";
         }
     }
