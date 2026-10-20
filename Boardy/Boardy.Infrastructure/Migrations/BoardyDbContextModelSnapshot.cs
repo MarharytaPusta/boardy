@@ -36,6 +36,57 @@ namespace Boardy.Infrastructure.Migrations
 
                     b.ToTable("Players");
                 });
+
+            modelBuilder.Entity("Boardy.Domain.Entities.ScoreCriterion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsNegative")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("ScoreTemplateId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ScoreTemplateId");
+
+                    b.ToTable("ScoreCriteria");
+                });
+
+            modelBuilder.Entity("Boardy.Domain.Entities.ScoreTemplate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ScoreTemplates");
+                });
+
+            modelBuilder.Entity("Boardy.Domain.Entities.ScoreCriterion", b =>
+                {
+                    b.HasOne("Boardy.Domain.Entities.ScoreTemplate", null)
+                        .WithMany("Criteria")
+                        .HasForeignKey("ScoreTemplateId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Boardy.Domain.Entities.ScoreTemplate", b =>
+                {
+                    b.Navigation("Criteria");
+                });
 #pragma warning restore 612, 618
         }
     }
