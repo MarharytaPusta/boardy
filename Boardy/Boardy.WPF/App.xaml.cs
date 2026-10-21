@@ -1,4 +1,5 @@
 ﻿using Boardy.Application.Authentication.Admin;
+using Boardy.Application.GameCatalog.ScoreTemplate;
 using Boardy.Application.Player;
 using Boardy.Application.Shared;
 using Boardy.Domain.Authentication;
@@ -6,6 +7,7 @@ using Boardy.Infrastructure;
 using Boardy.Infrastructure.Authentication;
 using Boardy.Infrastructure.Repositories;
 using Boardy.WPF.Authentication;
+using Boardy.WPF.GameCatalog;
 using Boardy.WPF.Home;
 using Boardy.WPF.Player;
 using Boardy.WPF.Services;
@@ -82,6 +84,10 @@ namespace Boardy.WPF
             services.AddSingleton<IUserSession, UserSession>();
 
             services.AddSingleton<IDialogService, DialogService>();
+
+            services.AddScoped<IScoreTemplateRepository, ScoreTemplateRepository>();
+            services.AddTransient<CreateScoreTemplateUseCase>();
+            services.AddTransient<CreateGameViewModel>();
 
             ServiceProvider = services.BuildServiceProvider();
 

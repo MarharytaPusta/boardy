@@ -4,6 +4,7 @@
         xmlns:home="clr-namespace:Boardy.WPF.Home"
         xmlns:auth="clr-namespace:Boardy.WPF.Authentication"
         xmlns:player="clr-namespace:Boardy.WPF.Player"
+        xmlns:gameCatalog="clr-namespace:Boardy.WPF.GameCatalog"
         Title="Boardy" Height="600" Width="800" WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
@@ -24,6 +25,9 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type player:EditPlayerViewModel}">
             <player:EditPlayerView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type gameCatalog:CreateGameViewModel}">
+            <gameCatalog:CreateGameView />
         </DataTemplate>
     </Window.Resources>
 
