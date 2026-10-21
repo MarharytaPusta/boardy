@@ -1,4 +1,5 @@
-﻿using Boardy.Application.GameCatalog.ScoreTemplate;
+﻿using Boardy.Application.Authentication.Admin;
+using Boardy.Application.GameCatalog.ScoreTemplate;
 using Boardy.WPF.Home;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -25,17 +26,19 @@ public partial class CreateGameViewModel : ObservableObject
     private readonly CreateScoreTemplateUseCase _createScoreTemplateUseCase;
     private readonly ILogger<CreateGameViewModel> _logger;
 
+    private readonly IUserSession _userSession;
+    public bool IsAdminMode => _userSession.IsAdminMode;
+
     public ObservableCollection<CriterionItemViewModel> Criteria { get; } = new();
 
     [ObservableProperty]
     private string _errorMessage = string.Empty;
 
-    public CreateGameViewModel(
-        CreateScoreTemplateUseCase createScoreTemplateUseCase,
-        ILogger<CreateGameViewModel> logger)
+    public CreateGameViewModel(CreateScoreTemplateUseCase createScoreTemplateUseCase, ILogger<CreateGameViewModel> logger, IUserSession userSession)
     {
         _createScoreTemplateUseCase = createScoreTemplateUseCase;
         _logger = logger;
+        _userSession = userSession;
 
         Criteria.Add(new CriterionItemViewModel());
     }
@@ -50,6 +53,13 @@ public partial class CreateGameViewModel : ObservableObject
     private async Task SaveTemplateAsync()
     {
         ErrorMessage = string.Empty;
+
+        if (!IsAdminMode)
+        {
+            _logger.LogWarning("Unauthorized access: Non-admin attempted to create a score template");
+            ErrorMessage = "Тільки адміністратор може додавати нові ігри";
+            return;
+        }
 
         if (Criteria.Count == 0 || Criteria.Any(c => string.IsNullOrWhiteSpace(c.Name)))
         {
