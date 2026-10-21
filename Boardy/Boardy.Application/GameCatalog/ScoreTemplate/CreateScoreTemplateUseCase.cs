@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Boardy.Application.BoardGameCatalog.ScoreTemplate
+namespace Boardy.Application.GameCatalog.ScoreTemplate
 {
     public class CreateScoreTemplateUseCase
     {
