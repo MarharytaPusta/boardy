@@ -16,6 +16,7 @@
                 BorderThickness="0"/>
 
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+
             <TextBlock Text="Додати нову гру" 
                        Foreground="Black" 
                        FontSize="42" 
@@ -27,9 +28,6 @@
                     MinWidth="500">
                 <StackPanel>
 
-                    <!-- Тут колега додасть Grid-и з полями GameName, MinPlayers, MaxPlayers -->
-
-                    <!-- Ваша частина: Динамічний список -->
                     <ItemsControl ItemsSource="{Binding Criteria}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
@@ -37,9 +35,26 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="230"/>
                                         <ColumnDefinition Width="220"/>
+                                        <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Уведіть критерій:" FontSize="18" VerticalAlignment="Center"/>
-                                    <TextBox Grid.Column="1" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Height="30" FontSize="16" VerticalContentAlignment="Center"/>
+
+                                    <TextBlock Text="Уведіть критерій:" 
+                                               FontSize="18" 
+                                               VerticalAlignment="Center"/>
+
+                                    <TextBox Grid.Column="1" 
+                                             Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" 
+                                             Height="30" 
+                                             FontSize="16" 
+                                             VerticalContentAlignment="Center"/>
+
+                                    <CheckBox Grid.Column="2" 
+                                              IsChecked="{Binding IsNegative}" 
+                                              Content="Від'ємний" 
+                                              FontSize="16" 
+                                              Foreground="#666666"
+                                              VerticalAlignment="Center" 
+                                              Margin="15,0,0,0"/>
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
@@ -61,7 +76,6 @@
                                HorizontalAlignment="Center"
                                Margin="0,0,0,15"/>
 
-                    <!-- Тимчасова кнопка, щоб ви могли перевірити роботу свого Use Case -->
                     <Button Content="Зберегти шаблон" 
                             Command="{Binding SaveTemplateCommand}"
                             Background="#FF5E5E" 

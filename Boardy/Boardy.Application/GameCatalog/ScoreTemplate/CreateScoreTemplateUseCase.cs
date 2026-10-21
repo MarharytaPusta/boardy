@@ -31,7 +31,7 @@ namespace Boardy.Application.GameCatalog.ScoreTemplate
 
             foreach (var criterionDto in request.Criteria)
             {
-                var criterion = new Domain.Entities.ScoreCriterion(criterionDto.Name);
+                var criterion = new Domain.Entities.ScoreCriterion(criterionDto.Name, criterionDto.IsNegative);
                 template.AddCriterion(criterion);
             }
 
@@ -42,7 +42,6 @@ namespace Boardy.Application.GameCatalog.ScoreTemplate
 
             return Result.Success();
         }
-
 
         static private Result Validate(CreateScoreTemplateRequest request)
         {

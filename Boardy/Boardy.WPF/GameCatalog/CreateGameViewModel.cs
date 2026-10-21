@@ -15,6 +15,9 @@ public partial class CriterionItemViewModel : ObservableObject
 {
     [ObservableProperty]
     private string _name = string.Empty;
+
+    [ObservableProperty]
+    private bool _isNegative;
 }
 
 public partial class CreateGameViewModel : ObservableObject
@@ -55,7 +58,7 @@ public partial class CreateGameViewModel : ObservableObject
             return;
         }
 
-        var criteriaDtos = Criteria.Select(c => new CriterionDto(c.Name)).ToList();
+        var criteriaDtos = Criteria.Select(c => new CriterionDto(c.Name, c.IsNegative)).ToList();
 
         var request = new CreateScoreTemplateRequest("Базовий шаблон", criteriaDtos);
         var result = await _createScoreTemplateUseCase.ExecuteAsync(request);
