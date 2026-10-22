@@ -22,6 +22,34 @@ namespace Boardy.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Boardy.Domain.Entities.Game", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("MaxPlayers")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MinPlayers")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Games");
+                });
+
             modelBuilder.Entity("Boardy.Domain.Entities.Player", b =>
                 {
                     b.Property<Guid>("Id")
@@ -66,11 +94,16 @@ namespace Boardy.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("GameId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("GameId");
 
                     b.ToTable("ScoreTemplates");
                 });
@@ -81,6 +114,19 @@ namespace Boardy.Infrastructure.Migrations
                         .WithMany("Criteria")
                         .HasForeignKey("ScoreTemplateId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Boardy.Domain.Entities.ScoreTemplate", b =>
+                {
+                    b.HasOne("Boardy.Domain.Entities.Game", null)
+                        .WithMany("ScoreTemplates")
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Boardy.Domain.Entities.Game", b =>
+                {
+                    b.Navigation("ScoreTemplates");
                 });
 
             modelBuilder.Entity("Boardy.Domain.Entities.ScoreTemplate", b =>
