@@ -18,6 +18,7 @@
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="350">
 
             <Button Content="Почати гру" 
+                     Command="{Binding NavigateToCreateGameCommand}"
                 Background="#FF5252" 
                 Foreground="White" 
                 FontSize="42" 

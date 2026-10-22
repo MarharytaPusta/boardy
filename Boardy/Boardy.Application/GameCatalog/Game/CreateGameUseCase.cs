@@ -20,14 +20,14 @@ public class CreateGameUseCase
         _logger = logger;
     }
 
-    public async Task<Result> ExecuteAsync(CreateGameRequest request)
+    public async Task<Result<Guid>> ExecuteAsync(CreateGameRequest request)
     {
         _logger.LogInformation("Attempting to create a new game: {GameName}", request.Name);
 
         var validationResult = Validate(request);
         if (!validationResult.IsSuccess)
         {
-            return validationResult;
+            return Result<Guid>.Failure(validationResult.ErrorMessage ?? "Невідома помилка валідації.");
         }
 
         var newGame = new Domain.Entities.Game(
@@ -43,12 +43,12 @@ public class CreateGameUseCase
             await _gameRepository.AddAsync(newGame);
             _logger.LogInformation("Successfully created game with ID {GameId}", newGame.Id);
 
-            return Result.Success();
+            return Result<Guid>.Success(newGame.Id);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error occurred while saving the game {GameName}", request.Name);
-            return Result.Failure("Сталася помилка при збереженні гри.");
+            return Result<Guid>.Failure("Сталася помилка при збереженні гри.");
         }
     }
 
