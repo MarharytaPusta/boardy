@@ -5,7 +5,7 @@
         xmlns:auth="clr-namespace:Boardy.WPF.Authentication"
         xmlns:player="clr-namespace:Boardy.WPF.Player"
         xmlns:gameCatalog="clr-namespace:Boardy.WPF.GameCatalog"
-        Title="Boardy" Height="600" Width="800" WindowStartupLocation="CenterScreen">
+        Title="Boardy" Height="700" Width="900" WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
         <DataTemplate DataType="{x:Type home:HomeViewModel}">

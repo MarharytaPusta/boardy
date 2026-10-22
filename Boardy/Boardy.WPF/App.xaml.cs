@@ -1,4 +1,5 @@
 ﻿using Boardy.Application.Authentication.Admin;
+using Boardy.Application.GameCatalog.Game;
 using Boardy.Application.GameCatalog.ScoreTemplate;
 using Boardy.Application.Player;
 using Boardy.Application.Shared;
@@ -88,6 +89,9 @@ namespace Boardy.WPF
             services.AddScoped<IScoreTemplateRepository, ScoreTemplateRepository>();
             services.AddTransient<CreateScoreTemplateUseCase>();
             services.AddTransient<CreateGameViewModel>();
+
+            services.AddScoped<IGameRepository, GameRepository>();
+            services.AddTransient<CreateGameUseCase>();
 
             ServiceProvider = services.BuildServiceProvider();
 

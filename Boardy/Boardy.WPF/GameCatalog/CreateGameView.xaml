@@ -8,85 +8,125 @@
                 Command="{Binding GoBackCommand}"
                 HorizontalAlignment="Right" 
                 VerticalAlignment="Top" 
-                Margin="15" 
+                Margin="15,15,35,15" 
                 Padding="20,10"
                 Background="#FF5E5E" 
                 Foreground="White" 
                 FontSize="18" 
-                BorderThickness="0"/>
+                BorderThickness="0"
+                Panel.ZIndex="1"/>
 
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                      HorizontalScrollBarVisibility="Disabled">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
 
-            <TextBlock Text="Додати нову гру" 
-                       Foreground="Black" 
-                       FontSize="42" 
-                       HorizontalAlignment="Center" 
-                       Margin="0,0,0,20"/>
+                <TextBlock Text="Додати нову гру" 
+                           Foreground="Black" 
+                           FontSize="42" 
+                           HorizontalAlignment="Center" 
+                           Margin="0,0,0,20"/>
 
-            <Border Background="#C8CAFF" 
-                    Padding="40,30" 
-                    MinWidth="500">
-                <StackPanel>
+                <Border Background="#C8CAFF" 
+                        Padding="40,30" 
+                        MinWidth="500">
+                    <StackPanel>
 
-                    <ItemsControl ItemsSource="{Binding Criteria}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Grid Margin="0,0,0,10">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="230"/>
-                                        <ColumnDefinition Width="220"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
+                        <Grid Margin="0,0,0,25">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="200"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
 
-                                    <TextBlock Text="Уведіть критерій:" 
-                                               FontSize="18" 
-                                               VerticalAlignment="Center"/>
+                            <TextBlock Text="Назва гри:" FontSize="18" VerticalAlignment="Center" Margin="0,0,0,10"/>
+                            <TextBox Grid.Column="1" Text="{Binding GameName, UpdateSourceTrigger=PropertyChanged}" 
+                                     Height="30" FontSize="16" VerticalContentAlignment="Center" Margin="0,0,0,10"/>
 
-                                    <TextBox Grid.Column="1" 
-                                             Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" 
-                                             Height="30" 
-                                             FontSize="16" 
-                                             VerticalContentAlignment="Center"/>
+                            <TextBlock Grid.Row="1" Text="Опис:" FontSize="18" VerticalAlignment="Top" Margin="0,0,0,10"/>
+                            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding GameDescription, UpdateSourceTrigger=PropertyChanged}" 
+                                     Height="60" FontSize="16" TextWrapping="Wrap" AcceptsReturn="True" Margin="0,0,0,10"/>
 
-                                    <CheckBox Grid.Column="2" 
-                                              IsChecked="{Binding IsNegative}" 
-                                              Content="Від'ємний" 
-                                              FontSize="16" 
-                                              Foreground="#666666"
-                                              VerticalAlignment="Center" 
-                                              Margin="15,0,0,0"/>
-                                </Grid>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                            <TextBlock Grid.Row="2" Text="Мін. кількість гравців:" FontSize="18" VerticalAlignment="Center" Margin="0,0,0,10"/>
+                            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding MinPlayers, UpdateSourceTrigger=PropertyChanged}" 
+                                     Height="30" FontSize="16" VerticalContentAlignment="Center" Margin="0,0,0,10"/>
 
-                    <Button Content="+ Додати критерій оцінювання"
-                            Command="{Binding AddNewCriterionFieldCommand}"
-                            Background="Transparent"
-                            Foreground="#666666"
-                            FontSize="18"
-                            BorderThickness="0"
-                            HorizontalAlignment="Center"
-                            Margin="0,5,0,15"
-                            Cursor="Hand"/>
+                            <TextBlock Grid.Row="3" Text="Макс. кількість гравців:" FontSize="18" VerticalAlignment="Center" Margin="0,0,0,10"/>
+                            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding MaxPlayers, UpdateSourceTrigger=PropertyChanged}" 
+                                     Height="30" FontSize="16" VerticalContentAlignment="Center" Margin="0,0,0,10"/>
 
-                    <TextBlock Text="{Binding ErrorMessage}"
-                               Foreground="#FF5E5E"
-                               FontSize="16"
-                               HorizontalAlignment="Center"
-                               Margin="0,0,0,15"/>
+                            <TextBlock Grid.Row="4" Text="Статус:" FontSize="18" VerticalAlignment="Center"/>
+                            <CheckBox Grid.Row="4" Grid.Column="1" Content="Активна" IsChecked="{Binding IsActive}" 
+                                      FontSize="16" VerticalAlignment="Center"/>
+                        </Grid>
 
-                    <Button Content="Зберегти шаблон" 
-                            Command="{Binding SaveTemplateCommand}"
-                            Background="#FF5E5E" 
-                            Foreground="White" 
-                            FontSize="20" 
-                            Padding="0,10"
-                            Width="250"
-                            HorizontalAlignment="Center"
-                            BorderThickness="0"/>
-                </StackPanel>
-            </Border>
-        </StackPanel>
+                        <Separator Background="#9597FF" Margin="0,0,0,20"/>
+
+                        <ItemsControl ItemsSource="{Binding Criteria}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,0,0,10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="230"/>
+                                            <ColumnDefinition Width="220"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Text="Уведіть критерій:" 
+                                                   FontSize="18" 
+                                                   VerticalAlignment="Center"/>
+
+                                        <TextBox Grid.Column="1" 
+                                                 Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" 
+                                                 Height="30" 
+                                                 FontSize="16" 
+                                                 VerticalContentAlignment="Center"/>
+
+                                        <CheckBox Grid.Column="2" 
+                                                  IsChecked="{Binding IsNegative}" 
+                                                  Content="Від'ємний" 
+                                                  FontSize="16" 
+                                                  Foreground="#666666"
+                                                  VerticalAlignment="Center" 
+                                                  Margin="15,0,0,0"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <Button Content="+ Додати критерій оцінювання"
+                                Command="{Binding AddNewCriterionFieldCommand}"
+                                Background="Transparent"
+                                Foreground="#666666"
+                                FontSize="18"
+                                BorderThickness="0"
+                                HorizontalAlignment="Center"
+                                Margin="0,5,0,15"
+                                Cursor="Hand"/>
+
+                        <TextBlock Text="{Binding ErrorMessage}"
+                                   Foreground="#FF5E5E"
+                                   FontSize="16"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,0,0,15"/>
+
+                        <Button Content="Зберегти гру" 
+                                Command="{Binding SaveGameCommand}"
+                                Background="#FF5E5E" 
+                                Foreground="White" 
+                                FontSize="20" 
+                                Padding="0,10"
+                                Width="250"
+                                HorizontalAlignment="Center"
+                                BorderThickness="0"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </UserControl>
