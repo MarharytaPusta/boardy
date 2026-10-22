@@ -28,7 +28,7 @@ namespace Boardy.Application.Tests.GameCatalog.ScoreTemplate
         public async Task ExecuteAsync_WithEmptyTemplateName_ReturnsFailure(string invalidName)
         {
             var criteria = new List<CriterionDto> { new CriterionDto("Правило 1", false) };
-            var request = new CreateScoreTemplateRequest(invalidName, criteria);
+            var request = new CreateScoreTemplateRequest(Guid.NewGuid(), invalidName, criteria);
 
             var result = await _useCase.ExecuteAsync(request);
 
@@ -41,7 +41,7 @@ namespace Boardy.Application.Tests.GameCatalog.ScoreTemplate
         [Fact]
         public async Task ExecuteAsync_WithEmptyCriteriaList_ReturnsFailure()
         {
-            var request = new CreateScoreTemplateRequest("Базовий шаблон", new List<CriterionDto>());
+            var request = new CreateScoreTemplateRequest(Guid.NewGuid(), "Базовий шаблон", new List<CriterionDto>());
 
             var result = await _useCase.ExecuteAsync(request);
 
@@ -58,12 +58,29 @@ namespace Boardy.Application.Tests.GameCatalog.ScoreTemplate
                 new CriterionDto("Правило 1", false),
                 new CriterionDto("   ", true)
             };
-            var request = new CreateScoreTemplateRequest("Базовий шаблон", criteria);
+            var request = new CreateScoreTemplateRequest(Guid.NewGuid(), "Базовий шаблон", criteria);
 
             var result = await _useCase.ExecuteAsync(request);
 
             Assert.False(result.IsSuccess);
             Assert.Equal("Критерій не може бути порожнім", result.ErrorMessage);
+            _mockRepository.Verify(repo => repo.AddAsync(It.IsAny<Domain.Entities.ScoreTemplate>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task ExecuteAsync_WithDuplicateCriteriaNames_ReturnsFailure()
+        {
+            var criteria = new List<CriterionDto>
+            {
+                new CriterionDto("Бали", false),
+                new CriterionDto("бали ", true)
+            };
+            var request = new CreateScoreTemplateRequest(Guid.NewGuid(), "Базовий шаблон", criteria);
+
+            var result = await _useCase.ExecuteAsync(request);
+
+            Assert.False(result.IsSuccess);
+            Assert.Equal("Критерії в одному шаблоні не можуть мати однакові назви", result.ErrorMessage);
             _mockRepository.Verify(repo => repo.AddAsync(It.IsAny<Domain.Entities.ScoreTemplate>()), Times.Never);
         }
 
@@ -75,7 +92,7 @@ namespace Boardy.Application.Tests.GameCatalog.ScoreTemplate
                 new CriterionDto("Перемога", false),
                 new CriterionDto("Штраф", true)
             };
-            var request = new CreateScoreTemplateRequest("Мій ідеальний шаблон", criteria);
+            var request = new CreateScoreTemplateRequest(Guid.NewGuid(), "Мій ідеальний шаблон", criteria);
 
             var result = await _useCase.ExecuteAsync(request);
 

@@ -60,6 +60,15 @@ namespace Boardy.Application.GameCatalog.ScoreTemplate
                 return Result.Failure("Критерій не може бути порожнім");
             }
 
+            bool hasDuplicates = request.Criteria
+                .GroupBy(c => c.Name.Trim(), StringComparer.OrdinalIgnoreCase)
+                .Any(g => g.Count() > 1);
+
+            if (hasDuplicates)
+            {
+                return Result.Failure("Критерії в одному шаблоні не можуть мати однакові назви");
+            }
+
             return Result.Success();
         }
     }
