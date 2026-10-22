@@ -37,26 +37,29 @@ namespace Boardy.Application.GameCatalog.ScoreTemplate
 
             await _repository.AddAsync(template);
 
-            _logger.LogInformation("Successfully created ScoreTemplate '{TemplateName}' with {CriteriaCount} criteria (ID: {TemplateId}).",
+            _logger.LogInformation("Successfully created ScoreTemplate '{TemplateName}' with {CriteriaCount} criteria (ID: {TemplateId})",
                 template.Name, template.Criteria.Count, template.Id);
 
             return Result.Success();
         }
 
-        static private Result Validate(CreateScoreTemplateRequest request)
+        private Result Validate(CreateScoreTemplateRequest request)
         {
             if (string.IsNullOrWhiteSpace(request.TemplateName))
             {
+                _logger.LogWarning("Invalid input: Attempted to create a score template without a name");
                 return Result.Failure("Назва шаблону не може бути порожньою");
             }
 
             if (request.Criteria == null || request.Criteria.Count == 0)
             {
+                _logger.LogWarning("Invalid input: Attempted to create a score template '{TemplateName}' without any criteria", request.TemplateName);
                 return Result.Failure("Додайте хоча б один критерій оцінювання");
             }
 
             if (request.Criteria.Any(c => string.IsNullOrWhiteSpace(c.Name)))
             {
+                _logger.LogWarning("Invalid input: Attempted to create a score template '{TemplateName}' with empty criterion fields", request.TemplateName);
                 return Result.Failure("Критерій не може бути порожнім");
             }
 
