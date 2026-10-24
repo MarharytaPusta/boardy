@@ -12,6 +12,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -43,14 +44,42 @@
                     HorizontalAlignment="Right"/>
         </Grid>
 
-        <TextBlock Grid.Row="1"
+        <Grid Grid.Row="1" Margin="0,20,0,10" HorizontalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="280"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="Назва гри:"
+                       FontSize="18"
+                       VerticalAlignment="Center"
+                       Margin="0,0,10,0"/>
+            <TextBox Grid.Column="1"
+                     Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
+                     Height="32"
+                     FontSize="16"
+                     VerticalContentAlignment="Center"/>
+            <Button Grid.Column="2"
+                    Content="Шукати"
+                    Command="{Binding SearchGamesCommand}"
+                    Background="#FF8A80"
+                    Foreground="White"
+                    FontSize="16"
+                    FontWeight="DemiBold"
+                    Padding="16,5"
+                    Margin="10,0,0,0"
+                    BorderThickness="0"/>
+        </Grid>
+
+        <TextBlock Grid.Row="2"
                    Text="{Binding ErrorMessage}"
                    Foreground="#FF5E5E"
                    FontSize="16"
                    HorizontalAlignment="Center"
-                   Margin="0,20,0,10"/>
+                   Margin="0,0,0,10"/>
 
-        <Border Grid.Row="2" Background="#C8CAFF" CornerRadius="6" Padding="20,12" Margin="0,0,0,5">
+        <Border Grid.Row="3" Background="#C8CAFF" CornerRadius="6" Padding="20,12" Margin="0,0,0,5">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="120"/>
@@ -66,7 +95,7 @@
             </Grid>
         </Border>
 
-        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer Grid.Row="4" VerticalScrollBarVisibility="Auto">
             <ItemsControl ItemsSource="{Binding Games}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>

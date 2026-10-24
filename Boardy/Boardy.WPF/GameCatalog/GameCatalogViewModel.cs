@@ -23,6 +23,9 @@ public partial class GameCatalogViewModel : ObservableObject
     [ObservableProperty]
     private string _errorMessage = string.Empty;
 
+    [ObservableProperty]
+    private string _searchQuery = string.Empty;
+
     public bool IsAdminMode => _userSession.IsAdminMode;
 
     public GameCatalogViewModel(GetGameCatalogUseCase getGameCatalogUseCase, IUserSession userSession)
@@ -34,7 +37,18 @@ public partial class GameCatalogViewModel : ObservableObject
 
     public async Task LoadGamesAsync()
     {
-        var result = await _getGameCatalogUseCase.ExecuteAsync(new GetGameCatalogRequest(null, null));
+        await LoadGamesAsync(SearchQuery);
+    }
+
+    [RelayCommand]
+    private async Task SearchGamesAsync()
+    {
+        await LoadGamesAsync(SearchQuery);
+    }
+
+    private async Task LoadGamesAsync(string? searchQuery)
+    {
+        var result = await _getGameCatalogUseCase.ExecuteAsync(new GetGameCatalogRequest(searchQuery, null));
 
         if (!result.IsSuccess || result.Data is null)
         {
