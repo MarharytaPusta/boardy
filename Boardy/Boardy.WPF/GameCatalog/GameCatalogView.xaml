@@ -51,6 +51,7 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="80"/>
                 <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
             <TextBlock Text="Назва гри:"
@@ -85,6 +86,16 @@
                     Padding="16,5"
                     Margin="10,0,0,0"
                     BorderThickness="0"/>
+            <Button Grid.Column="5"
+                    Content="Очистити"
+                    Command="{Binding ClearFiltersCommand}"
+                    Background="Transparent"
+                    Foreground="#333333"
+                    FontSize="16"
+                    FontWeight="DemiBold"
+                    Padding="16,5"
+                    Margin="5,0,0,0"
+                    BorderThickness="0"/>
         </Grid>
 
         <TextBlock Grid.Row="2"
@@ -110,7 +121,7 @@
             </Grid>
         </Border>
 
-        <ScrollViewer Grid.Row="4" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer Grid.Row="4" VerticalScrollBarVisibility="Hidden">
             <ItemsControl ItemsSource="{Binding Games}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
@@ -137,5 +148,15 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
+
+        <TextBlock Grid.Row="4"
+                   Text="Ігор не знайдено"
+                   Visibility="{Binding IsCatalogEmpty, Converter={StaticResource BoolToVis}}"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Top"
+                   Margin="0,30,0,0"
+                   FontSize="22"
+                   Foreground="Black"
+                   Panel.ZIndex="1"/>
     </Grid>
 </UserControl>

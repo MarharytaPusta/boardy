@@ -29,6 +29,9 @@ public partial class GameCatalogViewModel : ObservableObject
     [ObservableProperty]
     private string _playersCountText = string.Empty;
 
+    [ObservableProperty]
+    private bool _isCatalogEmpty;
+
     public bool IsAdminMode => _userSession.IsAdminMode;
 
     public GameCatalogViewModel(GetGameCatalogUseCase getGameCatalogUseCase, IUserSession userSession)
@@ -70,6 +73,7 @@ public partial class GameCatalogViewModel : ObservableObject
         {
             ErrorMessage = result.ErrorMessage ?? "Не вдалося завантажити каталог ігор.";
             Games = new ObservableCollection<GameCatalogListItem>();
+            IsCatalogEmpty = false;
             return;
         }
 
@@ -80,6 +84,15 @@ public partial class GameCatalogViewModel : ObservableObject
                 game.Name,
                 $"{game.MinPlayers}–{game.MaxPlayers}",
                 game.Status == GameStatus.Active)));
+        IsCatalogEmpty = Games.Count == 0;
+    }
+
+    [RelayCommand]
+    private async Task ClearFiltersAsync()
+    {
+        SearchQuery = string.Empty;
+        PlayersCountText = string.Empty;
+        await LoadGamesAsync();
     }
 
     [RelayCommand]
