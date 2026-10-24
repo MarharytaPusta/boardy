@@ -2,7 +2,6 @@
 using Boardy.Application.GameCatalog.Game;
 using Boardy.Application.GameCatalog.ScoreTemplate;
 using Boardy.Domain.Enums;
-using Boardy.WPF.Home;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -94,7 +93,7 @@ public partial class CreateGameViewModel : ObservableObject
 
         if (templateCreated)
         {
-            GoBack();
+            await NavigateToCatalogAsync();
         }
     }
 
@@ -148,9 +147,15 @@ public partial class CreateGameViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void GoBack()
+    private async Task GoBackAsync()
     {
-        var homeViewModel = App.ServiceProvider.GetRequiredService<HomeViewModel>();
-        WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(homeViewModel));
+        await NavigateToCatalogAsync();
+    }
+
+    private static async Task NavigateToCatalogAsync()
+    {
+        var gameCatalogViewModel = App.ServiceProvider.GetRequiredService<GameCatalogViewModel>();
+        await gameCatalogViewModel.LoadGamesAsync();
+        WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(gameCatalogViewModel));
     }
 }
