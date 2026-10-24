@@ -38,7 +38,8 @@ public class GetGameCatalogUseCase
                 game.Name,
                 game.Description,
                 game.MinPlayers,
-                game.MaxPlayers))
+                game.MaxPlayers,
+                game.Status))
             .ToList();
 
         _logger.LogInformation("Loaded game catalog");

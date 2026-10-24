@@ -97,5 +97,6 @@ public class GetGameCatalogUseCaseTests
         Assert.Equal(expected.Description, actual.Description);
         Assert.Equal(expected.MinPlayers, actual.MinPlayers);
         Assert.Equal(expected.MaxPlayers, actual.MaxPlayers);
+        Assert.Equal(expected.Status, actual.Status);
     }
 }

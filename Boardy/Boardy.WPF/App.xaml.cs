@@ -96,6 +96,7 @@ namespace Boardy.WPF
 
             services.AddScoped<IGameCatalogRepository, GameCatalogRepository>();
             services.AddTransient<GetGameCatalogUseCase>();
+            services.AddTransient<GameCatalogViewModel>();
 
             ServiceProvider = services.BuildServiceProvider();
 

@@ -1,3 +1,5 @@
+using Boardy.Domain.Enums;
+
 namespace Boardy.Application.GameCatalog.Catalog;
 
 public record GameCatalogItem(
@@ -5,4 +7,5 @@ public record GameCatalogItem(
     string Name,
     string Description,
     int MinPlayers,
-    int MaxPlayers);
+    int MaxPlayers,
+    GameStatus Status);
