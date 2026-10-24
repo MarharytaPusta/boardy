@@ -26,6 +26,9 @@ public partial class GameCatalogViewModel : ObservableObject
     [ObservableProperty]
     private string _searchQuery = string.Empty;
 
+    [ObservableProperty]
+    private string _playersCountText = string.Empty;
+
     public bool IsAdminMode => _userSession.IsAdminMode;
 
     public GameCatalogViewModel(GetGameCatalogUseCase getGameCatalogUseCase, IUserSession userSession)
@@ -37,18 +40,31 @@ public partial class GameCatalogViewModel : ObservableObject
 
     public async Task LoadGamesAsync()
     {
-        await LoadGamesAsync(SearchQuery);
+        await LoadGamesAsync(SearchQuery, null);
     }
 
     [RelayCommand]
     private async Task SearchGamesAsync()
     {
-        await LoadGamesAsync(SearchQuery);
+        int? playersCount = null;
+
+        if (!string.IsNullOrWhiteSpace(PlayersCountText))
+        {
+            if (!int.TryParse(PlayersCountText, out var parsedPlayersCount))
+            {
+                ErrorMessage = "Кількість гравців має бути числом.";
+                return;
+            }
+
+            playersCount = parsedPlayersCount;
+        }
+
+        await LoadGamesAsync(SearchQuery, playersCount);
     }
 
-    private async Task LoadGamesAsync(string? searchQuery)
+    private async Task LoadGamesAsync(string? searchQuery, int? playersCount)
     {
-        var result = await _getGameCatalogUseCase.ExecuteAsync(new GetGameCatalogRequest(searchQuery, null));
+        var result = await _getGameCatalogUseCase.ExecuteAsync(new GetGameCatalogRequest(searchQuery, playersCount));
 
         if (!result.IsSuccess || result.Data is null)
         {
