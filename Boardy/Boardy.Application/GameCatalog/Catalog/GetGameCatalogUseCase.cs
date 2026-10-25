@@ -22,9 +22,6 @@ public class GetGameCatalogUseCase
         var validationResult = Validate(request);
         if (!validationResult.IsSuccess)
         {
-            _logger.LogWarning(
-                "Game catalog request validation failed: {ErrorMessage}",
-                validationResult.ErrorMessage);
             return Result<IEnumerable<Domain.Entities.Game>>.Failure(validationResult.ErrorMessage!);
         }
 
@@ -40,10 +37,13 @@ public class GetGameCatalogUseCase
         return Result<IEnumerable<Domain.Entities.Game>>.Success(filteredGames);
     }
 
-    private static Result Validate(GetGameCatalogRequest request)
+    private Result Validate(GetGameCatalogRequest request)
     {
         if (request.PlayersCount is <= 0)
         {
+            _logger.LogWarning(
+                "Validation failed: PlayersCount is less than 1 (Provided: {PlayersCount}).",
+                request.PlayersCount);
             return Result.Failure("Кількість гравців має бути більшою за 0.");
         }
 
