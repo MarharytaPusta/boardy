@@ -38,10 +38,10 @@ public partial class CreateGameViewModel : ObservableObject
     private string _gameDescription = string.Empty;
 
     [ObservableProperty]
-    private int _minPlayers = 2;
+    private int? _minPlayers;
 
     [ObservableProperty]
-    private int _maxPlayers = 4;
+    private int? _maxPlayers;
 
     [ObservableProperty]
     private bool _isActive = true;
@@ -79,7 +79,7 @@ public partial class CreateGameViewModel : ObservableObject
         if (!ValidateCriteriaData()) return;
 
         var gameStatus = IsActive ? GameStatus.Active : GameStatus.Inactive;
-        var gameRequest = new CreateGameRequest(GameName, GameDescription, MinPlayers, MaxPlayers, gameStatus);
+        var gameRequest = new CreateGameRequest(GameName, GameDescription, MinPlayers ?? 0, MaxPlayers ?? 0, gameStatus);
 
         var gameResult = await _createGameUseCase.ExecuteAsync(gameRequest);
 
@@ -116,6 +116,13 @@ public partial class CreateGameViewModel : ObservableObject
             ErrorMessage = "Назва гри не може бути порожньою.";
             return false;
         }
+
+        if (!MinPlayers.HasValue || !MaxPlayers.HasValue)
+        {
+            ErrorMessage = "Введіть мінімальну та максимальну кількість гравців.";
+            return false;
+        }
+
         return true;
     }
 
