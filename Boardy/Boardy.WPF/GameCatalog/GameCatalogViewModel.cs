@@ -29,9 +29,6 @@ public partial class GameCatalogViewModel : ObservableObject
     [ObservableProperty]
     private string _playersCountText = string.Empty;
 
-    [ObservableProperty]
-    private bool _isCatalogEmpty;
-
     public bool IsAdminMode => _userSession.IsAdminMode;
 
     public GameCatalogViewModel(GetGameCatalogUseCase getGameCatalogUseCase, IUserSession userSession)
@@ -41,13 +38,8 @@ public partial class GameCatalogViewModel : ObservableObject
         _userSession.OnAdminStateChanged += UpdateAdminState;
     }
 
-    public async Task LoadGamesAsync()
-    {
-        await LoadGamesAsync(SearchQuery, null);
-    }
-
     [RelayCommand]
-    private async Task SearchGamesAsync()
+    public async Task LoadGamesAsync()
     {
         int? playersCount = null;
 
@@ -62,18 +54,11 @@ public partial class GameCatalogViewModel : ObservableObject
             playersCount = parsedPlayersCount;
         }
 
-        await LoadGamesAsync(SearchQuery, playersCount);
-    }
-
-    private async Task LoadGamesAsync(string? searchQuery, int? playersCount)
-    {
-        var result = await _getGameCatalogUseCase.ExecuteAsync(new GetGameCatalogRequest(searchQuery, playersCount));
+        var result = await _getGameCatalogUseCase.ExecuteAsync(new GetGameCatalogRequest(SearchQuery, playersCount));
 
         if (!result.IsSuccess || result.Data is null)
         {
             ErrorMessage = result.ErrorMessage ?? "Не вдалося завантажити каталог ігор.";
-            Games = new ObservableCollection<GameCatalogListItem>();
-            IsCatalogEmpty = false;
             return;
         }
 
@@ -84,7 +69,6 @@ public partial class GameCatalogViewModel : ObservableObject
                 game.Name,
                 $"{game.MinPlayers}–{game.MaxPlayers}",
                 game.Status == GameStatus.Active)));
-        IsCatalogEmpty = Games.Count == 0;
     }
 
     [RelayCommand]

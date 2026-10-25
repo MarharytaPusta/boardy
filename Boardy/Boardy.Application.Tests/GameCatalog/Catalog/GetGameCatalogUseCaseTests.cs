@@ -1,4 +1,5 @@
 using Boardy.Application.GameCatalog.Catalog;
+using Boardy.Application.GameCatalog.Game;
 using Boardy.Domain.Enums;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -7,7 +8,7 @@ namespace Boardy.Application.Tests.GameCatalog.Catalog;
 
 public class GetGameCatalogUseCaseTests
 {
-    private readonly Mock<IGameCatalogRepository> _mockRepository = new();
+    private readonly Mock<IGameRepository> _mockRepository = new();
     private readonly GetGameCatalogUseCase _useCase;
 
     public GetGameCatalogUseCaseTests()
@@ -29,13 +30,13 @@ public class GetGameCatalogUseCaseTests
         Assert.True(result.IsSuccess);
         var games = result.Data!.ToList();
         Assert.Collection(games,
-            game => AssertGame(game, monopoly),
-            game => AssertGame(game, carcassonne));
+            game => Assert.Same(monopoly, game),
+            game => Assert.Same(carcassonne, game));
         _mockRepository.Verify(repository => repository.GetAllAsync(), Times.Once);
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsGamesMatchingSearchAndPlayersCount()
+    public async Task ExecuteAsync_WithFilters_ReturnsMatchingGames()
     {
         var monopoly = new Domain.Entities.Game("Монополія", "Економічна гра", 2, 6, GameStatus.Active);
         var carcassonne = new Domain.Entities.Game("Каркассон", "Стратегічна гра", 2, 5, GameStatus.Active);
@@ -45,7 +46,7 @@ public class GetGameCatalogUseCaseTests
         var result = await _useCase.ExecuteAsync(new GetGameCatalogRequest("моноп", 4));
 
         Assert.True(result.IsSuccess);
-        AssertGame(Assert.Single(result.Data!), monopoly);
+        Assert.Same(monopoly, Assert.Single(result.Data!));
     }
 
     [Fact]
@@ -90,13 +91,4 @@ public class GetGameCatalogUseCaseTests
         _mockRepository.Verify(repository => repository.GetAllAsync(), Times.Never);
     }
 
-    private static void AssertGame(GameCatalogItem actual, Domain.Entities.Game expected)
-    {
-        Assert.Equal(expected.Id, actual.Id);
-        Assert.Equal(expected.Name, actual.Name);
-        Assert.Equal(expected.Description, actual.Description);
-        Assert.Equal(expected.MinPlayers, actual.MinPlayers);
-        Assert.Equal(expected.MaxPlayers, actual.MaxPlayers);
-        Assert.Equal(expected.Status, actual.Status);
-    }
 }

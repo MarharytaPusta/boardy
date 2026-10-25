@@ -93,7 +93,7 @@ public partial class CreateGameViewModel : ObservableObject
 
         if (templateCreated)
         {
-            await NavigateToCatalogAsync();
+            await GoBackAsync();
         }
     }
 
@@ -148,11 +148,6 @@ public partial class CreateGameViewModel : ObservableObject
 
     [RelayCommand]
     private async Task GoBackAsync()
-    {
-        await NavigateToCatalogAsync();
-    }
-
-    private static async Task NavigateToCatalogAsync()
     {
         var gameCatalogViewModel = App.ServiceProvider.GetRequiredService<GameCatalogViewModel>();
         await gameCatalogViewModel.LoadGamesAsync();
