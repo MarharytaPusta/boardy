@@ -52,20 +52,24 @@ public class CreateGameUseCase
         }
     }
 
-    static private Result Validate(CreateGameRequest request)
+    private Result Validate(CreateGameRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.Name))
         {
+            _logger.LogWarning("Validation failed: Game name is empty or null.");
             return Result.Failure("Назва гри не може бути порожньою.");
         }
 
         if (request.MinPlayers < 1)
         {
+            _logger.LogWarning("Validation failed: MinPlayers is less than 1 (Provided: {MinPlayers}).", request.MinPlayers);
             return Result.Failure("Мінімальна кількість гравців має бути більше 0.");
         }
 
         if (request.MinPlayers > request.MaxPlayers)
         {
+            _logger.LogWarning("Validation failed: MinPlayers ({MinPlayers}) is greater than MaxPlayers ({MaxPlayers}).",
+            request.MinPlayers, request.MaxPlayers);
             return Result.Failure("Мінімальна кількість гравців не може перевищувати максимальну.");
         }
 
