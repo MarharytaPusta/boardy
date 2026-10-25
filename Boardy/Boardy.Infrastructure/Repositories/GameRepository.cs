@@ -22,4 +22,9 @@ public class GameRepository : IGameRepository
         await _context.Games.AddAsync(game);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<IEnumerable<Game>> GetAllAsync()
+    {
+        return await _context.Games.ToListAsync();
+    }
 }

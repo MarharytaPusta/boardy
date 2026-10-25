@@ -9,4 +9,5 @@ namespace Boardy.Application.GameCatalog.Game;
 public interface IGameRepository
 {
     Task AddAsync(Domain.Entities.Game game);
+    Task<IEnumerable<Domain.Entities.Game>> GetAllAsync();
 }

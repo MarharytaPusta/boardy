@@ -1,5 +1,6 @@
 ﻿using Boardy.Application.Authentication.Admin;
 using Boardy.WPF.Authentication;
+using Boardy.WPF.GameCatalog;
 using Boardy.WPF.Player;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -39,6 +40,14 @@ public partial class HomeViewModel : ObservableObject
         var playersViewModel = App.ServiceProvider.GetRequiredService<PlayersViewModel>();
         await playersViewModel.LoadPlayersAsync();
         WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(playersViewModel));
+    }
+
+    [RelayCommand]
+    private async Task NavigateToGameCatalogAsync()
+    {
+        var gameCatalogViewModel = App.ServiceProvider.GetRequiredService<GameCatalogViewModel>();
+        await gameCatalogViewModel.LoadGamesAsync();
+        WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(gameCatalogViewModel));
     }
 
     [RelayCommand]

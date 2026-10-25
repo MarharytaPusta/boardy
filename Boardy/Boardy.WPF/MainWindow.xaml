@@ -29,6 +29,9 @@
         <DataTemplate DataType="{x:Type gameCatalog:CreateGameViewModel}">
             <gameCatalog:CreateGameView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type gameCatalog:GameCatalogViewModel}">
+            <gameCatalog:GameCatalogView />
+        </DataTemplate>
     </Window.Resources>
 
     <ContentControl Content="{Binding CurrentViewModel}" />
