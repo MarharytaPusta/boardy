@@ -10,4 +10,6 @@ public interface IGameRepository
 {
     Task AddAsync(Domain.Entities.Game game);
     Task<IEnumerable<Domain.Entities.Game>> GetAllAsync();
+
+    Task<IEnumerable<Domain.Entities.Game>> GetFilteredAsync(string? searchQuery, int? playersCount);
 }
