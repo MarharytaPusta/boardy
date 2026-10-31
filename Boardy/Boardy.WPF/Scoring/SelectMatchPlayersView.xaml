@@ -58,12 +58,13 @@
         <TextBlock Grid.Row="3" Text="{Binding ErrorMessage}" Foreground="#FF5E5E" FontSize="16" HorizontalAlignment="Center"/>
 
         <Grid Grid.Row="3">
-            <ScrollViewer VerticalScrollBarVisibility="Hidden">
                 <ListBox ItemsSource="{Binding Players}" 
                          SelectionMode="Multiple"
                          Background="Transparent" BorderThickness="0"
                          HorizontalContentAlignment="Stretch"
-                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                         ScrollViewer.VerticalScrollBarVisibility="Hidden"
+                         Margin="0,0,0,80">
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="ListBoxItem">
                             <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
@@ -90,7 +91,7 @@
                             </Border>
                             <DataTemplate.Triggers>
                                 <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="True">
-                                    <Setter TargetName="Bd" Property="Background" Value="#7074FF"/>
+                                    <Setter TargetName="Bd" Property="Background" Value="#E4E4FF"/>
                                     <Setter TargetName="Bd" Property="BorderBrush" Value="White"/>
                                     <Setter TargetName="Bd" Property="BorderThickness" Value="2"/>
                                 </DataTrigger>
@@ -98,7 +99,6 @@
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
-            </ScrollViewer>
 
             <Button Content="Почати гру"
                     Command="{Binding NextStepCommand}"

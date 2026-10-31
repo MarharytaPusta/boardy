@@ -45,12 +45,32 @@
         <TextBlock Grid.Row="2" Text="{Binding ErrorMessage}" Foreground="#FF5E5E" FontSize="16" HorizontalAlignment="Center"/>
 
         <Grid Grid.Row="2">
-            <ScrollViewer VerticalScrollBarVisibility="Hidden">
+            <TextBlock Text="Для обраної кількості гравців ігор не знайдено"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Top"
+               Margin="0,30,0,0"
+               FontSize="22"
+               Foreground="Black"
+               Panel.ZIndex="1">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Games.Count}" Value="0">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+            
                 <ListBox ItemsSource="{Binding Games}" 
                          SelectionMode="Single"
                          SelectedItem="{Binding SelectedGame}"
                          Background="Transparent" BorderThickness="0"
-                         HorizontalContentAlignment="Stretch">
+                         HorizontalContentAlignment="Stretch"
+                         ScrollViewer.VerticalScrollBarVisibility="Hidden"
+                            Margin="0,0,0,80">
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="ListBoxItem">
                             <Setter Property="Template">
@@ -61,7 +81,7 @@
                                         </Border>
                                         <ControlTemplate.Triggers>
                                             <Trigger Property="IsSelected" Value="True">
-                                                <Setter TargetName="Bd" Property="Background" Value="#7074FF"/>
+                                                <Setter TargetName="Bd" Property="Background" Value="#E4E4FF"/>
                                                 <Setter TargetName="Bd" Property="BorderBrush" Value="White"/>
                                                 <Setter TargetName="Bd" Property="BorderThickness" Value="2"/>
                                             </Trigger>
@@ -82,14 +102,12 @@
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Text="{Binding Number}" FontSize="22" Foreground="Black"/>
                                 <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="22" Foreground="Black"/>
-                                <!-- Тимчасово 0, доки не реалізована статистика -->
                                 <TextBlock Grid.Column="2" Text="0" FontSize="22" Foreground="Black"/>
                                 <TextBlock Grid.Column="3" Text="⋮" FontSize="28" Foreground="White" HorizontalAlignment="Center"/>
                             </Grid>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
-            </ScrollViewer>
 
             <Button Content="Почати гру"
                     Command="{Binding StartMatchCommand}"
