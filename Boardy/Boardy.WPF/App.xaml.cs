@@ -97,6 +97,8 @@ namespace Boardy.WPF
             services.AddTransient<GetGameCatalogUseCase>();
             services.AddTransient<GameCatalogViewModel>();
 
+            services.AddTransient<GetGameDetailsUseCase>();
+
             ServiceProvider = services.BuildServiceProvider();
 
             base.OnStartup(e);

@@ -15,6 +15,7 @@ namespace Boardy.WPF.GameCatalog;
 public partial class GameCatalogViewModel : ObservableObject
 {
     private readonly GetGameCatalogUseCase _getGameCatalogUseCase;
+    private readonly GetGameDetailsUseCase _getGameDetailsUseCase;
     private readonly IUserSession _userSession;
 
     [ObservableProperty]
@@ -29,11 +30,24 @@ public partial class GameCatalogViewModel : ObservableObject
     [ObservableProperty]
     private string _playersCountText = string.Empty;
 
+    [ObservableProperty] private bool _isDetailsPopupOpen;
+
+    [ObservableProperty] private bool _isTemplatesPopupOpen;
+
+    [ObservableProperty] private string _popupGameName = string.Empty;
+
+    [ObservableProperty] private string _popupGameDescription = string.Empty;
+
+    [ObservableProperty] private string _popupGamePlayers = string.Empty;
+
+    [ObservableProperty] private ObservableCollection<CriterionItemViewModel> _popupCriteria = new();
+
     public bool IsAdminMode => _userSession.IsAdminMode;
 
-    public GameCatalogViewModel(GetGameCatalogUseCase getGameCatalogUseCase, IUserSession userSession)
+    public GameCatalogViewModel(GetGameCatalogUseCase getGameCatalogUseCase, GetGameDetailsUseCase getGameDetailsUseCase, IUserSession userSession)
     {
         _getGameCatalogUseCase = getGameCatalogUseCase;
+        _getGameDetailsUseCase = getGameDetailsUseCase;
         _userSession = userSession;
         _userSession.OnAdminStateChanged += UpdateAdminState;
     }
@@ -65,6 +79,7 @@ public partial class GameCatalogViewModel : ObservableObject
         ErrorMessage = string.Empty;
         Games = new ObservableCollection<GameCatalogListItem>(result.Data.Select((game, index) =>
             new GameCatalogListItem(
+                game.Id,
                 index + 1,
                 game.Name,
                 $"{game.MinPlayers}–{game.MaxPlayers}",
@@ -78,6 +93,51 @@ public partial class GameCatalogViewModel : ObservableObject
         PlayersCountText = string.Empty;
         await LoadGamesAsync();
     }
+
+
+    [RelayCommand]
+    private async Task ViewGameDetailsAsync(GameCatalogListItem selectedGame)
+    {
+        var result = await _getGameDetailsUseCase.ExecuteAsync(new GetGameDetailsRequest(selectedGame.Id));
+        if (!result.IsSuccess || result.Data == null) return;
+
+        PopupGameName = result.Data.Name;
+        PopupGameDescription = result.Data.Description;
+        PopupGamePlayers = $"{result.Data.MinPlayers}-{result.Data.MaxPlayers}";
+
+        IsDetailsPopupOpen = true;
+    }
+
+
+    [RelayCommand]
+    private async Task ViewGameTemplatesAsync(GameCatalogListItem selectedGame)
+    {
+        var result = await _getGameDetailsUseCase.ExecuteAsync(new GetGameDetailsRequest(selectedGame.Id));
+        if (!result.IsSuccess || result.Data == null) return;
+
+        PopupGameName = result.Data.Name;
+        PopupCriteria.Clear();
+
+        var firstTemplate = result.Data.ScoreTemplates.FirstOrDefault();
+        if (firstTemplate != null)
+        {
+            foreach (var criterion in firstTemplate.Criteria)
+            {
+                PopupCriteria.Add(new CriterionItemViewModel { Name = criterion.Name, IsNegative = criterion.IsNegative });
+            }
+        }
+
+        IsTemplatesPopupOpen = true;
+    }
+
+
+    [RelayCommand]
+    private void ClosePopup()
+    {
+        IsDetailsPopupOpen = false;
+        IsTemplatesPopupOpen = false;
+    }
+
 
     [RelayCommand]
     private void NavigateToCreateGame()
@@ -104,4 +164,4 @@ public partial class GameCatalogViewModel : ObservableObject
     }
 }
 
-public record GameCatalogListItem(int Number, string Name, string PlayersCount, bool IsActive);
+public record GameCatalogListItem(Guid Id, int Number, string Name, string PlayersCount, bool IsActive);
