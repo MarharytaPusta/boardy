@@ -1,9 +1,4 @@
 ﻿using Boardy.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Boardy.Domain.Entities;
 
@@ -27,7 +22,7 @@ public class Match
         Id = Guid.NewGuid();
         ScoreTemplateId = scoreTemplateId;
         Date = DateTime.UtcNow; 
-        Status = MatchStatus.Created;
+        Status = MatchStatus.InProgress;
     }
 
     public void AddParticipant(MatchParticipant participant)

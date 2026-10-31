@@ -50,6 +50,53 @@ namespace Boardy.Infrastructure.Migrations
                     b.ToTable("Games");
                 });
 
+            modelBuilder.Entity("Boardy.Domain.Entities.Match", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ScoreTemplateId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Matches");
+                });
+
+            modelBuilder.Entity("Boardy.Domain.Entities.MatchParticipant", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsWinner")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("MatchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("PlayerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("TotalScore")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MatchId");
+
+                    b.HasIndex("PlayerId");
+
+                    b.ToTable("MatchParticipants");
+                });
+
             modelBuilder.Entity("Boardy.Domain.Entities.Player", b =>
                 {
                     b.Property<Guid>("Id")
@@ -108,6 +155,21 @@ namespace Boardy.Infrastructure.Migrations
                     b.ToTable("ScoreTemplates");
                 });
 
+            modelBuilder.Entity("Boardy.Domain.Entities.MatchParticipant", b =>
+                {
+                    b.HasOne("Boardy.Domain.Entities.Match", null)
+                        .WithMany("Participants")
+                        .HasForeignKey("MatchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Boardy.Domain.Entities.Player", null)
+                        .WithMany()
+                        .HasForeignKey("PlayerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Boardy.Domain.Entities.ScoreCriterion", b =>
                 {
                     b.HasOne("Boardy.Domain.Entities.ScoreTemplate", null)
@@ -127,6 +189,11 @@ namespace Boardy.Infrastructure.Migrations
             modelBuilder.Entity("Boardy.Domain.Entities.Game", b =>
                 {
                     b.Navigation("ScoreTemplates");
+                });
+
+            modelBuilder.Entity("Boardy.Domain.Entities.Match", b =>
+                {
+                    b.Navigation("Participants");
                 });
 
             modelBuilder.Entity("Boardy.Domain.Entities.ScoreTemplate", b =>

@@ -12,7 +12,7 @@ public class MatchParticipant
 
     public Guid PlayerId { get; private set; }
 
-    public Guid MatchId { get; private set; }
+    public Guid MatchId { get; }
 
     public int TotalScore { get; private set; }
 
