@@ -1,4 +1,5 @@
 ﻿using Boardy.Application.GameCatalog.ScoreTemplate;
+using Boardy.Domain.Entities;
 using Boardy.Domain.Shared;
 using Microsoft.Extensions.Logging;
 using System;
@@ -38,6 +39,14 @@ public class CreateGameUseCase
             request.Status
         );
 
+        var template = new Domain.Entities.ScoreTemplate("Базовий шаблон");
+        foreach (var critDto in request.Criteria)
+        {
+            template.AddCriterion(new Domain.Entities.ScoreCriterion(critDto.Name, critDto.IsNegative));
+        }
+
+        newGame.AddScoreTemplate(template);
+
         await _gameRepository.AddAsync(newGame);
         _logger.LogInformation("Successfully created game with ID {GameId}", newGame.Id);
 
@@ -63,6 +72,25 @@ public class CreateGameUseCase
             _logger.LogWarning("Validation failed: MinPlayers ({MinPlayers}) is greater than MaxPlayers ({MaxPlayers}).",
             request.MinPlayers, request.MaxPlayers);
             return Result.Failure("Мінімальна кількість гравців не може перевищувати максимальну.");
+        }
+
+        if (request.Criteria == null || request.Criteria.Count == 0)
+        {
+            return Result.Failure("Додайте хоча б один критерій оцінювання");
+        }
+
+        if (request.Criteria.Any(c => string.IsNullOrWhiteSpace(c.Name)))
+        {
+            return Result.Failure("Критерій не може бути порожнім");
+        }
+
+        bool hasDuplicates = request.Criteria
+            .GroupBy(c => c.Name.Trim(), StringComparer.OrdinalIgnoreCase)
+            .Any(g => g.Count() > 1);
+
+        if (hasDuplicates)
+        {
+            return Result.Failure("Критерії в одному шаблоні не можуть мати однакові назви");
         }
 
         return Result.Success();
