@@ -22,8 +22,8 @@ public class GetGameCatalogUseCaseTests
     {
         var monopoly = new Domain.Entities.Game("Монополія", "Економічна гра", 2, 6, GameStatus.Active);
         var carcassonne = new Domain.Entities.Game("Каркассон", "Стратегічна гра", 2, 5, GameStatus.Active);
-        _mockRepository.Setup(repository => repository.GetAllAsync())
-            .ReturnsAsync(new[] { monopoly, carcassonne });
+        _mockRepository.Setup(repository => repository.GetFilteredAsync(null, null))
+                    .ReturnsAsync(new[] { monopoly, carcassonne });
 
         var result = await _useCase.ExecuteAsync(new GetGameCatalogRequest(null, null));
 
@@ -32,16 +32,17 @@ public class GetGameCatalogUseCaseTests
         Assert.Collection(games,
             game => Assert.Same(monopoly, game),
             game => Assert.Same(carcassonne, game));
-        _mockRepository.Verify(repository => repository.GetAllAsync(), Times.Once);
+
+        _mockRepository.Verify(repository => repository.GetFilteredAsync(null, null), Times.Once);
     }
 
     [Fact]
     public async Task ExecuteAsync_WithFilters_ReturnsMatchingGames()
     {
         var monopoly = new Domain.Entities.Game("Монополія", "Економічна гра", 2, 6, GameStatus.Active);
-        var carcassonne = new Domain.Entities.Game("Каркассон", "Стратегічна гра", 2, 5, GameStatus.Active);
-        _mockRepository.Setup(repository => repository.GetAllAsync())
-            .ReturnsAsync(new[] { monopoly, carcassonne });
+
+        _mockRepository.Setup(repository => repository.GetFilteredAsync("моноп", 4))
+            .ReturnsAsync(new[] { monopoly });
 
         var result = await _useCase.ExecuteAsync(new GetGameCatalogRequest("моноп", 4));
 
@@ -52,11 +53,8 @@ public class GetGameCatalogUseCaseTests
     [Fact]
     public async Task ExecuteAsync_WhenSearchDoesNotMatch_ReturnsEmptyCatalog()
     {
-        _mockRepository.Setup(repository => repository.GetAllAsync())
-            .ReturnsAsync(new[]
-            {
-                new Domain.Entities.Game("Монополія", "Економічна гра", 2, 6, GameStatus.Active)
-            });
+        _mockRepository.Setup(repository => repository.GetFilteredAsync("Шахи", null))
+            .ReturnsAsync(Array.Empty<Domain.Entities.Game>());
 
         var result = await _useCase.ExecuteAsync(new GetGameCatalogRequest("Шахи", null));
 
@@ -67,11 +65,8 @@ public class GetGameCatalogUseCaseTests
     [Fact]
     public async Task ExecuteAsync_WhenPlayersCountDoesNotMatch_ReturnsEmptyCatalog()
     {
-        _mockRepository.Setup(repository => repository.GetAllAsync())
-            .ReturnsAsync(new[]
-            {
-                new Domain.Entities.Game("Монополія", "Економічна гра", 2, 6, GameStatus.Active)
-            });
+        _mockRepository.Setup(repository => repository.GetFilteredAsync(null, 7))
+            .ReturnsAsync(Array.Empty<Domain.Entities.Game>());
 
         var result = await _useCase.ExecuteAsync(new GetGameCatalogRequest(null, 7));
 
@@ -88,7 +83,8 @@ public class GetGameCatalogUseCaseTests
 
         Assert.False(result.IsSuccess);
         Assert.Equal("Кількість гравців має бути більшою за 0.", result.ErrorMessage);
-        _mockRepository.Verify(repository => repository.GetAllAsync(), Times.Never);
+        _mockRepository.Verify(repository => repository.GetFilteredAsync(It.IsAny<string>(), It.IsAny<int?>()), Times.Never);
+    
     }
 
 }

@@ -25,13 +25,7 @@ public class GetGameCatalogUseCase
             return Result<IEnumerable<Domain.Entities.Game>>.Failure(validationResult.ErrorMessage!);
         }
 
-        var games = await _gameRepository.GetAllAsync();
-        var filteredGames = games.Where(game =>
-            (string.IsNullOrWhiteSpace(request.SearchQuery) ||
-             game.Name.Contains(request.SearchQuery, StringComparison.OrdinalIgnoreCase)) &&
-            (!request.PlayersCount.HasValue ||
-             (game.MinPlayers <= request.PlayersCount.Value && game.MaxPlayers >= request.PlayersCount.Value)))
-            .ToList();
+        var filteredGames = await _gameRepository.GetFilteredAsync(request.SearchQuery, request.PlayersCount);
 
         _logger.LogInformation("Loaded game catalog");
         return Result<IEnumerable<Domain.Entities.Game>>.Success(filteredGames);

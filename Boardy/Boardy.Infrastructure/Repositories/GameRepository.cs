@@ -27,4 +27,22 @@ public class GameRepository : IGameRepository
     {
         return await _context.Games.ToListAsync();
     }
+
+    public async Task<IEnumerable<Game>> GetFilteredAsync(string? searchQuery, int? playersCount)
+    {
+        var query = _context.Games.AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(searchQuery))
+        {
+            query = query.Where(g => g.Name.Contains(searchQuery));
+        }
+
+        if (playersCount.HasValue)
+        {
+            query = query.Where(g => g.MinPlayers <= playersCount.Value && g.MaxPlayers >= playersCount.Value);
+        }
+
+        return await query.ToListAsync();
+    }
+
 }

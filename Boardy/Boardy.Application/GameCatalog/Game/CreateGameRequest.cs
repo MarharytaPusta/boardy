@@ -1,4 +1,5 @@
-﻿using Boardy.Domain.Enums;
+﻿using Boardy.Application.GameCatalog.ScoreTemplate;
+using Boardy.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,4 +13,6 @@ public record CreateGameRequest(
     string Description,
     int MinPlayers,
     int MaxPlayers,
-    GameStatus Status);
+    GameStatus Status,
+    List<CriterionDto> Criteria
+);

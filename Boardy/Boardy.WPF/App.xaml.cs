@@ -100,6 +100,8 @@ namespace Boardy.WPF
             ServiceProvider = services.BuildServiceProvider();
 
             base.OnStartup(e);
+
+            WarmUpDatabaseAsync();
         }
         protected override void OnExit(ExitEventArgs e)
         {
@@ -108,6 +110,26 @@ namespace Boardy.WPF
             Log.CloseAndFlush();
 
             base.OnExit(e);
+        }
+
+        private static void WarmUpDatabaseAsync()
+        {
+            Task.Run(async () =>
+            {
+                try
+                {
+                    using var scope = ServiceProvider.CreateScope();
+
+                    var dbContext = scope.ServiceProvider.GetRequiredService<BoardyDbContext>();
+
+                    await dbContext.Games.FirstOrDefaultAsync();
+
+                }
+                catch (Exception)
+                {
+                    //Ignore
+                }
+            });
         }
     }
 }

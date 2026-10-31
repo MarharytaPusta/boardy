@@ -25,7 +25,6 @@ public partial class CriterionItemViewModel : ObservableObject
 public partial class CreateGameViewModel : ObservableObject
 {
     private readonly CreateGameUseCase _createGameUseCase;
-    private readonly CreateScoreTemplateUseCase _createScoreTemplateUseCase;
     private readonly ILogger<CreateGameViewModel> _logger;
 
     private readonly IUserSession _userSession;
@@ -52,10 +51,9 @@ public partial class CreateGameViewModel : ObservableObject
     [ObservableProperty]
     private string _errorMessage = string.Empty;
 
-    public CreateGameViewModel(CreateGameUseCase createGameUseCase, CreateScoreTemplateUseCase createScoreTemplateUseCase, ILogger<CreateGameViewModel> logger, IUserSession userSession)
+    public CreateGameViewModel(CreateGameUseCase createGameUseCase, ILogger<CreateGameViewModel> logger, IUserSession userSession)
     {
         _createGameUseCase = createGameUseCase;
-        _createScoreTemplateUseCase = createScoreTemplateUseCase;
         _logger = logger;
         _userSession = userSession;
 
@@ -79,22 +77,30 @@ public partial class CreateGameViewModel : ObservableObject
         if (!ValidateCriteriaData()) return;
 
         var gameStatus = IsActive ? GameStatus.Active : GameStatus.Inactive;
-        var gameRequest = new CreateGameRequest(GameName, GameDescription, MinPlayers ?? 0, MaxPlayers ?? 0, gameStatus);
+        var criteriaDtos = Criteria.Select(c => new CriterionDto(c.Name, c.IsNegative)).ToList();
 
-        var gameResult = await _createGameUseCase.ExecuteAsync(gameRequest);
+        var gameRequest = new CreateGameRequest(GameName, GameDescription, MinPlayers ?? 0, MaxPlayers ?? 0, gameStatus, criteriaDtos);
 
-        if (!gameResult.IsSuccess)
+
+        try
         {
-            ErrorMessage = gameResult.ErrorMessage ?? "Помилка при створенні гри.";
-            return;
-        }
 
-        bool templateCreated = await CreateScoreTemplateAsync(gameResult.Data);
+            var gameResult = await _createGameUseCase.ExecuteAsync(gameRequest);
 
-        if (templateCreated)
-        {
+            if (!gameResult.IsSuccess)
+            {
+                ErrorMessage = gameResult.ErrorMessage ?? "Помилка при створенні гри.";
+                return;
+            }
+
             await GoBackAsync();
         }
+        catch(Exception ex) 
+        {
+            _logger.LogError(ex, "Critical error occurred while saving game {GameName}", GameName);
+            ErrorMessage = "Сталася критична помилка при збереженні. Перевірте з'єднання з базою даних.";
+        }
+
     }
 
 
@@ -133,23 +139,6 @@ public partial class CreateGameViewModel : ObservableObject
             ErrorMessage = "Усі критерії повинні мати назву. Заповніть порожні поля.";
             return false;
         }
-        return true;
-    }
-
-    private async Task<bool> CreateScoreTemplateAsync(Guid gameId)
-    {
-        var criteriaDtos = Criteria.Select(c => new CriterionDto(c.Name, c.IsNegative)).ToList();
-
-        var templateRequest = new CreateScoreTemplateRequest(gameId, "Базовий шаблон", criteriaDtos);
-        var templateResult = await _createScoreTemplateUseCase.ExecuteAsync(templateRequest);
-
-        if (!templateResult.IsSuccess)
-        {
-            _logger.LogWarning("UseCase rejected ScoreTemplate creation. Reason: {Reason}", templateResult.ErrorMessage);
-            ErrorMessage = templateResult.ErrorMessage ?? "Гра створена, але виникла помилка з шаблоном.";
-            return false;
-        }
-
         return true;
     }
 
