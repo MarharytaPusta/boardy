@@ -55,41 +55,59 @@ public class CreateGameUseCase
 
     private Result Validate(CreateGameRequest request)
     {
+        var gameValidation = ValidateGameDetails(request);
+        if (!gameValidation.IsSuccess) return gameValidation;
+
+        var criteriaValidation = ValidateCriteria(request.Criteria);
+        if (!criteriaValidation.IsSuccess) return criteriaValidation;
+
+        return Result.Success();
+    }
+
+    private Result ValidateGameDetails(CreateGameRequest request)
+    {
         if (string.IsNullOrWhiteSpace(request.Name))
         {
-            _logger.LogWarning("Validation failed: Game name is empty or null.");
+            _logger.LogWarning("Validation failed: Game name is empty.");
             return Result.Failure("Назва гри не може бути порожньою.");
         }
 
         if (request.MinPlayers < 1)
         {
-            _logger.LogWarning("Validation failed: MinPlayers is less than 1 (Provided: {MinPlayers}).", request.MinPlayers);
+            _logger.LogWarning("Validation failed: MinPlayers < 1.");
             return Result.Failure("Мінімальна кількість гравців має бути більше 0.");
         }
 
         if (request.MinPlayers > request.MaxPlayers)
         {
-            _logger.LogWarning("Validation failed: MinPlayers ({MinPlayers}) is greater than MaxPlayers ({MaxPlayers}).",
-            request.MinPlayers, request.MaxPlayers);
+            _logger.LogWarning("Validation failed: MinPlayers > MaxPlayers.");
             return Result.Failure("Мінімальна кількість гравців не може перевищувати максимальну.");
         }
 
-        if (request.Criteria == null || request.Criteria.Count == 0)
+        return Result.Success();
+    }
+
+    private Result ValidateCriteria(List<CriterionDto> criteria)
+    {
+        if (criteria == null || criteria.Count == 0)
         {
+            _logger.LogWarning("Validation failed: No criteria provided.");
             return Result.Failure("Додайте хоча б один критерій оцінювання");
         }
 
-        if (request.Criteria.Any(c => string.IsNullOrWhiteSpace(c.Name)))
+        if (criteria.Any(c => string.IsNullOrWhiteSpace(c.Name)))
         {
+            _logger.LogWarning("Validation failed: Empty criterion name exists.");
             return Result.Failure("Критерій не може бути порожнім");
         }
 
-        bool hasDuplicates = request.Criteria
+        bool hasDuplicates = criteria
             .GroupBy(c => c.Name.Trim(), StringComparer.OrdinalIgnoreCase)
             .Any(g => g.Count() > 1);
 
         if (hasDuplicates)
         {
+            _logger.LogWarning("Validation failed: Duplicate criteria names found.");
             return Result.Failure("Критерії в одному шаблоні не можуть мати однакові назви");
         }
 
