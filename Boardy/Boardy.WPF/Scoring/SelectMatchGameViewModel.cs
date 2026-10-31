@@ -73,9 +73,8 @@ public partial class SelectMatchGameViewModel : ObservableObject
 
         if (result.IsSuccess)
         {
-            // УСПІХ! Тут здійснюється перехід на сторінку "InProgress" (введення балів).
             // var scoringVm = App.ServiceProvider.GetRequiredService<ScoringViewModel>();
-            // scoringVm.Initialize(result.Data); // Передаємо ID створеної партії
+            // scoringVm.Initialize(result.Data);
             // WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(scoringVm));
         }
         else
