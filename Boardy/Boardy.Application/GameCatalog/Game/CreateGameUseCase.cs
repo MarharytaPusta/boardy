@@ -38,18 +38,10 @@ public class CreateGameUseCase
             request.Status
         );
 
-        try
-        {
-            await _gameRepository.AddAsync(newGame);
-            _logger.LogInformation("Successfully created game with ID {GameId}", newGame.Id);
+        await _gameRepository.AddAsync(newGame);
+        _logger.LogInformation("Successfully created game with ID {GameId}", newGame.Id);
 
-            return Result<Guid>.Success(newGame.Id);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error occurred while saving the game {GameName}", request.Name);
-            return Result<Guid>.Failure("Сталася помилка при збереженні гри.");
-        }
+        return Result<Guid>.Success(newGame.Id);
     }
 
     private Result Validate(CreateGameRequest request)
