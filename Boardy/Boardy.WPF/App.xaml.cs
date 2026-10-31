@@ -13,6 +13,7 @@ using Boardy.WPF.Authentication;
 using Boardy.WPF.GameCatalog;
 using Boardy.WPF.Home;
 using Boardy.WPF.Player;
+using Boardy.WPF.Scoring;
 using Boardy.WPF.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -97,6 +98,10 @@ namespace Boardy.WPF
 
             services.AddTransient<GetGameCatalogUseCase>();
             services.AddTransient<GameCatalogViewModel>();
+
+            services.AddTransient<SelectMatchPlayersViewModel>();
+            services.AddTransient<SelectMatchGameViewModel>();
+            services.AddTransient<CreateMatchUseCase>();
 
             services.AddScoped<IMatchRepository, MatchRepository>();
 

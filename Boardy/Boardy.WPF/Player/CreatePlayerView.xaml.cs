@@ -20,7 +20,6 @@ namespace Boardy.WPF.Player
         public CreatePlayerView()
         {
             InitializeComponent();
-            DataContext = App.ServiceProvider.GetRequiredService<CreatePlayerViewModel>();
         }
     }
 }

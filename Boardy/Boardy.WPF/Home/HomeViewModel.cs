@@ -2,6 +2,7 @@
 using Boardy.WPF.Authentication;
 using Boardy.WPF.GameCatalog;
 using Boardy.WPF.Player;
+using Boardy.WPF.Scoring;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -62,5 +63,13 @@ public partial class HomeViewModel : ObservableObject
             var loginViewModel = App.ServiceProvider.GetRequiredService<AdminLoginViewModel>();
             WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(loginViewModel));
         }
+    }
+
+    [RelayCommand]
+    private async Task NavigateToSelectMatchPlayersAsync()
+    {
+        var selectMatchPlayersVm = App.ServiceProvider.GetRequiredService<SelectMatchPlayersViewModel>();
+        await selectMatchPlayersVm.LoadPlayersAsync();
+        WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(selectMatchPlayersVm));
     }
 }
