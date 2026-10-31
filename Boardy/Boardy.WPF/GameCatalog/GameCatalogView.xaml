@@ -184,26 +184,32 @@
         </Grid>
 
         <Grid Background="#66000000" Panel.ZIndex="10" Visibility="{Binding IsDetailsPopupOpen, Converter={StaticResource BoolToVis}}">
-            <Border Background="#FFFFE0" Width="550" Height="350" CornerRadius="8" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Grid Margin="20">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-
-                    <TextBlock Text="{Binding PopupGameName}" FontSize="28" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,15"/>
-                    <TextBlock Grid.Row="1" Text="{Binding PopupGameDescription}" FontSize="18" TextWrapping="Wrap" TextAlignment="Center"/>
-                    <TextBlock Grid.Row="2" Text="{Binding PopupGamePlayers, StringFormat='Кількість гравців: {0}'}" FontSize="18" HorizontalAlignment="Center" Margin="0,15,0,20"/>
-                    <Button Grid.Row="3" Content="Закрити" Command="{Binding ClosePopupCommand}" Background="#FF5E5E" Foreground="White" FontSize="18" Padding="20,10" BorderThickness="0" HorizontalAlignment="Center"/>
-                </Grid>
+            <Border Background="#FFFFE0" 
+                    MinWidth="400" 
+                    MaxWidth="800"
+                    CornerRadius="8" 
+                    HorizontalAlignment="Center" 
+                    VerticalAlignment="Center"
+                    Padding="30">
+                <StackPanel Margin="0">
+                    <TextBlock Text="{Binding PopupGameName}" FontSize="28" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+                    <TextBlock Text="{Binding PopupGameDescription}" FontSize="18" TextWrapping="Wrap" TextAlignment="Center" Margin="0,0,0,30"/>
+                    <TextBlock Text="{Binding PopupGamePlayers, StringFormat='Кількість гравців: {0}'}" FontSize="18" HorizontalAlignment="Center" Margin="0,0,0,30"/>
+                    <Button Content="Закрити" Command="{Binding ClosePopupCommand}" Background="#FF5E5E" Foreground="White" FontSize="18" Padding="30,10" BorderThickness="0" HorizontalAlignment="Center"/>
+                </StackPanel>
             </Border>
         </Grid>
 
         <Grid Background="#66000000" Panel.ZIndex="10" Visibility="{Binding IsTemplatesPopupOpen, Converter={StaticResource BoolToVis}}">
-            <Border Background="#FFFFE0" Width="400" MinHeight="350" CornerRadius="8" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Grid Margin="20">
+            <Border Background="#FFFFE0" 
+                    MinWidth="350" 
+                    MaxWidth="600"
+                    MaxHeight="600"
+                    CornerRadius="8" 
+                    HorizontalAlignment="Center" 
+                    VerticalAlignment="Center"
+                    Padding="30">
+                <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
@@ -212,22 +218,24 @@
 
                     <TextBlock Text="Шаблон оцінювання" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,15"/>
 
-                    <ItemsControl Grid.Row="1" ItemsSource="{Binding PopupCriteria}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Grid Margin="0,5">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="100"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{Binding Name, StringFormat='{}{0}:'}" FontSize="16" VerticalAlignment="Center"/>
-                                    <Border Grid.Column="1" Background="White" BorderBrush="#CCC" BorderThickness="1" Height="25"/>
-                                </Grid>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,0,0,25">
+                        <ItemsControl ItemsSource="{Binding PopupCriteria}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="120"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding Name, StringFormat='{}{0}:'}" FontSize="18" VerticalAlignment="Center" TextWrapping="Wrap" Margin="0,0,15,0"/>
+                                        <Border Grid.Column="1" Background="White" BorderBrush="#CCC" BorderThickness="1" Height="30"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
 
-                    <Button Grid.Row="2" Content="Закрити" Command="{Binding ClosePopupCommand}" Background="#FF5E5E" Foreground="White" FontSize="18" Padding="20,10" BorderThickness="0" HorizontalAlignment="Center" Margin="0,20,0,0"/>
+                    <Button Grid.Row="2" Content="Закрити" Command="{Binding ClosePopupCommand}" Background="#FF5E5E" Foreground="White" FontSize="18" Padding="30,10" BorderThickness="0" HorizontalAlignment="Center"/>
                 </Grid>
             </Border>
         </Grid>
