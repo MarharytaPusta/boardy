@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Boardy.Application.Player;
 using Boardy.Domain.Entities;
@@ -25,6 +26,13 @@ namespace Boardy.Infrastructure.Repositories
         public async Task<IEnumerable<Domain.Entities.Player>> GetAllAsync()
         {
             return await _context.Players.ToListAsync();
+        }
+
+        public async Task<IEnumerable<Domain.Entities.Player>> GetByIdsAsync(IEnumerable<Guid> playerIds)
+        {
+            return await _context.Players
+                .Where(player => playerIds.Contains(player.Id))
+                .ToListAsync();
         }
 
         public async Task<Domain.Entities.Player?> GetByIdAsync(Guid playerId)
