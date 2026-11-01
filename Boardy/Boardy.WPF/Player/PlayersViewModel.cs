@@ -57,6 +57,7 @@ public partial class PlayersViewModel : ObservableObject
     private void NavigateToCreatePlayer()
     {
         var createPlayerViewModel = App.ServiceProvider.GetRequiredService<CreatePlayerViewModel>();
+        createPlayerViewModel.Initialize(this);
         WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(createPlayerViewModel));
     }
 

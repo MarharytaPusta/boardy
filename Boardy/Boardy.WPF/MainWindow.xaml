@@ -5,6 +5,7 @@
         xmlns:auth="clr-namespace:Boardy.WPF.Authentication"
         xmlns:player="clr-namespace:Boardy.WPF.Player"
         xmlns:gameCatalog="clr-namespace:Boardy.WPF.GameCatalog"
+        xmlns:scoring="clr-namespace:Boardy.WPF.Scoring"
         Title="Boardy" Height="700" Width="900" WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
@@ -31,6 +32,12 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type gameCatalog:GameCatalogViewModel}">
             <gameCatalog:GameCatalogView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type scoring:SelectMatchPlayersViewModel}">
+            <scoring:SelectMatchPlayersView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type scoring:SelectMatchGameViewModel}">
+            <scoring:SelectMatchGameView/>
         </DataTemplate>
     </Window.Resources>
 

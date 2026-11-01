@@ -16,7 +16,7 @@
                 BorderThickness="0"
                 Panel.ZIndex="1"/>
 
-        <ScrollViewer VerticalScrollBarVisibility="Auto" 
+        <ScrollViewer VerticalScrollBarVisibility="Hidden" 
                       HorizontalScrollBarVisibility="Disabled">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
 
