@@ -3,6 +3,7 @@ using Boardy.Application.GameCatalog.Catalog;
 using Boardy.Application.GameCatalog.Game;
 using Boardy.Application.GameCatalog.ScoreTemplate;
 using Boardy.Application.Player;
+using Boardy.Application.Scoring;
 using Boardy.Application.Shared;
 using Boardy.Domain.Authentication;
 using Boardy.Infrastructure;
@@ -12,6 +13,7 @@ using Boardy.WPF.Authentication;
 using Boardy.WPF.GameCatalog;
 using Boardy.WPF.Home;
 using Boardy.WPF.Player;
+using Boardy.WPF.Scoring;
 using Boardy.WPF.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -96,6 +98,12 @@ namespace Boardy.WPF
 
             services.AddTransient<GetGameCatalogUseCase>();
             services.AddTransient<GameCatalogViewModel>();
+
+            services.AddTransient<SelectMatchPlayersViewModel>();
+            services.AddTransient<SelectMatchGameViewModel>();
+            services.AddTransient<CreateMatchUseCase>();
+
+            services.AddScoped<IMatchRepository, MatchRepository>();
 
             ServiceProvider = services.BuildServiceProvider();
 

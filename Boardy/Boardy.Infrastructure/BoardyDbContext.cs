@@ -7,6 +7,9 @@ namespace Boardy.Infrastructure
     {
         public BoardyDbContext(DbContextOptions<BoardyDbContext> options) : base(options) { }
 
+        public DbSet<Match> Matches { get; set; }
+        public DbSet<MatchParticipant> MatchParticipants { get; set; }
+
         public DbSet<Player> Players { get; set; }
 
         public DbSet<ScoreTemplate> ScoreTemplates { get; set; }
@@ -27,6 +30,24 @@ namespace Boardy.Infrastructure
                 .WithOne()
                 .HasForeignKey("GameId")
                 .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Match>(entity =>
+            {
+                entity.HasKey(m => m.Id);
+
+                entity.HasMany(m => m.Participants)
+                      .WithOne()
+                      .HasForeignKey(p => p.MatchId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+            modelBuilder.Entity<MatchParticipant>(entity =>
+            {
+                entity.HasKey(p => p.Id);
+
+                entity.HasOne<Player>()
+                      .WithMany()
+                      .HasForeignKey(p => p.PlayerId)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
         }
     }
 }
