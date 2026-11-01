@@ -71,11 +71,11 @@ public partial class SelectMatchGameViewModel : ObservableObject
         var request = new CreateMatchRequest(SelectedGame.Id, _selectedPlayerIds);
         var result = await _createMatchUseCase.ExecuteAsync(request);
 
-        if (result.IsSuccess)
+        if (result.IsSuccess && result.Data is Guid matchId)
         {
-            // var scoringVm = App.ServiceProvider.GetRequiredService<ScoringViewModel>();
-            // scoringVm.Initialize(result.Data);
-            // WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(scoringVm));
+            var matchResultsVm = App.ServiceProvider.GetRequiredService<MatchResultsViewModel>();
+            matchResultsVm.Initialize(matchId);
+            WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(matchResultsVm));
         }
         else
         {
