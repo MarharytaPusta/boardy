@@ -1,4 +1,5 @@
 ﻿using Boardy.Application.GameCatalog.ScoreTemplate;
+using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
 namespace Boardy.Infrastructure.Repositories
@@ -16,6 +17,13 @@ namespace Boardy.Infrastructure.Repositories
         {
             await _context.ScoreTemplates.AddAsync(template);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<Domain.Entities.ScoreTemplate?> GetByIdAsync(Guid id)
+        {
+            return await _context.ScoreTemplates
+                .Include(template => template.Criteria)
+                .FirstOrDefaultAsync(template => template.Id == id);
         }
     }
 }

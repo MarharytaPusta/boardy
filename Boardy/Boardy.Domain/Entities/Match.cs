@@ -30,6 +30,29 @@ public class Match
         _participants.Add(participant);
     }
 
+    public void UpdateParticipantScore(Guid participantId, int totalScore)
+    {
+        var participant = _participants.First(p => p.Id == participantId);
+        participant.UpdateTotalScore(totalScore);
+    }
+
+    public void SetWinners(IEnumerable<Guid> participantIds)
+    {
+        var winnerIds = participantIds.ToHashSet();
+
+        foreach (var participant in _participants)
+        {
+            if (winnerIds.Contains(participant.Id))
+            {
+                participant.SetAsWinner();
+            }
+            else
+            {
+                participant.ResetWinner();
+            }
+        }
+    }
+
     public void ChangeStatus(MatchStatus newStatus)
     {
         Status = newStatus;

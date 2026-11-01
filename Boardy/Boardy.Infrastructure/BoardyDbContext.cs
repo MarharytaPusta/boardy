@@ -9,6 +9,7 @@ namespace Boardy.Infrastructure
 
         public DbSet<Match> Matches { get; set; }
         public DbSet<MatchParticipant> MatchParticipants { get; set; }
+        public DbSet<MatchCriterionResult> MatchCriterionResults { get; set; }
 
         public DbSet<Player> Players { get; set; }
 
@@ -46,7 +47,12 @@ namespace Boardy.Infrastructure
                 entity.HasOne<Player>()
                       .WithMany()
                       .HasForeignKey(p => p.PlayerId)
-                      .OnDelete(DeleteBehavior.Restrict);
+                       .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasMany(p => p.CriterionResults)
+                      .WithOne()
+                      .HasForeignKey(r => r.MatchParticipantId)
+                      .OnDelete(DeleteBehavior.Cascade);
             });
         }
     }

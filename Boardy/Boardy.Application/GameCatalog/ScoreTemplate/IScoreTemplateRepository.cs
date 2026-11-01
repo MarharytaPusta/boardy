@@ -5,5 +5,6 @@ namespace Boardy.Application.GameCatalog.ScoreTemplate
     public interface IScoreTemplateRepository
     {
         Task AddAsync(Domain.Entities.ScoreTemplate template);
+        Task<Domain.Entities.ScoreTemplate?> GetByIdAsync(Guid id);
     }
 }

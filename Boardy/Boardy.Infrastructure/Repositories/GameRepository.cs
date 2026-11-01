@@ -42,7 +42,10 @@ public class GameRepository : IGameRepository
             query = query.Where(g => g.MinPlayers <= playersCount.Value && g.MaxPlayers >= playersCount.Value);
         }
 
-        return await query.ToListAsync();
+        return await query
+            .Include(g => g.ScoreTemplates)
+            .ThenInclude(t => t.Criteria)
+            .ToListAsync();
     }
 
     public async Task<Game?> GetByIdAsync(Guid id)
@@ -53,4 +56,12 @@ public class GameRepository : IGameRepository
             .FirstOrDefaultAsync(g => g.Id == id);
     }
 
-}
+    public async Task<string?> GetNameByScoreTemplateIdAsync(Guid scoreTemplateId)
+    {
+        return await _context.Games
+            .Where(game => game.ScoreTemplates.Any(template => template.Id == scoreTemplateId))
+            .Select(game => game.Name)
+            .FirstOrDefaultAsync();
+    }
+
+} 
