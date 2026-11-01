@@ -1,7 +1,11 @@
 using Boardy.Application.Scoring;
-using Boardy.Domain.Enums;
+using Boardy.WPF.Home;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,6 +15,9 @@ namespace Boardy.WPF.Scoring;
 public partial class MatchResultsViewModel : ObservableObject
 {
     private readonly GetMatchResultsUseCase _getMatchResultsUseCase;
+    private readonly SaveMatchResultsUseCase _saveMatchResultsUseCase;
+
+    private Guid _matchId;
 
     [ObservableProperty]
     private ObservableCollection<MatchParticipantResultItem> _participants = new();
@@ -24,13 +31,26 @@ public partial class MatchResultsViewModel : ObservableObject
     [ObservableProperty]
     private string _errorMessage = string.Empty;
 
-    public MatchResultsViewModel(GetMatchResultsUseCase getMatchResultsUseCase)
+
+    private bool _canSaveResults;
+
+    public bool CanSaveResults
+    {
+        get => _canSaveResults;
+        set => SetProperty(ref _canSaveResults, value);
+    }
+
+    public MatchResultsViewModel(
+        GetMatchResultsUseCase getMatchResultsUseCase,
+        SaveMatchResultsUseCase saveMatchResultsUseCase)
     {
         _getMatchResultsUseCase = getMatchResultsUseCase;
+        _saveMatchResultsUseCase = saveMatchResultsUseCase;
     }
 
     public void Initialize(Guid matchId)
     {
+        _matchId = matchId;
         _ = LoadMatchResultsAsync(matchId);
     }
 
@@ -47,6 +67,7 @@ public partial class MatchResultsViewModel : ObservableObject
         ErrorMessage = string.Empty;
         MatchDate = result.Data.Date.ToLocalTime().ToString("dd.MM.yyyy HH:mm");
         MatchStatus = result.Data.Status == Boardy.Domain.Enums.MatchStatus.Completed ? "Завершена" : "У процесі";
+        CanSaveResults = result.Data.Status == Boardy.Domain.Enums.MatchStatus.InProgress;
 
         Participants = new ObservableCollection<MatchParticipantResultItem>(
             result.Data.Participants.Select(participant => new MatchParticipantResultItem(
@@ -55,20 +76,70 @@ public partial class MatchResultsViewModel : ObservableObject
                 participant.TotalScore,
                 participant.IsWinner)));
     }
+
+    [RelayCommand]
+    private async Task SaveResultsAsync()
+    {
+        if (!CanSaveResults)
+        {
+            return;
+        }
+
+        var participantScores = new List<MatchParticipantScoreRequest>();
+
+        foreach (var participant in Participants)
+        {
+            if (!int.TryParse(participant.TotalScoreText, out var totalScore))
+            {
+                ErrorMessage = $"Бали гравця {participant.PlayerName} мають бути цілим числом.";
+                return;
+            }
+
+            participantScores.Add(new MatchParticipantScoreRequest(participant.Id, totalScore));
+        }
+
+        var request = new SaveMatchResultsRequest(_matchId, participantScores);
+
+        var result = await _saveMatchResultsUseCase.ExecuteAsync(request);
+        if (!result.IsSuccess)
+        {
+            ErrorMessage = result.ErrorMessage ?? "Не вдалося зберегти результати партії.";
+            return;
+        }
+
+        await LoadMatchResultsAsync(_matchId);
+    }
+
+    [RelayCommand]
+    private void GoHome()
+    {
+        var homeVm = App.ServiceProvider.GetRequiredService<HomeViewModel>();
+        WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(homeVm));
+    }
 }
 
-public class MatchParticipantResultItem
+public partial class MatchParticipantResultItem : ObservableObject
 {
     public Guid Id { get; }
     public string PlayerName { get; }
-    public int TotalScore { get; }
+
+    public string WinnerLabel => IsWinner ? "Переможець" : string.Empty;
+
+    private string _totalScoreText;
+
+    public string TotalScoreText
+    {
+        get => _totalScoreText;
+        set => SetProperty(ref _totalScoreText, value);
+    }
+
     public bool IsWinner { get; }
 
     public MatchParticipantResultItem(Guid id, string playerName, int totalScore, bool isWinner)
     {
         Id = id;
         PlayerName = playerName;
-        TotalScore = totalScore;
+        _totalScoreText = totalScore.ToString();
         IsWinner = isWinner;
     }
 }

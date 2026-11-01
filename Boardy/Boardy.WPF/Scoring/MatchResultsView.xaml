@@ -11,10 +11,20 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="Результати партії"
-                   FontSize="42"
-                   Foreground="Black"
-                   HorizontalAlignment="Center"/>
+        <Grid>
+            <TextBlock Text="Результати партії"
+                       FontSize="42"
+                       Foreground="Black"
+                       HorizontalAlignment="Center"/>
+            <Button Content="На головну"
+                    Command="{Binding GoHomeCommand}"
+                    Background="#FF5E5E"
+                    Foreground="White"
+                    FontSize="20"
+                    Padding="20,8"
+                    BorderThickness="0"
+                    HorizontalAlignment="Right"/>
+        </Grid>
 
         <Grid Grid.Row="1" Margin="0,20,0,10">
             <Grid.ColumnDefinitions>
@@ -48,14 +58,18 @@
         <Grid Grid.Row="3">
             <TextBlock Text="{Binding ErrorMessage}"
                        Foreground="#FF5E5E"
+                       Background="White"
                        FontSize="16"
-                       HorizontalAlignment="Center"/>
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Top"
+                       Panel.ZIndex="1"/>
 
             <ListBox ItemsSource="{Binding Participants}"
                      Background="Transparent"
                      BorderThickness="0"
                      HorizontalContentAlignment="Stretch"
-                     ScrollViewer.VerticalScrollBarVisibility="Hidden">
+                     ScrollViewer.VerticalScrollBarVisibility="Hidden"
+                     Margin="0,0,0,80">
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="ListBoxItem">
                         <Setter Property="Padding" Value="0"/>
@@ -74,24 +88,40 @@
                                     <ColumnDefinition Width="180"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Text="{Binding PlayerName}" FontSize="22" Foreground="Black"/>
-                                <TextBlock Grid.Column="1" Text="{Binding TotalScore}" FontSize="22" Foreground="Black"/>
-                                <TextBlock Grid.Column="2" Text="Переможець" FontSize="22" Foreground="Black">
-                                    <TextBlock.Style>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsWinner}" Value="True">
-                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TextBlock.Style>
-                                </TextBlock>
+                                <TextBox Grid.Column="1"
+                                         Text="{Binding TotalScoreText, UpdateSourceTrigger=PropertyChanged}"
+                                         IsEnabled="{Binding DataContext.CanSaveResults, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                         FontSize="22"
+                                         Foreground="Black"
+                                         Background="White"
+                                         BorderThickness="0"
+                                         Padding="8,2"
+                                         VerticalContentAlignment="Center"/>
+                                <TextBlock Grid.Column="2" Text="{Binding WinnerLabel}" FontSize="22" Foreground="Black"/>
                             </Grid>
                         </Border>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
+
+            <Button Content="Зберегти результати"
+                    Command="{Binding SaveResultsCommand}"
+                    IsEnabled="{Binding CanSaveResults}"
+                    Background="#FF5E5E"
+                    Foreground="White"
+                    FontSize="24"
+                    FontWeight="DemiBold"
+                    Padding="40,10"
+                    BorderThickness="0"
+                    VerticalAlignment="Bottom"
+                    HorizontalAlignment="Center"
+                    Margin="0,0,0,20">
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="8"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
         </Grid>
     </Grid>
 </UserControl>
