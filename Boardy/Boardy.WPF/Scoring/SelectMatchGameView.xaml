@@ -3,153 +3,216 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Background="#9597FF">
 
-    <Grid Margin="35">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </UserControl.Resources>
 
-        <Grid>
-            <Button Content="Голосувати за гру"
-                    Background="#FF8A80" Foreground="White"
-                    FontSize="20" FontWeight="DemiBold"
-                    Padding="15,8" BorderThickness="0"
-                    HorizontalAlignment="Left"/>
+    <Grid>
+        <Grid Margin="35">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-            <TextBlock Text="Оберіть гру"
-                       FontSize="42" Foreground="Black"
-                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <Grid>
+                <Button Content="Голосувати за гру"
+                        Background="#FF8A80" Foreground="White"
+                        FontSize="20" FontWeight="DemiBold"
+                        Padding="15,8" BorderThickness="0"
+                        HorizontalAlignment="Left"/>
 
-            <Button Content="Назад"
-                    Command="{Binding GoBackCommand}"
-                    Background="#FF5E5E" Foreground="White"
-                    FontSize="20" Padding="20,8"
-                    BorderThickness="0" HorizontalAlignment="Right"/>
+                <TextBlock Text="Оберіть гру"
+                           FontSize="42" Foreground="Black"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                <Button Content="Назад"
+                        Command="{Binding GoBackCommand}"
+                        Background="#FF5E5E" Foreground="White"
+                        FontSize="20" Padding="20,8"
+                        BorderThickness="0" HorizontalAlignment="Right"/>
+            </Grid>
+
+            <Border Grid.Row="1" Background="White" CornerRadius="6" Padding="20,12" Margin="0,30,0,5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="120"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="180"/>
+                        <ColumnDefinition Width="45"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Номер" FontSize="20" Foreground="Black"/>
+                    <TextBlock Grid.Column="1" Text="Назва" FontSize="20" Foreground="Black"/>
+                    <TextBlock Grid.Column="2" Text="Зіграно разів" FontSize="20" Foreground="Black"/>
+                </Grid>
+            </Border>
+
+            <TextBlock Grid.Row="2" Text="{Binding ErrorMessage}" Foreground="#FF5E5E" FontSize="16" HorizontalAlignment="Center"/>
+
+            <Grid Grid.Row="2">
+                <TextBlock Text="Для обраної кількості гравців ігор не знайдено"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Top"
+                   Margin="0,30,0,0"
+                   FontSize="22"
+                   Foreground="Black"
+                   Panel.ZIndex="1">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Games.Count}" Value="0">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            
+                    <ListBox ItemsSource="{Binding Games}" 
+                             SelectionMode="Single"
+                             SelectedItem="{Binding SelectedGame}"
+                             Background="Transparent" BorderThickness="0"
+                             HorizontalContentAlignment="Stretch"
+                             ScrollViewer.VerticalScrollBarVisibility="Hidden"
+                                Margin="0,0,0,80">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ListBoxItem">
+                                            <Border x:Name="Bd" Background="#C8CAFF" CornerRadius="6" Margin="0,5" Padding="20,12">
+                                                <ContentPresenter/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsSelected" Value="True">
+                                                    <Setter TargetName="Bd" Property="Background" Value="#E4E4FF"/>
+                                                    <Setter TargetName="Bd" Property="BorderBrush" Value="White"/>
+                                                    <Setter TargetName="Bd" Property="BorderThickness" Value="2"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="180"/>
+                                        <ColumnDefinition Width="45"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding Number}" FontSize="22" Foreground="Black"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="22" Foreground="Black"/>
+                                    <TextBlock Grid.Column="2" Text="0" FontSize="22" Foreground="Black"/>
+                                    <Menu Grid.Column="3"
+                                          Background="Transparent"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center">
+                                    <MenuItem Header="⋮"
+                                          Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                          Foreground="White"
+                                          FontSize="28"
+                                          Padding="0"
+                                          Background="Transparent"
+                                          BorderThickness="0">
+                                        <MenuItem Header="Переглянути деталі"
+                                              Command="{Binding Tag.ViewGameDetailsCommand, RelativeSource={RelativeSource AncestorType=MenuItem}}"
+                                              CommandParameter="{Binding}"
+                                              Foreground="Black"
+                                              FontSize="16"
+                                              FontWeight="DemiBold"
+                                              MinWidth="200"
+                                              Padding="10,6"/>
+                                        <MenuItem Header="Переглянути шаблони"
+                                              Command="{Binding Tag.ViewGameTemplatesCommand, RelativeSource={RelativeSource AncestorType=MenuItem}}"
+                                              CommandParameter="{Binding}"
+                                              Foreground="Black"
+                                              FontSize="16"
+                                              FontWeight="DemiBold"
+                                              MinWidth="200"
+                                              Padding="10,6"/>
+                                    </MenuItem>
+                                </Menu>
+                            </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                <Button Content="Почати гру"
+                        Command="{Binding StartMatchCommand}"
+                        Background="#FF5E5E" Foreground="White"
+                        FontSize="24" FontWeight="DemiBold"
+                        Padding="40,10" BorderThickness="0"
+                        VerticalAlignment="Bottom" HorizontalAlignment="Center"
+                        Margin="0,0,0,20">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="8"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+            </Grid>
+
+        </Grid>
+        <Grid Background="#66000000" Panel.ZIndex="10" Visibility="{Binding IsDetailsPopupOpen, Converter={StaticResource BoolToVis}}">
+            <Border Background="#FFFFE0" MinWidth="400" MaxWidth="800" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="30">
+                <StackPanel Margin="0">
+                    <TextBlock Text="{Binding PopupGameName}" FontSize="28" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+                    <TextBlock Text="{Binding PopupGameDescription}" FontSize="18" TextWrapping="Wrap" TextAlignment="Center" Margin="0,0,0,30"/>
+                    <TextBlock Text="{Binding PopupGamePlayers, StringFormat='Кількість гравців: {0}'}" FontSize="18" HorizontalAlignment="Center" Margin="0,0,0,30"/>
+                    <Button Content="Закрити" Command="{Binding ClosePopupCommand}" Background="#FF5E5E" Foreground="White" FontSize="18" Padding="30,10" BorderThickness="0" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Border>
         </Grid>
 
-        <Border Grid.Row="1" Background="White" CornerRadius="6" Padding="20,12" Margin="0,30,0,5">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="120"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="180"/>
-                    <ColumnDefinition Width="45"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="Номер" FontSize="20" Foreground="Black"/>
-                <TextBlock Grid.Column="1" Text="Назва" FontSize="20" Foreground="Black"/>
-                <TextBlock Grid.Column="2" Text="Зіграно разів" FontSize="20" Foreground="Black"/>
-            </Grid>
-        </Border>
-
-        <TextBlock Grid.Row="2" Text="{Binding ErrorMessage}" Foreground="#FF5E5E" FontSize="16" HorizontalAlignment="Center"/>
-
-        <Grid Grid.Row="2">
-            <TextBlock Text="Для обраної кількості гравців ігор не знайдено"
-               HorizontalAlignment="Center"
-               VerticalAlignment="Top"
-               Margin="0,30,0,0"
-               FontSize="22"
-               Foreground="Black"
-               Panel.ZIndex="1">
-                <TextBlock.Style>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="Visibility" Value="Collapsed"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding Games.Count}" Value="0">
-                                <Setter Property="Visibility" Value="Visible"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </TextBlock.Style>
-            </TextBlock>
-            
-                <ListBox ItemsSource="{Binding Games}" 
-                         SelectionMode="Single"
-                         SelectedItem="{Binding SelectedGame}"
-                         Background="Transparent" BorderThickness="0"
-                         HorizontalContentAlignment="Stretch"
-                         ScrollViewer.VerticalScrollBarVisibility="Hidden"
-                            Margin="0,0,0,80">
-                    <ListBox.ItemContainerStyle>
-                        <Style TargetType="ListBoxItem">
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="ListBoxItem">
-                                        <Border x:Name="Bd" Background="#C8CAFF" CornerRadius="6" Margin="0,5" Padding="20,12">
-                                            <ContentPresenter/>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsSelected" Value="True">
-                                                <Setter TargetName="Bd" Property="Background" Value="#E4E4FF"/>
-                                                <Setter TargetName="Bd" Property="BorderBrush" Value="White"/>
-                                                <Setter TargetName="Bd" Property="BorderThickness" Value="2"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </ListBox.ItemContainerStyle>
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="120"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="180"/>
-                                    <ColumnDefinition Width="45"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="{Binding Number}" FontSize="22" Foreground="Black"/>
-                                <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="22" Foreground="Black"/>
-                                <TextBlock Grid.Column="2" Text="0" FontSize="22" Foreground="Black"/>
-                                <Menu Grid.Column="3"
-                                      Background="Transparent"
-                                      HorizontalAlignment="Center"
-                                      VerticalAlignment="Center">
-                                <MenuItem Header="⋮"
-                                      Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                      Foreground="White"
-                                      FontSize="28"
-                                      Padding="0"
-                                      Background="Transparent"
-                                      BorderThickness="0">
-                                    <MenuItem Header="Переглянути деталі"
-                                          Command="{Binding Tag.ViewGameDetailsCommand, RelativeSource={RelativeSource AncestorType=MenuItem}}"
-                                          CommandParameter="{Binding}"
-                                          Foreground="Black"
-                                          FontSize="16"
-                                          FontWeight="DemiBold"
-                                          MinWidth="200"
-                                          Padding="10,6"/>
-                                    <MenuItem Header="Переглянути шаблони"
-                                          Command="{Binding Tag.ViewGameTemplatesCommand, RelativeSource={RelativeSource AncestorType=MenuItem}}"
-                                          CommandParameter="{Binding}"
-                                          Foreground="Black"
-                                          FontSize="16"
-                                          FontWeight="DemiBold"
-                                          MinWidth="200"
-                                          Padding="10,6"/>
-                                </MenuItem>
-                            </Menu>
-                        </Grid>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-
-            <Button Content="Почати гру"
-                    Command="{Binding StartMatchCommand}"
-                    Background="#FF5E5E" Foreground="White"
-                    FontSize="24" FontWeight="DemiBold"
-                    Padding="40,10" BorderThickness="0"
-                    VerticalAlignment="Bottom" HorizontalAlignment="Center"
-                    Margin="0,0,0,20">
-                <Button.Resources>
-                    <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="8"/>
-                    </Style>
-                </Button.Resources>
-            </Button>
+        <Grid Background="#66000000" Panel.ZIndex="10" Visibility="{Binding IsTemplatesPopupOpen, Converter={StaticResource BoolToVis}}">
+            <Border Background="#FFFFE0" MinWidth="450" MaxWidth="900" MaxHeight="650" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="30">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Шаблони оцінювання" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,25"/>
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,0,0,25">
+                        <ItemsControl ItemsSource="{Binding PopupTemplates}" HorizontalAlignment="Center">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel HorizontalAlignment="Center" Orientation="Horizontal"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Width="340" Background="#C4C5FF" Margin="10" Padding="15">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding TemplateName}" FontSize="20" FontWeight="DemiBold" HorizontalAlignment="Center" Margin="0,0,0,15" TextWrapping="Wrap"/>
+                                            <ItemsControl ItemsSource="{Binding Criteria}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Grid Margin="0,6">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="*"/>
+                                                                <ColumnDefinition Width="80"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <TextBlock Text="{Binding Name, StringFormat='{}{0}:'}" FontSize="16" VerticalAlignment="Center" TextWrapping="Wrap" Margin="0,0,10,0"/>
+                                                            <Border Grid.Column="1" Background="White" BorderBrush="#CCC" BorderThickness="1" Height="28"/>
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                    <Button Grid.Row="2" Content="Закрити" Command="{Binding ClosePopupCommand}" Background="#FF5E5E" Foreground="White" FontSize="18" Padding="30,10" BorderThickness="0" HorizontalAlignment="Center"/>
+                </Grid>
+            </Border>
         </Grid>
     </Grid>
 </UserControl>
