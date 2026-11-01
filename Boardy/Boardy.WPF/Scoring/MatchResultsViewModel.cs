@@ -1,5 +1,4 @@
 using Boardy.Application.Scoring;
-using Boardy.WPF.Home;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -18,6 +17,7 @@ public partial class MatchResultsViewModel : ObservableObject
     private readonly SaveMatchResultsUseCase _saveMatchResultsUseCase;
 
     private Guid _matchId;
+    private SelectMatchGameViewModel? _callerViewModel;
 
     [ObservableProperty]
     private ObservableCollection<MatchParticipantResultItem> _participants = new();
@@ -48,9 +48,10 @@ public partial class MatchResultsViewModel : ObservableObject
         _saveMatchResultsUseCase = saveMatchResultsUseCase;
     }
 
-    public void Initialize(Guid matchId)
+    public void Initialize(Guid matchId, SelectMatchGameViewModel callerViewModel)
     {
         _matchId = matchId;
+        _callerViewModel = callerViewModel;
         _ = LoadMatchResultsAsync(matchId);
     }
 
@@ -108,13 +109,19 @@ public partial class MatchResultsViewModel : ObservableObject
         }
 
         await LoadMatchResultsAsync(_matchId);
+
+        var matchCompletionVm = App.ServiceProvider.GetRequiredService<MatchCompletionViewModel>();
+        matchCompletionVm.Initialize(this);
+        WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(matchCompletionVm));
     }
 
     [RelayCommand]
-    private void GoHome()
+    private void GoBack()
     {
-        var homeVm = App.ServiceProvider.GetRequiredService<HomeViewModel>();
-        WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(homeVm));
+        if (_callerViewModel is not null)
+        {
+            WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(_callerViewModel));
+        }
     }
 }
 
@@ -122,8 +129,6 @@ public partial class MatchParticipantResultItem : ObservableObject
 {
     public Guid Id { get; }
     public string PlayerName { get; }
-
-    public string WinnerLabel => IsWinner ? "Переможець" : string.Empty;
 
     private string _totalScoreText;
 

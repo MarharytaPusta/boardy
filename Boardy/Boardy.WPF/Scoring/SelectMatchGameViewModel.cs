@@ -74,7 +74,7 @@ public partial class SelectMatchGameViewModel : ObservableObject
         if (result.IsSuccess && result.Data is Guid matchId)
         {
             var matchResultsVm = App.ServiceProvider.GetRequiredService<MatchResultsViewModel>();
-            matchResultsVm.Initialize(matchId);
+            matchResultsVm.Initialize(matchId, this);
             WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(matchResultsVm));
         }
         else

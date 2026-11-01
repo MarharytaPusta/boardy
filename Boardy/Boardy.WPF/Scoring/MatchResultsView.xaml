@@ -17,8 +17,8 @@
                        FontSize="42"
                        Foreground="Black"
                        HorizontalAlignment="Center"/>
-            <Button Content="На головну"
-                    Command="{Binding GoHomeCommand}"
+            <Button Content="Назад"
+                    Command="{Binding GoBackCommand}"
                     Background="#FF5E5E"
                     Foreground="White"
                     FontSize="20"
@@ -71,11 +71,9 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="180"/>
-                    <ColumnDefinition Width="180"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="Гравець" FontSize="20" Foreground="Black"/>
                 <TextBlock Grid.Column="1" Text="Бали" FontSize="20" Foreground="Black"/>
-                <TextBlock Grid.Column="2" Text="Результат" FontSize="20" Foreground="Black"/>
             </Grid>
         </Border>
 
@@ -101,7 +99,6 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="180"/>
-                                    <ColumnDefinition Width="180"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Text="{Binding PlayerName}" FontSize="22" Foreground="Black"/>
                                 <TextBox Grid.Column="1"
@@ -113,7 +110,6 @@
                                          BorderThickness="0"
                                          Padding="8,2"
                                          VerticalContentAlignment="Center"/>
-                                <TextBlock Grid.Column="2" Text="{Binding WinnerLabel}" FontSize="22" Foreground="Black"/>
                             </Grid>
                         </Border>
                     </DataTemplate>
