@@ -36,16 +36,21 @@ public class Match
         participant.UpdateTotalScore(totalScore);
     }
 
-    public void SetWinner(Guid participantId)
+    public void SetWinners(IEnumerable<Guid> participantIds)
     {
-        var winner = _participants.First(p => p.Id == participantId);
+        var winnerIds = participantIds.ToHashSet();
 
         foreach (var participant in _participants)
         {
-            participant.ResetWinner();
+            if (winnerIds.Contains(participant.Id))
+            {
+                participant.SetAsWinner();
+            }
+            else
+            {
+                participant.ResetWinner();
+            }
         }
-
-        winner.SetAsWinner();
     }
 
     public void ChangeStatus(MatchStatus newStatus)

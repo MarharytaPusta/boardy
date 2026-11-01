@@ -104,6 +104,7 @@ namespace Boardy.WPF
             services.AddTransient<SelectMatchGameViewModel>();
             services.AddTransient<CreateMatchUseCase>();
             services.AddTransient<GetMatchResultsUseCase>();
+            services.AddTransient<SaveMatchResultsUseCase>();
 
             services.AddScoped<IMatchRepository, MatchRepository>();
 
