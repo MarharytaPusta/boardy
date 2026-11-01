@@ -2,6 +2,7 @@ using Boardy.Application.Authentication.Admin;
 using Boardy.Application.GameCatalog.Catalog;
 using Boardy.Domain.Enums;
 using Boardy.WPF.Home;
+using Boardy.WPF.Scoring;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -173,6 +174,18 @@ public partial class GameCatalogViewModel : ObservableObject
     private void UpdateAdminState()
     {
         OnPropertyChanged(nameof(IsAdminMode));
+    }
+
+    [RelayCommand]
+    private void ViewGameDetails(GameCatalogListItem game)
+    {
+        // TODO: Додати логіку переходу на сторінку деталей гри
+    }
+
+    [RelayCommand]
+    private void ViewGameTemplates(GameCatalogListItem game)
+    {
+        // TODO: Додати логіку перегляду шаблонів оцінювання для обраної гри
     }
 }
 

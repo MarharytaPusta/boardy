@@ -84,6 +84,19 @@ public partial class SelectMatchGameViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void ViewGameDetails(SelectableGameItem game)
+    {
+        // TODO: Додати логіку переходу на сторінку деталей гри
+    }
+
+    [RelayCommand]
+    private void ViewGameTemplates(SelectableGameItem game)
+    {
+        // TODO: Додати логіку перегляду шаблонів оцінювання для обраної гри
+    }
+
+
+    [RelayCommand]
     private void GoBack()
     {
         if (_callerVm != null)

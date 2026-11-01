@@ -3,6 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Background="#9597FF">
 
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </UserControl.Resources>
+
     <Grid Margin="35">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -86,8 +90,37 @@
 
                                     <TextBlock Text="{Binding Number}" FontSize="22" Foreground="Black"/>
                                     <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="22" Foreground="Black"/>
-                                    <TextBlock Grid.Column="2" Text="⋮" FontSize="28" Foreground="White" HorizontalAlignment="Center"/>
-                                </Grid>
+                                <Menu Grid.Column="2"
+                                      Background="Transparent"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center">
+                                    <MenuItem Header="⋮"
+                                        Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        Foreground="White"
+                                        FontSize="28"
+                                        Padding="0"
+                                        Background="Transparent"
+                                        BorderThickness="0">
+                                        <MenuItem Header="Редагувати"
+                                            Command="{Binding Tag.NavigateToEditPlayerCommand, RelativeSource={RelativeSource AncestorType=MenuItem}}"
+                                            CommandParameter="{Binding}"
+                                            Foreground="Black"
+                                            FontSize="16"
+                                            FontWeight="DemiBold"
+                                            MinWidth="130"
+                                            Padding="10,6"/>
+                                        <MenuItem Header="Видалити"
+                                            Command="{Binding Tag.DeletePlayerCommand, RelativeSource={RelativeSource AncestorType=MenuItem}}"
+                                            CommandParameter="{Binding}"
+                                            Visibility="{Binding Tag.IsAdminMode, RelativeSource={RelativeSource AncestorType=MenuItem}, Converter={StaticResource BoolToVis}}"
+                                            Foreground="Black"
+                                            FontSize="16"
+                                            FontWeight="DemiBold"
+                                            MinWidth="130"
+                                            Padding="10,6"/>
+                                    </MenuItem>
+                                </Menu>
+                            </Grid>
                             </Border>
                             <DataTemplate.Triggers>
                                 <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="True">

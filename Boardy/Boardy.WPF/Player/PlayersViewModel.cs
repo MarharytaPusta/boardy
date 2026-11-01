@@ -66,6 +66,7 @@ public partial class PlayersViewModel : ObservableObject
     {
         var editPlayerViewModel = App.ServiceProvider.GetRequiredService<EditPlayerViewModel>();
         editPlayerViewModel.SetPlayer(player);
+        editPlayerViewModel.Initialize(this);
         WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(editPlayerViewModel));
     }
 
