@@ -127,7 +127,7 @@ public partial class GameCatalogViewModel : ObservableObject
         PopupGameName = result.Data.Name;
         PopupTemplates.Clear();
 
-        foreach (var template in result.Data.ScoreTemplates)
+        foreach (var template in result.Data.Templates)
         {
             var templateModel = new ScoreTemplateDisplayModel { TemplateName = template.Name };
 

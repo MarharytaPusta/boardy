@@ -1,6 +1,8 @@
 ﻿using Boardy.Application.GameCatalog.Game;
+using Boardy.Application.GameCatalog.ScoreTemplate;
 using Boardy.Domain.Shared;
 using Microsoft.Extensions.Logging;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Boardy.Application.GameCatalog.Catalog
@@ -18,18 +20,31 @@ namespace Boardy.Application.GameCatalog.Catalog
             _logger = logger;
         }
 
-        public async Task<Result<Domain.Entities.Game>> ExecuteAsync(GetGameDetailsRequest request)
+        public async Task<Result<GameDetailsDto>> ExecuteAsync(GetGameDetailsRequest request)
         {
             var game = await _gameRepository.GetByIdAsync(request.GameId);
 
             if (game == null)
             {
                 _logger.LogWarning("Game with ID {GameId} not found.", request.GameId);
-                return Result<Domain.Entities.Game>.Failure("Гру не знайдено в базі даних.");
+                return Result<GameDetailsDto>.Failure("Гру не знайдено в базі даних.");
             }
 
-            _logger.LogInformation("Successfully loaded details for game '{GameName}' (ID: {GameId}).", game.Name, game.Id);
-            return Result<Domain.Entities.Game>.Success(game);
+            var templatesDto = game.ScoreTemplates.Select(t => new ScoreTemplateDto(
+                t.Name,
+                t.Criteria.Select(c => new CriterionDto(c.Name, c.IsNegative)).ToList()
+            )).ToList();
+
+            var gameDto = new GameDetailsDto(
+                game.Id,
+                game.Name,
+                game.Description,
+                game.MinPlayers,
+                game.MaxPlayers,
+                templatesDto
+            );
+
+            return Result<GameDetailsDto>.Success(gameDto);
         }
     }
 }
