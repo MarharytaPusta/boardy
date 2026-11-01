@@ -112,6 +112,7 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="180"/>
                     <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="45"/>
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Text="Номер" FontSize="20" Foreground="Black"/>
@@ -132,6 +133,7 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="180"/>
                                     <ColumnDefinition Width="80"/>
+                                    <ColumnDefinition Width="45"/>
                                 </Grid.ColumnDefinitions>
 
                                 <TextBlock Text="{Binding Number}" FontSize="22" Foreground="Black"/>
@@ -142,6 +144,35 @@
                                           IsEnabled="False"
                                           HorizontalAlignment="Center"
                                           VerticalAlignment="Center"/>
+                                <Menu Grid.Column="4"
+                                      Background="Transparent"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center">
+                                    <MenuItem Header="⋮"
+                                          Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                          Foreground="White"
+                                          FontSize="28"
+                                          Padding="0"
+                                          Background="Transparent"
+                                          BorderThickness="0">
+                                        <MenuItem Header="Переглянути деталі"
+                                          Command="{Binding Tag.ViewGameDetailsCommand, RelativeSource={RelativeSource AncestorType=MenuItem}}"
+                                          CommandParameter="{Binding}"
+                                          Foreground="Black"
+                                          FontSize="16"
+                                          FontWeight="DemiBold"
+                                          MinWidth="200"
+                                          Padding="10,6"/>
+                                        <MenuItem Header="Переглянути шаблони"
+                                          Command="{Binding Tag.ViewGameTemplatesCommand, RelativeSource={RelativeSource AncestorType=MenuItem}}"
+                                          CommandParameter="{Binding}"
+                                          Foreground="Black"
+                                          FontSize="16"
+                                          FontWeight="DemiBold"
+                                          MinWidth="200"
+                                          Padding="10,6"/>
+                                    </MenuItem>
+                                </Menu>
                             </Grid>
                         </Border>
                     </DataTemplate>

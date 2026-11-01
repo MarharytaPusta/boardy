@@ -1,4 +1,5 @@
 using Boardy.Application.Player;
+using Boardy.WPF.Scoring;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -13,6 +14,9 @@ public partial class EditPlayerViewModel : ObservableObject
     private readonly UpdatePlayerUseCase _updatePlayerUseCase;
     private Guid _playerId;
 
+
+    private ObservableObject? _callerViewModel;
+
     [ObservableProperty]
     private string _playerName = string.Empty;
 
@@ -22,6 +26,11 @@ public partial class EditPlayerViewModel : ObservableObject
     public EditPlayerViewModel(UpdatePlayerUseCase updatePlayerUseCase)
     {
         _updatePlayerUseCase = updatePlayerUseCase;
+    }
+
+    public void Initialize(ObservableObject callerViewModel)
+    {
+        _callerViewModel = callerViewModel;
     }
 
     public void SetPlayer(PlayerListItem player)
@@ -49,8 +58,21 @@ public partial class EditPlayerViewModel : ObservableObject
     [RelayCommand]
     private async Task GoBackAsync()
     {
-        var playersViewModel = App.ServiceProvider.GetRequiredService<PlayersViewModel>();
-        await playersViewModel.LoadPlayersAsync();
-        WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(playersViewModel));
+        if (_callerViewModel is PlayersViewModel pvm)
+        {
+            await pvm.LoadPlayersAsync();
+            WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(pvm));
+        }
+        else if (_callerViewModel is SelectMatchPlayersViewModel smpvm)
+        {
+            await smpvm.LoadPlayersAsync();
+            WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(smpvm));
+        }
+        else
+        {
+            var fallbackVm = App.ServiceProvider.GetRequiredService<PlayersViewModel>();
+            await fallbackVm.LoadPlayersAsync();
+            WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(fallbackVm));
+        }
     }
 }

@@ -1,4 +1,6 @@
-﻿using Boardy.Application.Player;
+﻿using Boardy.Application.Authentication.Admin;
+using Boardy.Application.Player;
+using Boardy.Application.Shared;
 using Boardy.Domain.Entities;
 using Boardy.WPF.Home;
 using Boardy.WPF.Player;
@@ -17,6 +19,10 @@ public partial class SelectMatchPlayersViewModel : ObservableObject
 {
     private readonly GetAllPlayers _getAllPlayers;
 
+    private readonly IDialogService _dialogService;
+    private readonly DeletePlayerUseCase _deletePlayerUseCase;
+    private readonly IUserSession _userSession;
+
     [ObservableProperty]
     private ObservableCollection<SelectablePlayerItem> _players = new();
 
@@ -26,9 +32,26 @@ public partial class SelectMatchPlayersViewModel : ObservableObject
     [ObservableProperty]
     private int _sortIndex;
 
-    public SelectMatchPlayersViewModel(GetAllPlayers getAllPlayers)
+    public bool IsAdminMode => _userSession.IsAdminMode;
+
+    public SelectMatchPlayersViewModel(
+            GetAllPlayers getAllPlayers,
+            IDialogService dialogService,
+            DeletePlayerUseCase deletePlayerUseCase,
+            IUserSession userSession)
     {
         _getAllPlayers = getAllPlayers;
+        _dialogService = dialogService;
+        _deletePlayerUseCase = deletePlayerUseCase;
+        _userSession = userSession;
+
+        // Підписуємося на зміну статусу адміністратора
+        _userSession.OnAdminStateChanged += UpdateAdminState;
+    }
+
+    private void UpdateAdminState()
+    {
+        OnPropertyChanged(nameof(IsAdminMode));
     }
 
     public async Task LoadPlayersAsync()
@@ -82,6 +105,42 @@ public partial class SelectMatchPlayersViewModel : ObservableObject
         createPlayerVm.Initialize(this);
         WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(createPlayerVm));
     }
+
+    [RelayCommand]
+    private void NavigateToEditPlayer(SelectablePlayerItem player)
+    {
+        var editPlayerViewModel = App.ServiceProvider.GetRequiredService<EditPlayerViewModel>();
+
+        var playerListItem = new PlayerListItem(player.Number, player.Id, player.Name);
+        editPlayerViewModel.SetPlayer(playerListItem);
+        editPlayerViewModel.Initialize(this);
+        WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(editPlayerViewModel));
+    }
+
+    [RelayCommand]
+    private async Task DeletePlayerAsync(SelectablePlayerItem player)
+    {
+        if (!IsAdminMode) return;
+
+        bool isConfirmed = _dialogService.Confirm(
+            "Видалення гравця",
+            $"Ви дійсно хочете назавжди видалити {player.Name}?");
+
+        if (isConfirmed)
+        {
+            var result = await _deletePlayerUseCase.ExecuteAsync(new DeletePlayerRequest(player.Id));
+
+            if (result.IsSuccess)
+            {
+                await LoadPlayersAsync();
+            }
+            else
+            {
+                ErrorMessage = result.ErrorMessage ?? "Не вдалося видалити гравця.";
+            }
+        }
+    }
+
 
     [RelayCommand]
     private void GoBack()
