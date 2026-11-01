@@ -12,4 +12,6 @@ public interface IGameRepository
     Task<IEnumerable<Domain.Entities.Game>> GetAllAsync();
 
     Task<IEnumerable<Domain.Entities.Game>> GetFilteredAsync(string? searchQuery, int? playersCount);
+
+    Task<Domain.Entities.Game?> GetByIdAsync(Guid id);
 }
