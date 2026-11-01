@@ -38,4 +38,9 @@ public class MatchParticipant
         IsWinner = true;
     }
 
+    public void ResetWinner()
+    {
+        IsWinner = false;
+    }
+
 }
