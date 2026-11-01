@@ -27,4 +27,10 @@ public class MatchRepository : IMatchRepository
             .Include(m => m.Participants)
             .FirstOrDefaultAsync(m => m.Id == id);
     }
+
+    public async Task UpdateAsync(Match match)
+    {
+        _context.Matches.Update(match);
+        await _context.SaveChangesAsync();
+    }
 }

@@ -6,4 +6,5 @@ public interface IMatchRepository
 {
     Task AddAsync(Match match);
     Task<Match?> GetByIdAsync(Guid id);
+    Task UpdateAsync(Match match);
 }
