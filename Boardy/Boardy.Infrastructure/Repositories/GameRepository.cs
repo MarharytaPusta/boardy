@@ -45,4 +45,12 @@ public class GameRepository : IGameRepository
         return await query.ToListAsync();
     }
 
+    public async Task<Game?> GetByIdAsync(Guid id)
+    {
+        return await _context.Games
+            .Include(g => g.ScoreTemplates)
+            .ThenInclude(t => t.Criteria)
+            .FirstOrDefaultAsync(g => g.Id == id);
+    }
+
 }
