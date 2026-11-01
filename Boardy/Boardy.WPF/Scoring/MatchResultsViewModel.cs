@@ -162,8 +162,9 @@ public partial class MatchParticipantResultItem : ObservableObject
         var scoresByCriterion = criterionResults.ToDictionary(result => result.CriterionId, result => result.Score);
         foreach (var criterion in criteria)
         {
+            var hasSavedScore = scoresByCriterion.TryGetValue(criterion.Id, out var score);
             var item = new CriterionScoreItem(criterion.Id, criterion.Name, criterion.IsNegative,
-                scoresByCriterion.GetValueOrDefault(criterion.Id));
+                hasSavedScore ? score.ToString() : string.Empty);
             item.PropertyChanged += (_, args) =>
             {
                 if (args.PropertyName == nameof(CriterionScoreItem.ScoreText))
@@ -198,11 +199,11 @@ public partial class CriterionScoreItem : ObservableObject
     [ObservableProperty]
     private string _scoreText;
 
-    public CriterionScoreItem(Guid id, string name, bool isNegative, int score)
+    public CriterionScoreItem(Guid id, string name, bool isNegative, string scoreText)
     {
         Id = id;
         Name = isNegative ? $"{name} (штраф)" : name;
         IsNegative = isNegative;
-        _scoreText = score.ToString();
+        _scoreText = scoreText;
     }
 }
