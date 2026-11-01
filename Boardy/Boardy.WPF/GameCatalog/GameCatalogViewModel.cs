@@ -12,6 +12,15 @@ using System.Threading.Tasks;
 
 namespace Boardy.WPF.GameCatalog;
 
+
+public partial class ScoreTemplateDisplayModel : ObservableObject
+{
+    [ObservableProperty]
+    private string _templateName = string.Empty;
+
+    public ObservableCollection<CriterionItemViewModel> Criteria { get; } = new();
+}
+
 public partial class GameCatalogViewModel : ObservableObject
 {
     private readonly GetGameCatalogUseCase _getGameCatalogUseCase;
@@ -40,7 +49,7 @@ public partial class GameCatalogViewModel : ObservableObject
 
     [ObservableProperty] private string _popupGamePlayers = string.Empty;
 
-    [ObservableProperty] private ObservableCollection<CriterionItemViewModel> _popupCriteria = new();
+    [ObservableProperty] private ObservableCollection<ScoreTemplateDisplayModel> _popupTemplates = new();
 
     public bool IsAdminMode => _userSession.IsAdminMode;
 
@@ -116,15 +125,18 @@ public partial class GameCatalogViewModel : ObservableObject
         if (!result.IsSuccess || result.Data == null) return;
 
         PopupGameName = result.Data.Name;
-        PopupCriteria.Clear();
+        PopupTemplates.Clear();
 
-        var firstTemplate = result.Data.ScoreTemplates.FirstOrDefault();
-        if (firstTemplate != null)
+        foreach (var template in result.Data.ScoreTemplates)
         {
-            foreach (var criterion in firstTemplate.Criteria)
+            var templateModel = new ScoreTemplateDisplayModel { TemplateName = template.Name };
+
+            foreach (var criterion in template.Criteria)
             {
-                PopupCriteria.Add(new CriterionItemViewModel { Name = criterion.Name, IsNegative = criterion.IsNegative });
+                templateModel.Criteria.Add(new CriterionItemViewModel { Name = criterion.Name, IsNegative = criterion.IsNegative });
             }
+
+            PopupTemplates.Add(templateModel);
         }
 
         IsTemplatesPopupOpen = true;

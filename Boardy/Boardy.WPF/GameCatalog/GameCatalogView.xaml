@@ -216,20 +216,41 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock Text="Шаблон оцінювання" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,15"/>
+                    <TextBlock Text="Шаблони оцінювання" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,25"/>
 
                     <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,0,0,25">
-                        <ItemsControl ItemsSource="{Binding PopupCriteria}">
+
+                        <ItemsControl ItemsSource="{Binding PopupTemplates}" HorizontalAlignment="Center">
+
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel HorizontalAlignment="Center" Orientation="Horizontal"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Grid Margin="0,8">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="120"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Text="{Binding Name, StringFormat='{}{0}:'}" FontSize="18" VerticalAlignment="Center" TextWrapping="Wrap" Margin="0,0,15,0"/>
-                                        <Border Grid.Column="1" Background="White" BorderBrush="#CCC" BorderThickness="1" Height="30"/>
-                                    </Grid>
+                                    <Border Width="340" Background="#C4C5FF" Margin="10" Padding="15">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding TemplateName}" FontSize="20" FontWeight="DemiBold" HorizontalAlignment="Center" Margin="0,0,0,15" TextWrapping="Wrap"/>
+
+                                            <ItemsControl ItemsSource="{Binding Criteria}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Grid Margin="0,6">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="*"/>
+                                                                <ColumnDefinition Width="80"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <TextBlock Text="{Binding Name, StringFormat='{}{0}:'}" FontSize="16" VerticalAlignment="Center" TextWrapping="Wrap" Margin="0,0,10,0"/>
+                                                            <Border Grid.Column="1" Background="White" BorderBrush="#CCC" BorderThickness="1" Height="28"/>
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+
+                                        </StackPanel>
+                                    </Border>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
