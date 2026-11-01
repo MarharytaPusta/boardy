@@ -39,6 +39,9 @@
         <DataTemplate DataType="{x:Type scoring:SelectMatchGameViewModel}">
             <scoring:SelectMatchGameView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type scoring:MatchResultsViewModel}">
+            <scoring:MatchResultsView/>
+        </DataTemplate>
     </Window.Resources>
 
     <ContentControl Content="{Binding CurrentViewModel}" />
