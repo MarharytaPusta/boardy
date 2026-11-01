@@ -25,12 +25,22 @@ public class MatchRepository : IMatchRepository
     {
         return await _context.Matches
             .Include(m => m.Participants)
+            .ThenInclude(p => p.CriterionResults)
             .FirstOrDefaultAsync(m => m.Id == id);
     }
 
     public async Task UpdateAsync(Match match)
     {
-        _context.Matches.Update(match);
+        var newCriterionResults = match.Participants
+            .SelectMany(participant => participant.CriterionResults)
+            .Where(result => _context.Entry(result).State == EntityState.Detached)
+            .ToList();
+
+        if (newCriterionResults.Count > 0)
+        {
+            await _context.MatchCriterionResults.AddRangeAsync(newCriterionResults);
+        }
+
         await _context.SaveChangesAsync();
     }
 }

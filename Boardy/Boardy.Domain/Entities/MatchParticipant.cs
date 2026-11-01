@@ -18,6 +18,9 @@ public class MatchParticipant
 
     public bool IsWinner { get; private set; }
 
+    private readonly List<MatchCriterionResult> _criterionResults = new();
+    public IReadOnlyCollection<MatchCriterionResult> CriterionResults => _criterionResults.AsReadOnly();
+
     private MatchParticipant() { }
 
     public MatchParticipant(Guid playerId)
@@ -31,6 +34,18 @@ public class MatchParticipant
     public void UpdateTotalScore(int score)
     {
         TotalScore = score;
+    }
+
+    public void UpdateCriterionScore(Guid criterionId, int score)
+    {
+        var result = _criterionResults.FirstOrDefault(item => item.ScoreCriterionId == criterionId);
+        if (result is null)
+        {
+            _criterionResults.Add(new MatchCriterionResult(Id, criterionId, score));
+            return;
+        }
+
+        result.UpdateScore(score);
     }
 
     public void SetAsWinner()

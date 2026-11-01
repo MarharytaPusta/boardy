@@ -70,6 +70,28 @@ namespace Boardy.Infrastructure.Migrations
                     b.ToTable("Matches");
                 });
 
+            modelBuilder.Entity("Boardy.Domain.Entities.MatchCriterionResult", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("MatchParticipantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Score")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("ScoreCriterionId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MatchParticipantId");
+
+                    b.ToTable("MatchCriterionResults");
+                });
+
             modelBuilder.Entity("Boardy.Domain.Entities.MatchParticipant", b =>
                 {
                     b.Property<Guid>("Id")
@@ -155,6 +177,15 @@ namespace Boardy.Infrastructure.Migrations
                     b.ToTable("ScoreTemplates");
                 });
 
+            modelBuilder.Entity("Boardy.Domain.Entities.MatchCriterionResult", b =>
+                {
+                    b.HasOne("Boardy.Domain.Entities.MatchParticipant", null)
+                        .WithMany("CriterionResults")
+                        .HasForeignKey("MatchParticipantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Boardy.Domain.Entities.MatchParticipant", b =>
                 {
                     b.HasOne("Boardy.Domain.Entities.Match", null)
@@ -194,6 +225,11 @@ namespace Boardy.Infrastructure.Migrations
             modelBuilder.Entity("Boardy.Domain.Entities.Match", b =>
                 {
                     b.Navigation("Participants");
+                });
+
+            modelBuilder.Entity("Boardy.Domain.Entities.MatchParticipant", b =>
+                {
+                    b.Navigation("CriterionResults");
                 });
 
             modelBuilder.Entity("Boardy.Domain.Entities.ScoreTemplate", b =>
