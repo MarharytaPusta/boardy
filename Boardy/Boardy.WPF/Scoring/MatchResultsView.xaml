@@ -8,6 +8,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -42,7 +43,30 @@
                        HorizontalAlignment="Right"/>
         </Grid>
 
-        <Border Grid.Row="2" Background="White" CornerRadius="6" Padding="20,12" Margin="0,0,0,5">
+        <Border Grid.Row="2"
+                Background="#FFF0F0"
+                BorderBrush="#FF5E5E"
+                BorderThickness="1"
+                CornerRadius="6"
+                Padding="12,6"
+                Margin="0,0,0,10">
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Setter Property="Visibility" Value="Visible"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ErrorMessage}" Value="">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+            <TextBlock Text="{Binding ErrorMessage}"
+                       Foreground="#CC3333"
+                       FontSize="16"
+                       HorizontalAlignment="Center"/>
+        </Border>
+
+        <Border Grid.Row="3" Background="White" CornerRadius="6" Padding="20,12" Margin="0,0,0,5">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -55,15 +79,7 @@
             </Grid>
         </Border>
 
-        <Grid Grid.Row="3">
-            <TextBlock Text="{Binding ErrorMessage}"
-                       Foreground="#FF5E5E"
-                       Background="White"
-                       FontSize="16"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Top"
-                       Panel.ZIndex="1"/>
-
+        <Grid Grid.Row="4">
             <ListBox ItemsSource="{Binding Participants}"
                      Background="Transparent"
                      BorderThickness="0"
