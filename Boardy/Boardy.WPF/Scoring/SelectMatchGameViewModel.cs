@@ -56,7 +56,13 @@ public partial class SelectMatchGameViewModel : ObservableObject
         }
 
         Games = new ObservableCollection<SelectableGameItem>(
-            result.Data.Select((g, i) => new SelectableGameItem(i + 1, g.Id, g.Name)));
+            result.Data
+                .Where(game => game.ScoreTemplates.Any())
+                .Select((game, index) => new SelectableGameItem(
+                    index + 1,
+                    game.Id,
+                    game.ScoreTemplates.First().Id,
+                    game.Name)));
     }
 
     [RelayCommand]
@@ -68,7 +74,7 @@ public partial class SelectMatchGameViewModel : ObservableObject
             return;
         }
 
-        var request = new CreateMatchRequest(SelectedGame.Id, _selectedPlayerIds);
+        var request = new CreateMatchRequest(SelectedGame.ScoreTemplateId, _selectedPlayerIds);
         var result = await _createMatchUseCase.ExecuteAsync(request);
 
         if (result.IsSuccess && result.Data is Guid matchId)
@@ -93,4 +99,4 @@ public partial class SelectMatchGameViewModel : ObservableObject
     }
 }
 
-public record SelectableGameItem(int Number, Guid Id, string Name);
+public record SelectableGameItem(int Number, Guid Id, Guid ScoreTemplateId, string Name);
