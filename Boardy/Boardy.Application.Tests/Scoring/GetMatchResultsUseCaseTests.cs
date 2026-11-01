@@ -1,4 +1,6 @@
 using Boardy.Application.Player;
+using Boardy.Application.GameCatalog.ScoreTemplate;
+using Boardy.Application.GameCatalog.Game;
 using Boardy.Application.Scoring;
 using Boardy.Domain.Entities;
 using Microsoft.Extensions.Logging;
@@ -17,17 +19,23 @@ public class GetMatchResultsUseCaseTests
 {
     private readonly Mock<IMatchRepository> _matchRepositoryMock;
     private readonly Mock<IPlayerRepository> _playerRepositoryMock;
+    private readonly Mock<IScoreTemplateRepository> _scoreTemplateRepositoryMock;
+    private readonly Mock<IGameRepository> _gameRepositoryMock;
     private readonly GetMatchResultsUseCase _useCase;
 
     public GetMatchResultsUseCaseTests()
     {
         _matchRepositoryMock = new Mock<IMatchRepository>();
         _playerRepositoryMock = new Mock<IPlayerRepository>();
+        _scoreTemplateRepositoryMock = new Mock<IScoreTemplateRepository>();
+        _gameRepositoryMock = new Mock<IGameRepository>();
         var loggerMock = new Mock<ILogger<GetMatchResultsUseCase>>();
 
         _useCase = new GetMatchResultsUseCase(
             _matchRepositoryMock.Object,
             _playerRepositoryMock.Object,
+            _scoreTemplateRepositoryMock.Object,
+            _gameRepositoryMock.Object,
             loggerMock.Object);
     }
 
@@ -45,12 +53,17 @@ public class GetMatchResultsUseCaseTests
         _playerRepositoryMock
             .Setup(repository => repository.GetByIdsAsync(It.IsAny<IEnumerable<Guid>>()))
             .ReturnsAsync(new List<DomainPlayer> { firstPlayer, secondPlayer });
+        var template = new ScoreTemplate("Базовий");
+        template.AddCriterion(new ScoreCriterion("Очки"));
+        _scoreTemplateRepositoryMock.Setup(repository => repository.GetByIdAsync(match.ScoreTemplateId)).ReturnsAsync(template);
+        _gameRepositoryMock.Setup(repository => repository.GetNameByScoreTemplateIdAsync(match.ScoreTemplateId)).ReturnsAsync("Крила");
 
         var result = await _useCase.ExecuteAsync(new GetMatchResultsRequest(match.Id));
 
         Assert.True(result.IsSuccess);
         var data = Assert.IsType<MatchResultsDto>(result.Data);
         Assert.Equal(match.Id, data.Id);
+        Assert.Equal("Крила", data.GameName);
         Assert.Equal(2, data.Participants.Count());
         Assert.Contains(data.Participants, participant =>
             participant.PlayerName == "Олена" && participant.TotalScore == 20);

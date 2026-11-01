@@ -26,6 +26,9 @@ public partial class MatchResultsViewModel : ObservableObject
     private string _matchDate = string.Empty;
 
     [ObservableProperty]
+    private string _gameName = string.Empty;
+
+    [ObservableProperty]
     private string _matchStatus = string.Empty;
 
     [ObservableProperty]
@@ -66,6 +69,7 @@ public partial class MatchResultsViewModel : ObservableObject
         }
 
         ErrorMessage = string.Empty;
+        GameName = result.Data.GameName;
         MatchDate = result.Data.Date.ToLocalTime().ToString("dd.MM.yyyy HH:mm");
         MatchStatus = result.Data.Status == Boardy.Domain.Enums.MatchStatus.Completed ? "Завершена" : "У процесі";
         CanSaveResults = result.Data.Status == Boardy.Domain.Enums.MatchStatus.InProgress;
@@ -75,7 +79,9 @@ public partial class MatchResultsViewModel : ObservableObject
                 participant.Id,
                 participant.PlayerName,
                 participant.TotalScore,
-                participant.IsWinner)));
+                participant.IsWinner,
+                result.Data.Criteria,
+                participant.CriterionResults)));
     }
 
     [RelayCommand]
@@ -90,13 +96,19 @@ public partial class MatchResultsViewModel : ObservableObject
 
         foreach (var participant in Participants)
         {
-            if (!int.TryParse(participant.TotalScoreText, out var totalScore))
+            var criterionScores = new List<CriterionScoreRequest>();
+            foreach (var criterion in participant.Criteria)
             {
-                ErrorMessage = $"Бали гравця {participant.PlayerName} мають бути цілим числом.";
-                return;
+                if (!int.TryParse(criterion.ScoreText, out var score))
+                {
+                    ErrorMessage = $"Значення критерію «{criterion.Name}» для гравця {participant.PlayerName} має бути цілим числом.";
+                    return;
+                }
+
+                criterionScores.Add(new CriterionScoreRequest(criterion.Id, score));
             }
 
-            participantScores.Add(new MatchParticipantScoreRequest(participant.Id, totalScore));
+            participantScores.Add(new MatchParticipantScoreRequest(participant.Id, criterionScores));
         }
 
         var request = new SaveMatchResultsRequest(_matchId, participantScores);
@@ -130,21 +142,67 @@ public partial class MatchParticipantResultItem : ObservableObject
     public Guid Id { get; }
     public string PlayerName { get; }
 
-    private string _totalScoreText;
-
-    public string TotalScoreText
-    {
-        get => _totalScoreText;
-        set => SetProperty(ref _totalScoreText, value);
-    }
+    public ObservableCollection<CriterionScoreItem> Criteria { get; } = new();
+    public string TotalScoreText => CalculateTotal().ToString();
 
     public bool IsWinner { get; }
 
-    public MatchParticipantResultItem(Guid id, string playerName, int totalScore, bool isWinner)
+    public MatchParticipantResultItem(
+        Guid id,
+        string playerName,
+        int totalScore,
+        bool isWinner,
+        IEnumerable<ScoreCriterionDto> criteria,
+        IEnumerable<CriterionResultDto> criterionResults)
     {
         Id = id;
         PlayerName = playerName;
-        _totalScoreText = totalScore.ToString();
         IsWinner = isWinner;
+
+        var scoresByCriterion = criterionResults.ToDictionary(result => result.CriterionId, result => result.Score);
+        foreach (var criterion in criteria)
+        {
+            var item = new CriterionScoreItem(criterion.Id, criterion.Name, criterion.IsNegative,
+                scoresByCriterion.GetValueOrDefault(criterion.Id));
+            item.PropertyChanged += (_, args) =>
+            {
+                if (args.PropertyName == nameof(CriterionScoreItem.ScoreText))
+                {
+                    OnPropertyChanged(nameof(TotalScoreText));
+                }
+            };
+            Criteria.Add(item);
+        }
+    }
+
+    private int CalculateTotal()
+    {
+        return Criteria.Sum(criterion =>
+        {
+            if (!int.TryParse(criterion.ScoreText, out var score))
+            {
+                return 0;
+            }
+
+            return criterion.IsNegative ? -score : score;
+        });
+    }
+}
+
+public partial class CriterionScoreItem : ObservableObject
+{
+    public Guid Id { get; }
+    public string Name { get; }
+    public bool IsNegative { get; }
+
+    [ObservableProperty]
+    private string _scoreText;
+
+    public CriterionScoreItem(Guid id, string name, bool isNegative, int score)
+    {
+        Id = id;
+        Name = isNegative ? $"{name} (штраф)" : name;
+        IsNegative = isNegative;
+        _scoreText = score.ToString();
     }
 }

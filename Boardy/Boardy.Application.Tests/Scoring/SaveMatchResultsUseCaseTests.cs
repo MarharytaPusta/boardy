@@ -1,4 +1,5 @@
 using Boardy.Application.Scoring;
+using Boardy.Application.GameCatalog.ScoreTemplate;
 using Boardy.Domain.Entities;
 using Boardy.Domain.Enums;
 using Microsoft.Extensions.Logging;
@@ -15,14 +16,20 @@ namespace Boardy.Application.Tests.Scoring.SaveMatchResults;
 public class SaveMatchResultsUseCaseTests
 {
     private readonly Mock<IMatchRepository> _matchRepositoryMock;
+    private readonly Mock<IScoreTemplateRepository> _scoreTemplateRepositoryMock;
     private readonly SaveMatchResultsUseCase _useCase;
+    private readonly ScoreTemplate _scoreTemplate;
 
     public SaveMatchResultsUseCaseTests()
     {
         _matchRepositoryMock = new Mock<IMatchRepository>();
+        _scoreTemplateRepositoryMock = new Mock<IScoreTemplateRepository>();
+        _scoreTemplate = new ScoreTemplate("Базовий");
+        _scoreTemplate.AddCriterion(new ScoreCriterion("Очки"));
+        _scoreTemplateRepositoryMock.Setup(repository => repository.GetByIdAsync(_scoreTemplate.Id)).ReturnsAsync(_scoreTemplate);
         var loggerMock = new Mock<ILogger<SaveMatchResultsUseCase>>();
 
-        _useCase = new SaveMatchResultsUseCase(_matchRepositoryMock.Object, loggerMock.Object);
+        _useCase = new SaveMatchResultsUseCase(_matchRepositoryMock.Object, _scoreTemplateRepositoryMock.Object, loggerMock.Object);
     }
 
     [Fact]
@@ -81,8 +88,8 @@ public class SaveMatchResultsUseCaseTests
             Guid.NewGuid(),
             new List<MatchParticipantScoreRequest>
             {
-                new(participantId, 10),
-                new(participantId, 20)
+                new(participantId, new List<CriterionScoreRequest> { new(_scoreTemplate.Criteria.First().Id, 10) }),
+                new(participantId, new List<CriterionScoreRequest> { new(_scoreTemplate.Criteria.First().Id, 20) })
             });
 
         var result = await _useCase.ExecuteAsync(request);
@@ -108,16 +115,16 @@ public class SaveMatchResultsUseCaseTests
         _matchRepositoryMock.Verify(repository => repository.UpdateAsync(It.IsAny<DomainMatch>()), Times.Never);
     }
 
-    private static DomainMatch CreateMatch()
+    private DomainMatch CreateMatch()
     {
-        var match = new DomainMatch(Guid.NewGuid());
+        var match = new DomainMatch(_scoreTemplate.Id);
         match.AddParticipant(new MatchParticipant(Guid.NewGuid()));
         match.AddParticipant(new MatchParticipant(Guid.NewGuid()));
 
         return match;
     }
 
-    private static SaveMatchResultsRequest CreateRequest(DomainMatch match, int firstScore, int secondScore)
+    private SaveMatchResultsRequest CreateRequest(DomainMatch match, int firstScore, int secondScore)
     {
         var participants = match.Participants.ToList();
 
@@ -125,8 +132,8 @@ public class SaveMatchResultsUseCaseTests
             match.Id,
             new List<MatchParticipantScoreRequest>
             {
-                new(participants[0].Id, firstScore),
-                new(participants[1].Id, secondScore)
+                new(participants[0].Id, new List<CriterionScoreRequest> { new(_scoreTemplate.Criteria.First().Id, firstScore) }),
+                new(participants[1].Id, new List<CriterionScoreRequest> { new(_scoreTemplate.Criteria.First().Id, secondScore) })
             });
     }
 }

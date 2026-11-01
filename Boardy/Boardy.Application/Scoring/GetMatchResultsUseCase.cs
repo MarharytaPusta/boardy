@@ -1,4 +1,6 @@
 using Boardy.Application.Player;
+using Boardy.Application.GameCatalog.ScoreTemplate;
+using Boardy.Application.GameCatalog.Game;
 using Boardy.Domain.Shared;
 using Microsoft.Extensions.Logging;
 using System;
@@ -12,15 +14,21 @@ public class GetMatchResultsUseCase
 {
     private readonly IMatchRepository _matchRepository;
     private readonly IPlayerRepository _playerRepository;
+    private readonly IScoreTemplateRepository _scoreTemplateRepository;
+    private readonly IGameRepository _gameRepository;
     private readonly ILogger<GetMatchResultsUseCase> _logger;
 
     public GetMatchResultsUseCase(
         IMatchRepository matchRepository,
         IPlayerRepository playerRepository,
+        IScoreTemplateRepository scoreTemplateRepository,
+        IGameRepository gameRepository,
         ILogger<GetMatchResultsUseCase> logger)
     {
         _matchRepository = matchRepository;
         _playerRepository = playerRepository;
+        _scoreTemplateRepository = scoreTemplateRepository;
+        _gameRepository = gameRepository;
         _logger = logger;
     }
 
@@ -39,6 +47,18 @@ public class GetMatchResultsUseCase
             _logger.LogWarning("Match with ID {MatchId} not found.", request.MatchId);
             return Result<MatchResultsDto>.Failure("Партію не знайдено в базі даних.");
         }
+
+        var scoreTemplate = await _scoreTemplateRepository.GetByIdAsync(match.ScoreTemplateId);
+        if (scoreTemplate is null)
+        {
+            return Result<MatchResultsDto>.Failure("Шаблон підрахунку балів не знайдено.");
+        }
+
+        var criteria = scoreTemplate.Criteria
+            .Select(criterion => new ScoreCriterionDto(criterion.Id, criterion.Name, criterion.IsNegative))
+            .ToList();
+        var gameName = await _gameRepository.GetNameByScoreTemplateIdAsync(match.ScoreTemplateId)
+            ?? "Гра";
 
         var playerIds = match.Participants
             .Select(participant => participant.PlayerId)
@@ -59,7 +79,9 @@ public class GetMatchResultsUseCase
                 participant.PlayerId,
                 playerName,
                 participant.TotalScore,
-                participant.IsWinner
+                participant.IsWinner,
+                participant.CriterionResults.Select(criterionResult =>
+                    new CriterionResultDto(criterionResult.ScoreCriterionId, criterionResult.Score)).ToList()
             );
         }).ToList();
 
@@ -67,6 +89,8 @@ public class GetMatchResultsUseCase
             match.Id,
             match.Date,
             match.Status,
+            gameName,
+            criteria,
             participantsDto
         );
 

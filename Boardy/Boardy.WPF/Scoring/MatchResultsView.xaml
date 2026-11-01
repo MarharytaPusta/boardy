@@ -13,10 +13,16 @@
         </Grid.RowDefinitions>
 
         <Grid>
-            <TextBlock Text="Результати партії"
-                       FontSize="42"
-                       Foreground="Black"
-                       HorizontalAlignment="Center"/>
+            <StackPanel HorizontalAlignment="Center">
+                <TextBlock Text="{Binding GameName}"
+                           FontSize="42"
+                           Foreground="Black"
+                           HorizontalAlignment="Center"/>
+                <TextBlock Text="Результати партії"
+                           FontSize="20"
+                           Foreground="#45456B"
+                           HorizontalAlignment="Center"/>
+            </StackPanel>
             <Button Content="Назад"
                     Command="{Binding GoBackCommand}"
                     Background="#FF5E5E"
@@ -24,7 +30,8 @@
                     FontSize="20"
                     Padding="20,8"
                     BorderThickness="0"
-                    HorizontalAlignment="Right"/>
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"/>
         </Grid>
 
         <Grid Grid.Row="1" Margin="0,20,0,10">
@@ -73,7 +80,7 @@
                     <ColumnDefinition Width="180"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="Гравець" FontSize="20" Foreground="Black"/>
-                <TextBlock Grid.Column="1" Text="Бали" FontSize="20" Foreground="Black"/>
+                <TextBlock Grid.Column="1" Text="Підсумок" FontSize="20" Foreground="Black"/>
             </Grid>
         </Border>
 
@@ -96,20 +103,34 @@
                     <DataTemplate>
                         <Border Background="#C8CAFF" CornerRadius="6" Padding="20,12">
                             <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="180"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="{Binding PlayerName}" FontSize="22" Foreground="Black"/>
-                                <TextBox Grid.Column="1"
-                                         Text="{Binding TotalScoreText, UpdateSourceTrigger=PropertyChanged}"
-                                         IsEnabled="{Binding DataContext.CanSaveResults, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                         FontSize="22"
-                                         Foreground="Black"
-                                         Background="White"
-                                         BorderThickness="0"
-                                         Padding="8,2"
-                                         VerticalContentAlignment="Center"/>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="180"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding PlayerName}" FontSize="22" Foreground="Black"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding TotalScoreText}"
+                                               FontSize="22" Foreground="Black" HorizontalAlignment="Right"/>
+                                    <ItemsControl Grid.Row="1" Grid.ColumnSpan="2" ItemsSource="{Binding Criteria}" Margin="0,12,0,0">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid Margin="0,3">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="180"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Text="{Binding Name}" FontSize="16" Foreground="Black" VerticalAlignment="Center"/>
+                                                    <TextBox Grid.Column="1" Text="{Binding ScoreText, UpdateSourceTrigger=PropertyChanged}"
+                                                             IsEnabled="{Binding DataContext.CanSaveResults, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                             FontSize="18" Foreground="Black" Background="White" BorderThickness="0"
+                                                             Padding="8,2" VerticalContentAlignment="Center"/>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
                             </Grid>
                         </Border>
                     </DataTemplate>

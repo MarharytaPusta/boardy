@@ -10,5 +10,7 @@ public record SaveMatchResultsRequest(
 
 public record MatchParticipantScoreRequest(
     Guid ParticipantId,
-    int TotalScore
+    List<CriterionScoreRequest> CriterionScores
 );
+
+public record CriterionScoreRequest(Guid CriterionId, int Score);
