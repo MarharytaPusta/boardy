@@ -176,17 +176,6 @@ public partial class GameCatalogViewModel : ObservableObject
         OnPropertyChanged(nameof(IsAdminMode));
     }
 
-    [RelayCommand]
-    private void ViewGameDetails(GameCatalogListItem game)
-    {
-        // TODO: Додати логіку переходу на сторінку деталей гри
-    }
-
-    [RelayCommand]
-    private void ViewGameTemplates(GameCatalogListItem game)
-    {
-        // TODO: Додати логіку перегляду шаблонів оцінювання для обраної гри
-    }
 }
 
 public record GameCatalogListItem(Guid Id, int Number, string Name, string PlayersCount, bool IsActive);
