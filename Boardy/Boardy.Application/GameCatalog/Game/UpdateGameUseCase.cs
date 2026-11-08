@@ -44,8 +44,6 @@ public class UpdateGameUseCase
 
         await _gameRepository.UpdateAsync(game);
 
-        await _gameRepository.UpdateAsync(game);
-
         _logger.LogInformation("Game with ID {GameId} was updated", game.Id);
 
         return Result.Success();
