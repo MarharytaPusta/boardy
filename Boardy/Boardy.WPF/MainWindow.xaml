@@ -6,6 +6,7 @@
         xmlns:player="clr-namespace:Boardy.WPF.Player"
         xmlns:gameCatalog="clr-namespace:Boardy.WPF.GameCatalog"
         xmlns:scoring="clr-namespace:Boardy.WPF.Scoring"
+        xmlns:catalog="clr-namespace:Boardy.WPF.GameCatalog"
         Title="Boardy" Height="700" Width="900" WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
@@ -44,6 +45,9 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type scoring:MatchCompletionViewModel}">
             <scoring:MatchCompletionView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type catalog:UpdateGameViewModel}">
+            <catalog:UpdateGameView />
         </DataTemplate>
     </Window.Resources>
 

@@ -41,6 +41,7 @@ namespace Boardy.Application.GameCatalog.Catalog
                 game.Description,
                 game.MinPlayers,
                 game.MaxPlayers,
+                game.Status,
                 templatesDto
             );
 
