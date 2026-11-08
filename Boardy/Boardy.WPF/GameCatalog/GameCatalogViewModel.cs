@@ -1,5 +1,6 @@
 using Boardy.Application.Authentication.Admin;
 using Boardy.Application.GameCatalog.Catalog;
+using Boardy.Application.GameCatalog.Game;
 using Boardy.Domain.Enums;
 using Boardy.WPF.Home;
 using Boardy.WPF.Scoring;
@@ -26,6 +27,7 @@ public partial class GameCatalogViewModel : ObservableObject
 {
     private readonly GetGameCatalogUseCase _getGameCatalogUseCase;
     private readonly GetGameDetailsUseCase _getGameDetailsUseCase;
+    private readonly ToggleGameStatusUseCase _toggleGameStatusUseCase;
     private readonly IUserSession _userSession;
 
     [ObservableProperty]
@@ -54,10 +56,11 @@ public partial class GameCatalogViewModel : ObservableObject
 
     public bool IsAdminMode => _userSession.IsAdminMode;
 
-    public GameCatalogViewModel(GetGameCatalogUseCase getGameCatalogUseCase, GetGameDetailsUseCase getGameDetailsUseCase, IUserSession userSession)
+    public GameCatalogViewModel(GetGameCatalogUseCase getGameCatalogUseCase, GetGameDetailsUseCase getGameDetailsUseCase, ToggleGameStatusUseCase toggleGameStatusUseCase, IUserSession userSession)
     {
         _getGameCatalogUseCase = getGameCatalogUseCase;
         _getGameDetailsUseCase = getGameDetailsUseCase;
+        _toggleGameStatusUseCase = toggleGameStatusUseCase;
         _userSession = userSession;
         _userSession.OnAdminStateChanged += UpdateAdminState;
     }
@@ -87,7 +90,12 @@ public partial class GameCatalogViewModel : ObservableObject
         }
 
         ErrorMessage = string.Empty;
-        Games = new ObservableCollection<GameCatalogListItem>(result.Data.Select((game, index) =>
+
+        var filteredGames = IsAdminMode
+            ? result.Data
+            : result.Data.Where(g => g.Status == GameStatus.Active);
+
+        Games = new ObservableCollection<GameCatalogListItem>(filteredGames.Select((game, index) =>
             new GameCatalogListItem(
                 game.Id,
                 index + 1,
@@ -188,6 +196,20 @@ public partial class GameCatalogViewModel : ObservableObject
     private void UpdateAdminState()
     {
         OnPropertyChanged(nameof(IsAdminMode));
+    }
+
+    [RelayCommand]
+    private async Task ToggleGameStatusAsync(GameCatalogListItem selectedGame)
+    {
+        var result = await _toggleGameStatusUseCase.ExecuteAsync(new ToggleGameStatusRequest(selectedGame.Id));
+        if (result.IsSuccess)
+        {
+            await LoadGamesAsync();
+        }
+        else
+        {
+            ErrorMessage = result.ErrorMessage ?? "Не вдалося змінити статус гри.";
+        }
     }
 
 }
