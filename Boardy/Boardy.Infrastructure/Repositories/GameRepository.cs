@@ -64,4 +64,10 @@ public class GameRepository : IGameRepository
             .FirstOrDefaultAsync();
     }
 
+    public async Task DeleteAsync(Game game)
+    {
+        _context.Games.Remove(game);
+        await _context.SaveChangesAsync();
+    }
+
 } 
