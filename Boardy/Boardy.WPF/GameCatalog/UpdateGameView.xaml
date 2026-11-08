@@ -1,0 +1,61 @@
+﻿<UserControl x:Class="Boardy.WPF.GameCatalog.UpdateGameView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="#9597FF">
+
+    <Grid Margin="35">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <TextBlock Text="Редагувати деталі гри" FontSize="42" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <Button Content="Назад" Command="{Binding GoBackCommand}" Background="#FF5E5E" Foreground="White" FontSize="20" Padding="20,8" BorderThickness="0" HorizontalAlignment="Right"/>
+        </Grid>
+
+        <Border Grid.Row="1" Background="#C8CAFF" CornerRadius="8" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="40" MinWidth="500">
+            <StackPanel>
+                <Grid Margin="0,0,0,15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Назва:" FontSize="22" Foreground="Black" VerticalAlignment="Center"/>
+                    <TextBox Grid.Column="1" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" FontSize="20" Padding="5"/>
+                </Grid>
+
+                <Grid Margin="0,0,0,15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Опис:" FontSize="22" Foreground="Black" VerticalAlignment="Top" Margin="0,5,0,0"/>
+                    <TextBox Grid.Column="1" Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" FontSize="18" Padding="5" Height="80" TextWrapping="Wrap" AcceptsReturn="True"/>
+                </Grid>
+
+                <Grid Margin="0,0,0,15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Мін. гравців:" FontSize="22" Foreground="Black" VerticalAlignment="Center"/>
+                    <TextBox Grid.Column="1" Text="{Binding MinPlayersText, UpdateSourceTrigger=PropertyChanged}" FontSize="20" Padding="5"/>
+                </Grid>
+
+                <Grid Margin="0,0,0,15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Макс. гравців:" FontSize="22" Foreground="Black" VerticalAlignment="Center"/>
+                    <TextBox Grid.Column="1" Text="{Binding MaxPlayersText, UpdateSourceTrigger=PropertyChanged}" FontSize="20" Padding="5"/>
+                </Grid>
+
+                <TextBlock Text="{Binding ErrorMessage}" Foreground="#FF5E5E" FontSize="16" HorizontalAlignment="Center" Margin="0,0,0,15"/>
+
+                <Button Content="Зберегти" Command="{Binding SaveCommand}" Background="#FF5E5E" Foreground="White" FontSize="22" FontWeight="DemiBold" Padding="40,10" BorderThickness="0" HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

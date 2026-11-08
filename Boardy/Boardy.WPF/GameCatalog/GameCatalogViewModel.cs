@@ -161,6 +161,20 @@ public partial class GameCatalogViewModel : ObservableObject
 
 
     [RelayCommand]
+    private void EditGame(GameCatalogListItem selectedGame)
+    {
+        if (!IsAdminMode)
+        {
+            return;
+        }
+
+        var updateVm = App.ServiceProvider.GetRequiredService<UpdateGameViewModel>();
+        _ = updateVm.InitializeAsync(selectedGame.Id);
+        WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(updateVm));
+    }
+
+
+    [RelayCommand]
     private void NavigateToCreateGame()
     {
         if (!IsAdminMode)
