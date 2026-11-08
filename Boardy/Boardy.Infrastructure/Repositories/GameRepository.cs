@@ -64,4 +64,10 @@ public class GameRepository : IGameRepository
             .FirstOrDefaultAsync();
     }
 
+
+    public async Task UpdateAsync(Domain.Entities.Game game)
+    {
+        _context.Games.Update(game);
+        await _context.SaveChangesAsync();
+    }
 } 

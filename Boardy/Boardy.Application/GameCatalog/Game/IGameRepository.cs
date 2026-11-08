@@ -15,4 +15,5 @@ public interface IGameRepository
 
     Task<Domain.Entities.Game?> GetByIdAsync(Guid id);
     Task<string?> GetNameByScoreTemplateIdAsync(Guid scoreTemplateId);
+    Task UpdateAsync(Domain.Entities.Game game);
 }
