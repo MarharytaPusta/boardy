@@ -47,6 +47,9 @@ public class Game
     public void ClearScoreTemplates()
     {
         _scoreTemplates.Clear();
+    }
+
+
     public void ChangeStatus(GameStatus newStatus) 
     {
         Status = newStatus;
