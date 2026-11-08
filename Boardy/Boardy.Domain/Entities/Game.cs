@@ -34,4 +34,9 @@ public class Game
         _scoreTemplates.Add(template);
     }
 
+    public void ChangeStatus(GameStatus newStatus) 
+    {
+        Status = newStatus;
+    }
+
 }
