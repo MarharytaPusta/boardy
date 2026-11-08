@@ -64,7 +64,13 @@ public class GameRepository : IGameRepository
             .FirstOrDefaultAsync();
     }
 
-    public async Task UpdateAsync(Game game)
+    public async Task DeleteAsync(Game game)
+    {
+        _context.Games.Remove(game);
+        await _context.SaveChangesAsync();
+    }
+    
+    public async Task UpdateAsync(Game game) 
     {
         if (_context.Entry(game).State == EntityState.Detached)
         {

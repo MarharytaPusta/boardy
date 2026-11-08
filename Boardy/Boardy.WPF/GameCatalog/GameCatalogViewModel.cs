@@ -1,6 +1,7 @@
 using Boardy.Application.Authentication.Admin;
 using Boardy.Application.GameCatalog.Catalog;
 using Boardy.Application.GameCatalog.Game;
+using Boardy.Application.Shared;
 using Boardy.Domain.Enums;
 using Boardy.WPF.Home;
 using Boardy.WPF.Scoring;
@@ -27,6 +28,8 @@ public partial class GameCatalogViewModel : ObservableObject
 {
     private readonly GetGameCatalogUseCase _getGameCatalogUseCase;
     private readonly GetGameDetailsUseCase _getGameDetailsUseCase;
+    private readonly DeleteGameUseCase _deleteGameUseCase;
+    private readonly IDialogService _dialogService;
     private readonly ToggleGameStatusUseCase _toggleGameStatusUseCase;
     private readonly IUserSession _userSession;
 
@@ -58,11 +61,19 @@ public partial class GameCatalogViewModel : ObservableObject
 
     public bool IsAdminMode => _userSession.IsAdminMode;
 
-    public GameCatalogViewModel(GetGameCatalogUseCase getGameCatalogUseCase, GetGameDetailsUseCase getGameDetailsUseCase, ToggleGameStatusUseCase toggleGameStatusUseCase, IUserSession userSession)
+    public GameCatalogViewModel(
+        GetGameCatalogUseCase getGameCatalogUseCase,
+        GetGameDetailsUseCase getGameDetailsUseCase,
+        ToggleGameStatusUseCase toggleGameStatusUseCase,
+        DeleteGameUseCase deleteGameUseCase,
+        IDialogService dialogService,
+        IUserSession userSession)
     {
         _getGameCatalogUseCase = getGameCatalogUseCase;
         _getGameDetailsUseCase = getGameDetailsUseCase;
         _toggleGameStatusUseCase = toggleGameStatusUseCase;
+        _deleteGameUseCase = deleteGameUseCase;
+        _dialogService = dialogService;
         _userSession = userSession;
         _userSession.OnAdminStateChanged += UpdateAdminState;
     }
@@ -198,6 +209,35 @@ public partial class GameCatalogViewModel : ObservableObject
 
         var createGameViewModel = App.ServiceProvider.GetRequiredService<CreateGameViewModel>();
         WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(createGameViewModel));
+    }
+
+    [RelayCommand]
+    private async Task DeleteGameAsync(GameCatalogListItem game)
+    {
+        if (!IsAdminMode)
+        {
+            return;
+        }
+
+        var isConfirmed = _dialogService.Confirm(
+            "Видалення гри",
+            $"Ви дійсно хочете назавжди видалити {game.Name}?");
+
+        if (!isConfirmed)
+        {
+            return;
+        }
+
+        var result = await _deleteGameUseCase.ExecuteAsync(new DeleteGameRequest(game.Id));
+
+        if (result.IsSuccess)
+        {
+            await LoadGamesAsync();
+        }
+        else
+        {
+            ErrorMessage = result.ErrorMessage ?? "Не вдалося видалити гру.";
+        }
     }
 
     [RelayCommand]
