@@ -91,6 +91,7 @@ namespace Boardy.WPF
 
             services.AddScoped<IScoreTemplateRepository, ScoreTemplateRepository>();
             services.AddTransient<CreateScoreTemplateUseCase>();
+            services.AddTransient<CreateScoreTemplateViewModel>();
             services.AddTransient<CreateGameViewModel>();
 
             services.AddScoped<IGameRepository, GameRepository>();

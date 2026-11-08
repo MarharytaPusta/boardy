@@ -54,6 +54,8 @@ public partial class GameCatalogViewModel : ObservableObject
 
     [ObservableProperty] private ObservableCollection<ScoreTemplateDisplayModel> _popupTemplates = new();
 
+    private Guid _currentPopupGameId;
+
     public bool IsAdminMode => _userSession.IsAdminMode;
 
     public GameCatalogViewModel(GetGameCatalogUseCase getGameCatalogUseCase, GetGameDetailsUseCase getGameDetailsUseCase, ToggleGameStatusUseCase toggleGameStatusUseCase, IUserSession userSession)
@@ -130,6 +132,7 @@ public partial class GameCatalogViewModel : ObservableObject
     [RelayCommand]
     private async Task ViewGameTemplatesAsync(GameCatalogListItem selectedGame)
     {
+        _currentPopupGameId = selectedGame.Id;
         var result = await _getGameDetailsUseCase.ExecuteAsync(new GetGameDetailsRequest(selectedGame.Id));
         if (!result.IsSuccess || result.Data == null) return;
 
@@ -157,6 +160,17 @@ public partial class GameCatalogViewModel : ObservableObject
     {
         IsDetailsPopupOpen = false;
         IsTemplatesPopupOpen = false;
+    }
+
+
+    [RelayCommand]
+    private void AddScoreTemplate(GameCatalogListItem selectedGame)
+    {
+        if (!IsAdminMode) return;
+
+        var createTemplateVm = App.ServiceProvider.GetRequiredService<CreateScoreTemplateViewModel>();
+        createTemplateVm.Initialize(_currentPopupGameId);
+        WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(createTemplateVm));
     }
 
 
