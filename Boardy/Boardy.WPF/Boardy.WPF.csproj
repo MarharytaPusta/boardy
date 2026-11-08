@@ -31,6 +31,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="GameCatalog\CreateScoreTemplateViewModel.cs">
+      <Generator>MSBuild:Compile</Generator>
+    </Compile>
     <Compile Update="GameCatalog\UpdateGameViewModel.cs">
       <Generator>MSBuild:Compile</Generator>
     </Compile>

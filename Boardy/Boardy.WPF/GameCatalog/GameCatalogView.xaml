@@ -115,15 +115,10 @@
                         <ColumnDefinition Width="80"/>
                         <ColumnDefinition Width="45"/>
                     </Grid.ColumnDefinitions>
-
                     <TextBlock Text="Номер" FontSize="20" Foreground="Black"/>
                     <TextBlock Grid.Column="1" Text="Назва" FontSize="20" Foreground="Black"/>
                     <TextBlock Grid.Column="2" Text="Кількість гравців" FontSize="20" Foreground="Black"/>
-                    <TextBlock Grid.Column="3" 
-                       Text="Стан" 
-                       FontSize="20" 
-                       Foreground="Black"
-                       Visibility="{Binding IsAdminMode, Converter={StaticResource BoolToVis}}"/>
+                    <TextBlock Grid.Column="3" Text="Стан" FontSize="20" Foreground="Black" Visibility="{Binding IsAdminMode, Converter={StaticResource BoolToVis}}"/>
                 </Grid>
             </Border>
 
@@ -144,13 +139,8 @@
                                     <TextBlock Text="{Binding Number}" FontSize="22" Foreground="Black"/>
                                     <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="22" Foreground="Black"/>
                                     <TextBlock Grid.Column="2" Text="{Binding PlayersCount}" FontSize="22" Foreground="Black"/>
-                                    <CheckBox Grid.Column="3" 
-                                      IsChecked="{Binding IsActive, Mode=OneWay}" 
-                                      Visibility="{Binding DataContext.IsAdminMode, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BoolToVis}}"
-                                      Command="{Binding DataContext.ToggleGameStatusCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                      CommandParameter="{Binding}"
-                                      HorizontalAlignment="Center" 
-                                      VerticalAlignment="Center"/>
+
+                                    <CheckBox Grid.Column="3" IsChecked="{Binding IsActive, Mode=OneWay}" Visibility="{Binding DataContext.IsAdminMode, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BoolToVis}}" Command="{Binding DataContext.ToggleGameStatusCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
                                     <Menu Grid.Column="4" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center">
                                         <MenuItem Header="⋮"
@@ -204,12 +194,7 @@
         </Grid>
 
         <Grid Background="#66000000" Panel.ZIndex="10" Visibility="{Binding IsDetailsPopupOpen, Converter={StaticResource BoolToVis}}">
-            <Border Background="#FFFFE0" 
-                    MinWidth="400" 
-                    MaxWidth="800"
-                    HorizontalAlignment="Center" 
-                    VerticalAlignment="Center"
-                    Padding="30">
+            <Border Background="#FFFFE0" MinWidth="400" MaxWidth="800" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="30">
                 <StackPanel Margin="0">
                     <TextBlock Text="{Binding PopupGameName}" FontSize="28" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,20"/>
                     <TextBlock Text="{Binding PopupGameDescription}" FontSize="18" TextWrapping="Wrap" TextAlignment="Center" Margin="0,0,0,30"/>
@@ -220,13 +205,7 @@
         </Grid>
 
         <Grid Background="#66000000" Panel.ZIndex="10" Visibility="{Binding IsTemplatesPopupOpen, Converter={StaticResource BoolToVis}}">
-            <Border Background="#FFFFE0" 
-                    MinWidth="450" 
-                    MaxWidth="900"
-                    MaxHeight="650"
-                    HorizontalAlignment="Center" 
-                    VerticalAlignment="Center"
-                    Padding="30">
+            <Border Background="#FFFFE0" MinWidth="450" MaxWidth="900" MaxHeight="650" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="30">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -236,48 +215,59 @@
 
                     <TextBlock Text="Шаблони оцінювання" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,25"/>
 
-                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,0,0,25">
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto" Margin="0,0,0,25">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
 
-                        <ItemsControl ItemsSource="{Binding PopupTemplates}" HorizontalAlignment="Center">
+                            <ItemsControl ItemsSource="{Binding PopupTemplates}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel Orientation="Horizontal"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
 
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <WrapPanel HorizontalAlignment="Center" Orientation="Horizontal"/>
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Width="340" Background="#C4C5FF" Margin="10" Padding="15">
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding TemplateName}" FontSize="20" FontWeight="DemiBold" HorizontalAlignment="Center" Margin="0,0,0,15" TextWrapping="Wrap"/>
 
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Width="340" Background="#C4C5FF" Margin="10" Padding="15">
-                                        <StackPanel>
-                                            <TextBlock Text="{Binding TemplateName}" FontSize="20" FontWeight="DemiBold" HorizontalAlignment="Center" Margin="0,0,0,15" TextWrapping="Wrap"/>
+                                                <ItemsControl ItemsSource="{Binding Criteria}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <Grid Margin="0,6">
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="*"/>
+                                                                    <ColumnDefinition Width="80"/>
+                                                                </Grid.ColumnDefinitions>
+                                                                <TextBlock Text="{Binding Name, StringFormat='{}{0}:'}" FontSize="16" VerticalAlignment="Center" TextWrapping="Wrap" Margin="0,0,10,0"/>
+                                                                <Border Grid.Column="1" Background="White" BorderBrush="#CCC" BorderThickness="1" Height="28"/>
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
 
-                                            <ItemsControl ItemsSource="{Binding Criteria}">
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <Grid Margin="0,6">
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="80"/>
-                                                            </Grid.ColumnDefinitions>
-                                                            <TextBlock Text="{Binding Name, StringFormat='{}{0}:'}" FontSize="16" VerticalAlignment="Center" TextWrapping="Wrap" Margin="0,0,10,0"/>
-                                                            <Border Grid.Column="1" Background="White" BorderBrush="#CCC" BorderThickness="1" Height="28"/>
-                                                        </Grid>
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                            </ItemsControl>
+                            <Button Content="+" 
+                                    Command="{Binding AddScoreTemplateCommand}" 
+                                    Visibility="{Binding IsAdminMode, Converter={StaticResource BoolToVis}}"
+                                    FontSize="60" 
+                                    Foreground="#7A7A7A" 
+                                    Background="Transparent" 
+                                    BorderThickness="0" 
+                                    Margin="20,0,20,0" 
+                                    VerticalAlignment="Center"
+                                    Cursor="Hand"/>
 
-                                        </StackPanel>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
+                        </StackPanel>
                     </ScrollViewer>
 
                     <Button Grid.Row="2" Content="Закрити" Command="{Binding ClosePopupCommand}" Background="#FF5E5E" Foreground="White" FontSize="18" Padding="30,10" BorderThickness="0" HorizontalAlignment="Center"/>
                 </Grid>
             </Border>
         </Grid>
-
     </Grid>
 </UserControl>

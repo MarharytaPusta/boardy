@@ -72,8 +72,33 @@ public class GameRepository : IGameRepository
     
     public async Task UpdateAsync(Game game) 
     {
-        _context.Games.Update(game);
+        if (_context.Entry(game).State == EntityState.Detached)
+        {
+            _context.Games.Update(game);
+        }
+
+        foreach (var template in game.ScoreTemplates)
+        {
+            var entry = _context.Entry(template);
+
+            if (entry.State == EntityState.Modified)
+            {
+                bool existsInDb = await _context.Set<Boardy.Domain.Entities.ScoreTemplate>()
+                                                .AsNoTracking()
+                                                .AnyAsync(t => t.Id == template.Id);
+
+                if (!existsInDb)
+                {
+                    entry.State = EntityState.Added;
+
+                    foreach (var criterion in template.Criteria)
+                    {
+                        _context.Entry(criterion).State = EntityState.Added;
+                    }
+                }
+            }
+        }
+
         await _context.SaveChangesAsync();
     }
-
 } 
