@@ -1,4 +1,5 @@
 ﻿using Boardy.Application.GameCatalog.ScoreTemplate;
+using Boardy.Domain.Enums;
 using System;
 using System.Collections.Generic;
 
@@ -12,6 +13,7 @@ public record GameDetailsDto(
     string Description,
     int MinPlayers,
     int MaxPlayers,
+    GameStatus Status,
     IEnumerable<ScoreTemplateDto> Templates
 );
 

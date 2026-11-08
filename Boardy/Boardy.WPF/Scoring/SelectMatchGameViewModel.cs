@@ -1,5 +1,6 @@
 ﻿using Boardy.Application.GameCatalog.Catalog;
 using Boardy.Application.Scoring;
+using Boardy.Domain.Enums;
 using Boardy.WPF.GameCatalog;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -67,7 +68,7 @@ public partial class SelectMatchGameViewModel : ObservableObject
 
         Games = new ObservableCollection<SelectableGameItem>(
             result.Data
-                .Where(game => game.ScoreTemplates.Any())
+                .Where(game => game.ScoreTemplates.Any() && game.Status == GameStatus.Active)
                 .Select((game, index) => new SelectableGameItem(
                     index + 1,
                     game.Id,

@@ -119,7 +119,11 @@
                     <TextBlock Text="Номер" FontSize="20" Foreground="Black"/>
                     <TextBlock Grid.Column="1" Text="Назва" FontSize="20" Foreground="Black"/>
                     <TextBlock Grid.Column="2" Text="Кількість гравців" FontSize="20" Foreground="Black"/>
-                    <TextBlock Grid.Column="3" Text="Стан" FontSize="20" Foreground="Black"/>
+                    <TextBlock Grid.Column="3" 
+                       Text="Стан" 
+                       FontSize="20" 
+                       Foreground="Black"
+                       Visibility="{Binding IsAdminMode, Converter={StaticResource BoolToVis}}"/>
                 </Grid>
             </Border>
 
@@ -140,7 +144,13 @@
                                     <TextBlock Text="{Binding Number}" FontSize="22" Foreground="Black"/>
                                     <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="22" Foreground="Black"/>
                                     <TextBlock Grid.Column="2" Text="{Binding PlayersCount}" FontSize="22" Foreground="Black"/>
-                                    <CheckBox Grid.Column="3" IsChecked="{Binding IsActive}" IsEnabled="False" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <CheckBox Grid.Column="3" 
+                                      IsChecked="{Binding IsActive, Mode=OneWay}" 
+                                      Visibility="{Binding DataContext.IsAdminMode, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BoolToVis}}"
+                                      Command="{Binding DataContext.ToggleGameStatusCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      CommandParameter="{Binding}"
+                                      HorizontalAlignment="Center" 
+                                      VerticalAlignment="Center"/>
 
                                     <Menu Grid.Column="4" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center">
                                         <MenuItem Header="⋮"
@@ -160,6 +170,8 @@
                                                       Foreground="Black" FontSize="16" FontWeight="DemiBold" MinWidth="200" Padding="10,6"/>
                                             <MenuItem Header="Видалити"
                                                       Command="{Binding Tag.DeleteGameCommand, RelativeSource={RelativeSource AncestorType=MenuItem}}"
+                                            <MenuItem Header="Редагувати деталі"
+                                                      Command="{Binding Tag.EditGameCommand, RelativeSource={RelativeSource AncestorType=MenuItem}}"
                                                       CommandParameter="{Binding}"
                                                       Visibility="{Binding Tag.IsAdminMode, RelativeSource={RelativeSource AncestorType=MenuItem}, Converter={StaticResource BoolToVis}}"
                                                       Foreground="Black" FontSize="16" FontWeight="DemiBold" MinWidth="200" Padding="10,6"/>

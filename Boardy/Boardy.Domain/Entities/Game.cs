@@ -34,4 +34,25 @@ public class Game
         _scoreTemplates.Add(template);
     }
 
+
+    public void UpdateDetails(string name, string description, int minPlayers, int maxPlayers)
+    {
+        Name = name;
+        Description = description;
+        MinPlayers = minPlayers;
+        MaxPlayers = maxPlayers;
+    }
+
+
+    public void ClearScoreTemplates()
+    {
+        _scoreTemplates.Clear();
+    }
+
+
+    public void ChangeStatus(GameStatus newStatus) 
+    {
+        Status = newStatus;
+    }
+
 }
