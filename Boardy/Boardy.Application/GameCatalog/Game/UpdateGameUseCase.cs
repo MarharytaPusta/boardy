@@ -39,8 +39,7 @@ public class UpdateGameUseCase
             request.Name.Trim(),
             request.Description?.Trim() ?? string.Empty,
             request.MinPlayers,
-            request.MaxPlayers,
-            request.Status
+            request.MaxPlayers
         );
 
         await _gameRepository.UpdateAsync(game);

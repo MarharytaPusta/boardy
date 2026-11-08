@@ -35,13 +35,12 @@ public class Game
     }
 
 
-    public void UpdateDetails(string name, string description, int minPlayers, int maxPlayers, GameStatus status)
+    public void UpdateDetails(string name, string description, int minPlayers, int maxPlayers)
     {
         Name = name;
         Description = description;
         MinPlayers = minPlayers;
         MaxPlayers = maxPlayers;
-        Status = status;
     }
 
 

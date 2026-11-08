@@ -52,19 +52,6 @@
                     <TextBox Grid.Column="1" Text="{Binding MaxPlayersText, UpdateSourceTrigger=PropertyChanged}" FontSize="20" Padding="5"/>
                 </Grid>
 
-                <Grid Margin="0,0,0,25">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="150"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="Гра активна:" FontSize="22" Foreground="Black" VerticalAlignment="Center"/>
-                    <CheckBox Grid.Column="1" IsChecked="{Binding IsActive}" VerticalAlignment="Center">
-                        <CheckBox.LayoutTransform>
-                            <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
-                        </CheckBox.LayoutTransform>
-                    </CheckBox>
-                </Grid>
-
                 <TextBlock Text="{Binding ErrorMessage}" Foreground="#FF5E5E" FontSize="16" HorizontalAlignment="Center" Margin="0,0,0,15"/>
 
                 <Button Content="Зберегти" Command="{Binding SaveCommand}" Background="#FF5E5E" Foreground="White" FontSize="22" FontWeight="DemiBold" Padding="40,10" BorderThickness="0" HorizontalAlignment="Center"/>

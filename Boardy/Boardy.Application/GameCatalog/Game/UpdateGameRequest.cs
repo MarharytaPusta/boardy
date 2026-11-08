@@ -10,6 +10,5 @@ public record UpdateGameRequest(
     string Name,
     string Description,
     int MinPlayers,
-    int MaxPlayers,
-    GameStatus Status
+    int MaxPlayers
 );

@@ -20,7 +20,6 @@ public partial class UpdateGameViewModel : ObservableObject
     [ObservableProperty] private string _description = string.Empty;
     [ObservableProperty] private string _minPlayersText = string.Empty;
     [ObservableProperty] private string _maxPlayersText = string.Empty;
-    [ObservableProperty] private bool _isActive;
 
     [ObservableProperty] private string _errorMessage = string.Empty;
 
@@ -43,7 +42,6 @@ public partial class UpdateGameViewModel : ObservableObject
             Description = result.Data.Description;
             MinPlayersText = result.Data.MinPlayers.ToString();
             MaxPlayersText = result.Data.MaxPlayers.ToString();
-            IsActive = result.Data.Status == GameStatus.Active;
         }
         else
         {
@@ -60,9 +58,7 @@ public partial class UpdateGameViewModel : ObservableObject
             return;
         }
 
-        var status = IsActive ? GameStatus.Active : GameStatus.Inactive;
-
-        var request = new UpdateGameRequest(_gameId, Name, Description, minPlayers, maxPlayers, status);
+        var request = new UpdateGameRequest(_gameId, Name, Description, minPlayers, maxPlayers);
         var result = await _updateGameUseCase.ExecuteAsync(request);
 
         if (result.IsSuccess)
