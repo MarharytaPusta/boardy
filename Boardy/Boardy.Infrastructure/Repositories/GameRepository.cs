@@ -67,6 +67,9 @@ public class GameRepository : IGameRepository
     public async Task DeleteAsync(Game game)
     {
         _context.Games.Remove(game);
+        await _context.SaveChangesAsync();
+    }
+    
     public async Task UpdateAsync(Game game) 
     {
         _context.Games.Update(game);
