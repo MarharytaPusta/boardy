@@ -66,32 +66,25 @@ public class GameRepository : IGameRepository
 
     public async Task UpdateAsync(Game game)
     {
-        // 1. Оновлюємо граф (якщо гра прийшла з іншого контексту, вона отримає стан Modified)
         if (_context.Entry(game).State == EntityState.Detached)
         {
             _context.Games.Update(game);
         }
 
-        // 2. ХАК ДЛЯ EF CORE: Знаходимо шаблони, які система помилково хоче "оновити"
         foreach (var template in game.ScoreTemplates)
         {
             var entry = _context.Entry(template);
 
-            // Якщо EF Core збирається зробити UPDATE для цього шаблону...
             if (entry.State == EntityState.Modified)
             {
-                // Напряму перевіряємо в базі даних, чи він там взагалі існує
                 bool existsInDb = await _context.Set<Boardy.Domain.Entities.ScoreTemplate>()
                                                 .AsNoTracking()
                                                 .AnyAsync(t => t.Id == template.Id);
 
-                // Якщо в базі його немає — це наш НОВИЙ шаблон!
                 if (!existsInDb)
                 {
-                    // Примусово змінюємо стан на INSERT
                     entry.State = EntityState.Added;
 
-                    // Робимо те саме для всіх його критеріїв
                     foreach (var criterion in template.Criteria)
                     {
                         _context.Entry(criterion).State = EntityState.Added;
@@ -100,7 +93,6 @@ public class GameRepository : IGameRepository
             }
         }
 
-        // 3. Зберігаємо зміни (тепер EF Core зробить правильний INSERT для нових шаблонів)
         await _context.SaveChangesAsync();
     }
 } 
