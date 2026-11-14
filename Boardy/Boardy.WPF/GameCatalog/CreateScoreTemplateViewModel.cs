@@ -116,8 +116,7 @@ public partial class CreateScoreTemplateViewModel : ObservableObject
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error saving score template '{TemplateName}'", TemplateName);
-            ErrorMessage = $"Помилка: {ex.InnerException?.Message ?? ex.Message}";
-            //ErrorMessage = "Сталася критична помилка при збереженні.";
+            ErrorMessage = "Сталася критична помилка при збереженні.";
         }
     }
 

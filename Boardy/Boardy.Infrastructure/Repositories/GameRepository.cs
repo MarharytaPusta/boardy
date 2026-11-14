@@ -93,8 +93,6 @@ public class GameRepository : IGameRepository
                 }
             }
 
-            // Нові критерії мають згенерований Guid, тому EF вважає їх Modified.
-            // Переводимо їх у Added, якщо їх ще немає в базі:
             foreach (var criterion in template.Criteria)
             {
                 var criterionEntry = _context.Entry(criterion);
@@ -111,7 +109,6 @@ public class GameRepository : IGameRepository
             }
         }
 
-        // Старі критерії, які залишилися без батьківського шаблону після ClearCriteria(), переводимо в Deleted
         var orphanedCriteria = _context.ChangeTracker.Entries<Boardy.Domain.Entities.ScoreCriterion>()
             .Where(e => e.State == EntityState.Modified &&
                         e.Properties.Any(p => p.Metadata.IsForeignKey() && p.CurrentValue == null))
