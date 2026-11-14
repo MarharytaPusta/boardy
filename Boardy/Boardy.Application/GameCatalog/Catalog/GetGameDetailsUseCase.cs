@@ -31,6 +31,7 @@ namespace Boardy.Application.GameCatalog.Catalog
             }
 
             var templatesDto = game.ScoreTemplates.Select(t => new ScoreTemplateDto(
+                t.Id,
                 t.Name,
                 t.Criteria.Select(c => new CriterionDto(c.Name, c.IsNegative)).ToList()
             )).ToList();
