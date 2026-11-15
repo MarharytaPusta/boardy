@@ -18,6 +18,7 @@ public record GameDetailsDto(
 );
 
 public record ScoreTemplateDto(
+    Guid Id,
     string Name,
     IEnumerable<CriterionDto> Criteria
 );
