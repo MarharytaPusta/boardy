@@ -1,4 +1,5 @@
 ﻿using Boardy.Application.GameCatalog.Game;
+using Boardy.Domain.Entities;
 using Boardy.Domain.Shared;
 using Microsoft.Extensions.Logging;
 using System;
@@ -67,20 +68,23 @@ public class UpdateScoreTemplateUseCase
         return Result.Success();
     }
 
-    private static Result Validate(UpdateScoreTemplateRequest request)
+    private Result Validate(UpdateScoreTemplateRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.TemplateName))
         {
+            _logger.LogWarning("Validation failed: template name is empty.");
             return Result.Failure("Назва шаблону не може бути порожньою.");
         }
 
         if (request.Criteria == null || request.Criteria.Count == 0)
         {
+            _logger.LogWarning("Validation failed: template without criteria.");
             return Result.Failure("Додайте хоча б один критерій оцінювання.");
         }
 
         if (request.Criteria.Any(c => string.IsNullOrWhiteSpace(c.Name)))
         {
+            _logger.LogWarning("Validation failed: all criteria must have a name.");
             return Result.Failure("Усі критерії повинні мати назву. Заповніть порожні поля.");
         }
 
@@ -90,6 +94,7 @@ public class UpdateScoreTemplateUseCase
 
         if (hasDuplicates)
         {
+            _logger.LogWarning("Validation failed: the names of the criteria cannot be the same.");
             return Result.Failure("Критерії в одному шаблоні не можуть мати однакові назви.");
         }
 
