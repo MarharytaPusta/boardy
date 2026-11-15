@@ -96,6 +96,41 @@ public class UpdateMatchResultsUseCaseTests
     }
 
     [Fact]
+    public async Task ExecuteAsync_WhenPreviousMatchHasNoAssociatedGame_UpdatesResultsAndAvailableStatistics()
+    {
+        var firstPlayer = new DomainPlayer("Маргарита");
+        var secondPlayer = new DomainPlayer("Максим");
+        var match = CreateCompletedMatch(firstPlayer.Id, secondPlayer.Id, firstPlayer.Id);
+        var previousMatchWithoutGame = new DomainMatch(Guid.NewGuid());
+        previousMatchWithoutGame.AddParticipant(new MatchParticipant(firstPlayer.Id));
+        previousMatchWithoutGame.AddParticipant(new MatchParticipant(secondPlayer.Id));
+        previousMatchWithoutGame.SetWinners(new[] { previousMatchWithoutGame.Participants.Last().Id });
+        previousMatchWithoutGame.ChangeStatus(MatchStatus.Completed);
+        var gameId = Guid.NewGuid();
+
+        _matchRepositoryMock.Setup(repository => repository.GetByIdAsync(match.Id)).ReturnsAsync(match);
+        _matchRepositoryMock
+            .Setup(repository => repository.GetCompletedByPlayerIdsAsync(It.IsAny<IEnumerable<Guid>>()))
+            .ReturnsAsync(new List<DomainMatch> { match, previousMatchWithoutGame });
+        _playerRepositoryMock
+            .Setup(repository => repository.GetByIdsAsync(It.IsAny<IEnumerable<Guid>>()))
+            .ReturnsAsync(new List<DomainPlayer> { firstPlayer, secondPlayer });
+        _gameRepositoryMock
+            .Setup(repository => repository.GetGameIdsByScoreTemplateIdsAsync(It.IsAny<IEnumerable<Guid>>()))
+            .ReturnsAsync(new Dictionary<Guid, Guid> { [_scoreTemplate.Id] = gameId });
+
+        var result = await _useCase.ExecuteAsync(CreateRequest(match, 20, 10));
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal(1, firstPlayer.PlayedGamesCount);
+        Assert.Equal(2, firstPlayer.PlayedMatchesCount);
+        Assert.Equal(1, firstPlayer.WinsCount);
+        Assert.Equal(1, secondPlayer.PlayedGamesCount);
+        Assert.Equal(2, secondPlayer.PlayedMatchesCount);
+        Assert.Equal(1, secondPlayer.WinsCount);
+    }
+
+    [Fact]
     public async Task ExecuteAsync_WhenParticipantDoesNotBelongToMatch_ReturnsFailure()
     {
         var firstPlayer = new DomainPlayer("Маргарита");

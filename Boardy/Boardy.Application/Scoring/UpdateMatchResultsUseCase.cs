@@ -130,10 +130,14 @@ public class UpdateMatchResultsUseCase
             .ToList();
         var gameIdsByScoreTemplateId = await _gameRepository.GetGameIdsByScoreTemplateIdsAsync(scoreTemplateIds);
 
-        if (scoreTemplateIds.Any(scoreTemplateId => !gameIdsByScoreTemplateId.ContainsKey(scoreTemplateId)))
+        var matchesWithoutGame = completedMatches
+            .Where(completedMatch => !gameIdsByScoreTemplateId.ContainsKey(completedMatch.ScoreTemplateId))
+            .ToList();
+        if (matchesWithoutGame.Count > 0)
         {
-            _logger.LogWarning("Statistics recalculation failed because one or more score templates have no game.");
-            return Result.Failure("Не вдалося визначити гру для однієї або кількох партій.");
+            _logger.LogWarning(
+                "Skipped {MatchCount} completed matches without an associated game during statistics recalculation.",
+                matchesWithoutGame.Count);
         }
 
         foreach (var player in players)
@@ -143,6 +147,7 @@ public class UpdateMatchResultsUseCase
                     participant => participant.PlayerId == player.Id))
                 .ToList();
             var playedGamesCount = playerMatches
+                .Where(completedMatch => gameIdsByScoreTemplateId.ContainsKey(completedMatch.ScoreTemplateId))
                 .Select(completedMatch => gameIdsByScoreTemplateId[completedMatch.ScoreTemplateId])
                 .Distinct()
                 .Count();

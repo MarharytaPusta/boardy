@@ -15,9 +15,11 @@ public partial class MatchResultsViewModel : ObservableObject
 {
     private readonly GetMatchResultsUseCase _getMatchResultsUseCase;
     private readonly SaveMatchResultsUseCase _saveMatchResultsUseCase;
+    private readonly UpdateMatchResultsUseCase _updateMatchResultsUseCase;
 
     private Guid _matchId;
-    private SelectMatchGameViewModel? _callerViewModel;
+    private object? _callerViewModel;
+    private bool _isEditingCompletedMatch;
 
     [ObservableProperty]
     private ObservableCollection<MatchParticipantResultItem> _participants = new();
@@ -43,18 +45,35 @@ public partial class MatchResultsViewModel : ObservableObject
         set => SetProperty(ref _canSaveResults, value);
     }
 
+    public string SaveButtonText => _isEditingCompletedMatch
+        ? "Зберегти зміни"
+        : "Зберегти результати";
+
     public MatchResultsViewModel(
         GetMatchResultsUseCase getMatchResultsUseCase,
-        SaveMatchResultsUseCase saveMatchResultsUseCase)
+        SaveMatchResultsUseCase saveMatchResultsUseCase,
+        UpdateMatchResultsUseCase updateMatchResultsUseCase)
     {
         _getMatchResultsUseCase = getMatchResultsUseCase;
         _saveMatchResultsUseCase = saveMatchResultsUseCase;
+        _updateMatchResultsUseCase = updateMatchResultsUseCase;
     }
 
     public void Initialize(Guid matchId, SelectMatchGameViewModel callerViewModel)
     {
         _matchId = matchId;
         _callerViewModel = callerViewModel;
+        _isEditingCompletedMatch = false;
+        OnPropertyChanged(nameof(SaveButtonText));
+        _ = LoadMatchResultsAsync(matchId);
+    }
+
+    public void InitializeForEditing(Guid matchId, MatchHistoryViewModel callerViewModel)
+    {
+        _matchId = matchId;
+        _callerViewModel = callerViewModel;
+        _isEditingCompletedMatch = true;
+        OnPropertyChanged(nameof(SaveButtonText));
         _ = LoadMatchResultsAsync(matchId);
     }
 
@@ -72,7 +91,8 @@ public partial class MatchResultsViewModel : ObservableObject
         GameName = result.Data.GameName;
         MatchDate = result.Data.Date.ToLocalTime().ToString("dd.MM.yyyy HH:mm");
         MatchStatus = result.Data.Status == Boardy.Domain.Enums.MatchStatus.Completed ? "Завершена" : "У процесі";
-        CanSaveResults = result.Data.Status == Boardy.Domain.Enums.MatchStatus.InProgress;
+        CanSaveResults = result.Data.Status == Boardy.Domain.Enums.MatchStatus.InProgress
+            || _isEditingCompletedMatch;
 
         Participants = new ObservableCollection<MatchParticipantResultItem>(
             result.Data.Participants.Select(participant => new MatchParticipantResultItem(
@@ -111,9 +131,11 @@ public partial class MatchResultsViewModel : ObservableObject
             participantScores.Add(new MatchParticipantScoreRequest(participant.Id, criterionScores));
         }
 
-        var request = new SaveMatchResultsRequest(_matchId, participantScores);
-
-        var result = await _saveMatchResultsUseCase.ExecuteAsync(request);
+        var result = _isEditingCompletedMatch
+            ? await _updateMatchResultsUseCase.ExecuteAsync(
+                new UpdateMatchResultsRequest(_matchId, participantScores))
+            : await _saveMatchResultsUseCase.ExecuteAsync(
+                new SaveMatchResultsRequest(_matchId, participantScores));
         if (!result.IsSuccess)
         {
             ErrorMessage = result.ErrorMessage ?? "Не вдалося зберегти результати партії.";
@@ -121,6 +143,17 @@ public partial class MatchResultsViewModel : ObservableObject
         }
 
         await LoadMatchResultsAsync(_matchId);
+
+        if (_isEditingCompletedMatch)
+        {
+            if (_callerViewModel is MatchHistoryViewModel matchHistoryViewModel)
+            {
+                await matchHistoryViewModel.LoadMatchesAsync();
+                WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(matchHistoryViewModel));
+            }
+
+            return;
+        }
 
         var matchCompletionVm = App.ServiceProvider.GetRequiredService<MatchCompletionViewModel>();
         matchCompletionVm.Initialize(this);

@@ -40,6 +40,7 @@
                     <ColumnDefinition Width="180"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="45"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="№" FontSize="18" Foreground="Black"/>
                 <TextBlock Grid.Column="1" Text="Гра" FontSize="18" Foreground="Black"/>
@@ -49,7 +50,7 @@
             </Grid>
         </Border>
 
-        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Hidden">
             <ItemsControl ItemsSource="{Binding Matches}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
@@ -61,12 +62,34 @@
                                     <ColumnDefinition Width="180"/>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="45"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Text="{Binding Number}" FontSize="18" Foreground="Black"/>
                                 <TextBlock Grid.Column="1" Text="{Binding GameName}" FontSize="18" Foreground="Black"/>
                                 <TextBlock Grid.Column="2" Text="{Binding Date}" FontSize="18" Foreground="Black"/>
                                 <TextBlock Grid.Column="3" Text="{Binding Participants}" FontSize="18" Foreground="Black" TextWrapping="Wrap"/>
                                 <TextBlock Grid.Column="4" Text="{Binding Winners}" FontSize="18" Foreground="Black" TextWrapping="Wrap"/>
+                                <Menu Grid.Column="5"
+                                      Background="Transparent"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center">
+                                    <MenuItem Header="⋮"
+                                              Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                              Foreground="White"
+                                              FontSize="28"
+                                              Padding="0"
+                                              Background="Transparent"
+                                              BorderThickness="0">
+                                        <MenuItem Header="Редагувати"
+                                                  Command="{Binding Tag.EditMatchCommand, RelativeSource={RelativeSource AncestorType=MenuItem}}"
+                                                  CommandParameter="{Binding}"
+                                                  Foreground="Black"
+                                                  FontSize="16"
+                                                  FontWeight="DemiBold"
+                                                  MinWidth="130"
+                                                  Padding="10,6"/>
+                                    </MenuItem>
+                                </Menu>
                             </Grid>
                         </Border>
                     </DataTemplate>

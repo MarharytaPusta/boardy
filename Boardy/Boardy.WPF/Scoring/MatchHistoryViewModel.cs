@@ -62,6 +62,14 @@ public partial class MatchHistoryViewModel : ObservableObject
         var homeViewModel = App.ServiceProvider.GetRequiredService<HomeViewModel>();
         WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(homeViewModel));
     }
+
+    [RelayCommand]
+    private void EditMatch(MatchHistoryListItem match)
+    {
+        var matchResultsViewModel = App.ServiceProvider.GetRequiredService<MatchResultsViewModel>();
+        matchResultsViewModel.InitializeForEditing(match.Id, this);
+        WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(matchResultsViewModel));
+    }
 }
 
 public record MatchHistoryListItem(
