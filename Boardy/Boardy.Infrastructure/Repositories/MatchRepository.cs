@@ -29,6 +29,26 @@ public class MatchRepository : IMatchRepository
             .FirstOrDefaultAsync(m => m.Id == id);
     }
 
+    public async Task<IEnumerable<Match>> GetCompletedAsync()
+    {
+        return await _context.Matches
+            .Where(match => match.Status == Domain.Enums.MatchStatus.Completed)
+            .Include(match => match.Participants)
+            .OrderByDescending(match => match.Date)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Match>> GetCompletedByPlayerIdsAsync(IEnumerable<Guid> playerIds)
+    {
+        var playerIdsSet = playerIds.ToHashSet();
+
+        return await _context.Matches
+            .Where(match => match.Status == Domain.Enums.MatchStatus.Completed
+                            && match.Participants.Any(participant => playerIdsSet.Contains(participant.PlayerId)))
+            .Include(match => match.Participants)
+            .ToListAsync();
+    }
+
     public async Task UpdateAsync(Match match)
     {
         var newCriterionResults = match.Participants
