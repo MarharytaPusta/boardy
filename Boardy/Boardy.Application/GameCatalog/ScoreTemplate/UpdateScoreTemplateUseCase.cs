@@ -50,14 +50,21 @@ public class UpdateScoreTemplateUseCase
             _logger.LogWarning("ScoreTemplate {TemplateId} not found in Game {GameId}", request.TemplateId, request.GameId);
             return Result.Failure("Шаблон оцінювання не знайдено.");
         }
-
-        template.UpdateName(request.TemplateName.Trim());
-        template.ClearCriteria();
-
-        foreach (var criterionDto in request.Criteria)
+        try
         {
-            var criterion = new Domain.Entities.ScoreCriterion(criterionDto.Name.Trim(), criterionDto.IsNegative);
-            template.AddCriterion(criterion);
+            template.UpdateName(request.TemplateName.Trim());
+            template.ClearCriteria();
+
+            foreach (var criterionDto in request.Criteria)
+            {
+                var criterion = new Domain.Entities.ScoreCriterion(criterionDto.Name.Trim(), criterionDto.IsNegative);
+                template.AddCriterion(criterion);
+            }
+        }
+        catch (ArgumentException ex)
+        {
+            _logger.LogWarning(ex, "Validation failed when updating score template {TemplateId}", request.TemplateId);
+            return Result.Failure(ex.Message);
         }
 
         await _gameRepository.UpdateAsync(game);
