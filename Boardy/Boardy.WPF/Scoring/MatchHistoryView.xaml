@@ -2,6 +2,11 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Background="#9597FF">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </UserControl.Resources>
+
     <Grid Margin="35">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -12,9 +17,9 @@
 
         <Grid>
             <TextBlock Text="Історія партій"
-                       FontSize="42"
-                       Foreground="Black"
-                       HorizontalAlignment="Center"/>
+                        FontSize="42"
+                        Foreground="Black"
+                        HorizontalAlignment="Center"/>
             <Button Content="Назад"
                     Command="{Binding GoBackCommand}"
                     Background="#FF5E5E"
@@ -26,11 +31,11 @@
         </Grid>
 
         <TextBlock Grid.Row="1"
-                   Text="{Binding ErrorMessage}"
-                   Foreground="#FF5E5E"
-                   FontSize="16"
-                   HorizontalAlignment="Center"
-                   Margin="0,20,0,10"/>
+                    Text="{Binding ErrorMessage}"
+                    Foreground="#FF5E5E"
+                    FontSize="16"
+                    HorizontalAlignment="Center"
+                    Margin="0,20,0,10"/>
 
         <Border Grid.Row="2" Background="White" CornerRadius="6" Padding="20,12" Margin="0,0,0,5">
             <Grid>
@@ -70,19 +75,28 @@
                                 <TextBlock Grid.Column="3" Text="{Binding Participants}" FontSize="18" Foreground="Black" TextWrapping="Wrap"/>
                                 <TextBlock Grid.Column="4" Text="{Binding Winners}" FontSize="18" Foreground="Black" TextWrapping="Wrap"/>
                                 <Menu Grid.Column="5"
-                                      Background="Transparent"
-                                      HorizontalAlignment="Center"
-                                      VerticalAlignment="Center">
+                                        Background="Transparent"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center">
                                     <MenuItem Header="⋮"
-                                              Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                              Foreground="White"
-                                              FontSize="28"
-                                              Padding="0"
-                                              Background="Transparent"
-                                              BorderThickness="0">
+                                                Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                Foreground="White"
+                                                FontSize="28"
+                                                Padding="0"
+                                                Background="Transparent"
+                                                BorderThickness="0">
                                         <MenuItem Header="Редагувати"
-                                                  Command="{Binding Tag.EditMatchCommand, RelativeSource={RelativeSource AncestorType=MenuItem}}"
+                                                    Command="{Binding Tag.EditMatchCommand, RelativeSource={RelativeSource AncestorType=MenuItem}}"
+                                                    CommandParameter="{Binding}"
+                                                    Foreground="Black"
+                                                    FontSize="16"
+                                                    FontWeight="DemiBold"
+                                                    MinWidth="130"
+                                                    Padding="10,6"/>
+                                        <MenuItem Header="Видалити"
+                                                  Command="{Binding Tag.DeleteMatchCommand, RelativeSource={RelativeSource AncestorType=MenuItem}}"
                                                   CommandParameter="{Binding}"
+                                                  Visibility="{Binding Tag.IsAdminMode, RelativeSource={RelativeSource AncestorType=MenuItem}, Converter={StaticResource BoolToVis}}"
                                                   Foreground="Black"
                                                   FontSize="16"
                                                   FontWeight="DemiBold"
