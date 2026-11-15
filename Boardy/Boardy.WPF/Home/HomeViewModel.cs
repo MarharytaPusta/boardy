@@ -52,6 +52,19 @@ public partial class HomeViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private async Task NavigateToMatchHistoryAsync()
+    {
+        if (!IsAdminMode)
+        {
+            return;
+        }
+
+        var matchHistoryViewModel = App.ServiceProvider.GetRequiredService<MatchHistoryViewModel>();
+        await matchHistoryViewModel.LoadMatchesAsync();
+        WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(matchHistoryViewModel));
+    }
+
+    [RelayCommand]
     private async Task AdminActionAsync()
     {
         if (IsAdminMode)
