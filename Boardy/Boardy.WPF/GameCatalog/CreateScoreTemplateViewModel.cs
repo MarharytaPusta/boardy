@@ -77,7 +77,6 @@ public partial class CreateScoreTemplateViewModel : ObservableObject
 
         if (!_userSession.IsAdminMode)
         {
-            ErrorMessage = "Тільки адміністратор може змінювати шаблони.";
             return;
         }
 
@@ -97,7 +96,6 @@ public partial class CreateScoreTemplateViewModel : ObservableObject
             .Select(c => new CriterionDto(c.Name.Trim(), c.IsNegative))
             .ToList();
 
-        //var request = new CreateScoreTemplateRequest(_gameId, TemplateName.Trim(), criteriaDtos);
         try
         {
             var result = _editingTemplateId == null
