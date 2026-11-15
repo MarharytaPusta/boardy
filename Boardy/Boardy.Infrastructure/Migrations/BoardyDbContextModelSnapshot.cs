@@ -125,9 +125,21 @@ namespace Boardy.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("PlayedGamesCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PlayedMatchesCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("WinsCount")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 

@@ -1,4 +1,5 @@
 ﻿using Boardy.Application.Player;
+using Boardy.Application.Scoring;
 using Boardy.Domain.Entities;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -13,14 +14,19 @@ namespace Boardy.Application.Tests.PlayerManagement;
 public class DeletePlayerUseCaseTests
 {
     private readonly Mock<IPlayerRepository> _mockRepository;
+    private readonly Mock<IMatchRepository> _matchRepositoryMock;
     private readonly DeletePlayerUseCase _useCase;
 
     public DeletePlayerUseCaseTests()
     {
         _mockRepository = new Mock<IPlayerRepository>();
+        _matchRepositoryMock = new Mock<IMatchRepository>();
         var _mockLogger = new Mock<ILogger<DeletePlayerUseCase>>();
 
-        _useCase = new DeletePlayerUseCase(_mockRepository.Object, _mockLogger.Object);
+        _useCase = new DeletePlayerUseCase(
+            _mockRepository.Object,
+            _matchRepositoryMock.Object,
+            _mockLogger.Object);
     }
 
     [Fact]
@@ -48,11 +54,33 @@ public class DeletePlayerUseCaseTests
 
         _mockRepository.Setup(repo => repo.GetByIdAsync(player.Id))
             .ReturnsAsync(player);
+        _matchRepositoryMock.Setup(repository => repository.HasMatchesByPlayerIdAsync(player.Id))
+            .ReturnsAsync(false);
 
         var result = await _useCase.ExecuteAsync(request);
 
         Assert.True(result.IsSuccess);
         Assert.Null(result.ErrorMessage);
         _mockRepository.Verify(repo => repo.DeleteAsync(player), Times.Once);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WhenPlayerParticipatedInMatches_MarksPlayerAsDeleted()
+    {
+        var player = new Domain.Entities.Player("Marharyta");
+        var request = new DeletePlayerRequest(player.Id);
+
+        _mockRepository.Setup(repo => repo.GetByIdAsync(player.Id))
+            .ReturnsAsync(player);
+        _matchRepositoryMock.Setup(repository => repository.HasMatchesByPlayerIdAsync(player.Id))
+            .ReturnsAsync(true);
+
+        var result = await _useCase.ExecuteAsync(request);
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal("<видалений>", player.Name);
+        Assert.True(player.IsDeleted);
+        _mockRepository.Verify(repo => repo.UpdateAsync(player), Times.Once);
+        _mockRepository.Verify(repo => repo.DeleteAsync(It.IsAny<Domain.Entities.Player>()), Times.Never);
     }
 }

@@ -137,7 +137,7 @@
                 </ListBox.ItemTemplate>
             </ListBox>
 
-            <Button Content="Зберегти результати"
+            <Button Content="{Binding SaveButtonText}"
                     Command="{Binding SaveResultsCommand}"
                     IsEnabled="{Binding CanSaveResults}"
                     Background="#FF5E5E"

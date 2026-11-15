@@ -25,7 +25,9 @@ namespace Boardy.Infrastructure.Repositories
 
         public async Task<IEnumerable<Domain.Entities.Player>> GetAllAsync()
         {
-            return await _context.Players.ToListAsync();
+            return await _context.Players
+                .Where(player => !player.IsDeleted)
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<Domain.Entities.Player>> GetByIdsAsync(IEnumerable<Guid> playerIds)

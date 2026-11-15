@@ -46,6 +46,9 @@
         <DataTemplate DataType="{x:Type scoring:MatchCompletionViewModel}">
             <scoring:MatchCompletionView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type scoring:MatchHistoryViewModel}">
+            <scoring:MatchHistoryView/>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type catalog:UpdateGameViewModel}">
             <catalog:UpdateGameView />
         </DataTemplate>
