@@ -64,6 +64,19 @@ public class GameRepository : IGameRepository
             .FirstOrDefaultAsync();
     }
 
+    public async Task<IReadOnlyDictionary<Guid, Guid>> GetGameIdsByScoreTemplateIdsAsync(
+        IEnumerable<Guid> scoreTemplateIds)
+    {
+        var scoreTemplateIdsSet = scoreTemplateIds.ToHashSet();
+
+        return await _context.Games
+            .Where(game => game.ScoreTemplates.Any(template => scoreTemplateIdsSet.Contains(template.Id)))
+            .SelectMany(game => game.ScoreTemplates
+                .Where(template => scoreTemplateIdsSet.Contains(template.Id))
+                .Select(template => new { template.Id, GameId = game.Id }))
+            .ToDictionaryAsync(item => item.Id, item => item.GameId);
+    }
+
     public async Task DeleteAsync(Game game)
     {
         _context.Games.Remove(game);
