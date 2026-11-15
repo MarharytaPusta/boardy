@@ -8,6 +8,8 @@ namespace Boardy.Domain.Entities
 
         public string Name { get; set; } = string.Empty;
 
+        public bool IsDeleted { get; private set; }
+
         public int PlayedGamesCount { get; private set; }
 
         public int PlayedMatchesCount { get; private set; }
@@ -37,6 +39,12 @@ namespace Boardy.Domain.Entities
             PlayedGamesCount = playedGamesCount;
             PlayedMatchesCount = playedMatchesCount;
             WinsCount = winsCount;
+        }
+
+        public void MarkAsDeleted()
+        {
+            Name = "<видалений>";
+            IsDeleted = true;
         }
 
         private Player()

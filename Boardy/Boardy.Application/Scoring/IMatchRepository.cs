@@ -8,5 +8,6 @@ public interface IMatchRepository
     Task<Match?> GetByIdAsync(Guid id);
     Task<IEnumerable<Match>> GetCompletedAsync();
     Task<IEnumerable<Match>> GetCompletedByPlayerIdsAsync(IEnumerable<Guid> playerIds);
+    Task<bool> HasMatchesByPlayerIdAsync(Guid playerId);
     Task UpdateAsync(Match match);
 }

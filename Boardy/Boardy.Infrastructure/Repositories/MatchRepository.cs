@@ -49,6 +49,12 @@ public class MatchRepository : IMatchRepository
             .ToListAsync();
     }
 
+    public async Task<bool> HasMatchesByPlayerIdAsync(Guid playerId)
+    {
+        return await _context.MatchParticipants
+            .AnyAsync(participant => participant.PlayerId == playerId);
+    }
+
     public async Task UpdateAsync(Match match)
     {
         var newCriterionResults = match.Participants
