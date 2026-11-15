@@ -21,28 +21,28 @@
                 <Button Content="Додати нову гру"
                         Command="{Binding NavigateToCreateGameCommand}"
                         Visibility="{Binding IsAdminMode, Converter={StaticResource BoolToVis}}"
-                    Background="#FF8A80"
-                    Foreground="White"
-                    FontSize="20"
-                    FontWeight="DemiBold"
-                    Padding="10,8"
-                    BorderThickness="0"
-                    HorizontalAlignment="Left"/>
+                        Background="#FF8A80"
+                        Foreground="White"
+                        FontSize="20"
+                        FontWeight="DemiBold"
+                        Padding="10,8"
+                        BorderThickness="0"
+                        HorizontalAlignment="Left"/>
 
                 <TextBlock Text="Каталог ігор"
-                       FontSize="42"
-                       Foreground="Black"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"/>
+                           FontSize="42"
+                           Foreground="Black"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
 
                 <Button Content="Назад"
-                    Command="{Binding GoBackCommand}"
-                    Background="#FF5E5E"
-                    Foreground="White"
-                    FontSize="20"
-                    Padding="20,8"
-                    BorderThickness="0"
-                    HorizontalAlignment="Right"/>
+                        Command="{Binding GoBackCommand}"
+                        Background="#FF5E5E"
+                        Foreground="White"
+                        FontSize="20"
+                        Padding="20,8"
+                        BorderThickness="0"
+                        HorizontalAlignment="Right"/>
             </Grid>
 
             <Grid Grid.Row="1" Margin="0,20,0,10" HorizontalAlignment="Center">
@@ -55,56 +55,15 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Text="Назва гри:"
-                       FontSize="18"
-                       VerticalAlignment="Center"
-                       Margin="0,0,10,0"/>
-                <TextBox Grid.Column="1"
-                     Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
-                     Width="180"
-                     Height="32"
-                     FontSize="16"
-                     VerticalContentAlignment="Center"
-                     Margin="0,0,20,0"/>
-                <TextBlock Grid.Column="2"
-                       Text="Гравців:"
-                       FontSize="18"
-                       VerticalAlignment="Center"
-                       Margin="0,0,10,0"/>
-                <TextBox Grid.Column="3"
-                     Text="{Binding PlayersCountText, UpdateSourceTrigger=PropertyChanged}"
-                     Height="32"
-                     FontSize="16"
-                     VerticalContentAlignment="Center"
-                     Margin="0,0,10,0"/>
-                <Button Grid.Column="4"
-                    Content="Шукати"
-                    Command="{Binding LoadGamesCommand}"
-                    Background="#FF8A80"
-                    Foreground="White"
-                    FontSize="16"
-                    FontWeight="DemiBold"
-                    Padding="16,5"
-                    Margin="10,0,0,0"
-                    BorderThickness="0"/>
-                <Button Grid.Column="5"
-                    Content="Очистити"
-                    Command="{Binding ClearFiltersCommand}"
-                    Background="Transparent"
-                    Foreground="#333333"
-                    FontSize="16"
-                    FontWeight="DemiBold"
-                    Padding="16,5"
-                    Margin="5,0,0,0"
-                    BorderThickness="0"/>
+                <TextBlock Text="Назва гри:" FontSize="18" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <TextBox Grid.Column="1" Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" Width="180" Height="32" FontSize="16" VerticalContentAlignment="Center" Margin="0,0,20,0"/>
+                <TextBlock Grid.Column="2" Text="Гравців:" FontSize="18" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <TextBox Grid.Column="3" Text="{Binding PlayersCountText, UpdateSourceTrigger=PropertyChanged}" Height="32" FontSize="16" VerticalContentAlignment="Center" Margin="0,0,10,0"/>
+                <Button Grid.Column="4" Content="Шукати" Command="{Binding LoadGamesCommand}" Background="#FF8A80" Foreground="White" FontSize="16" FontWeight="DemiBold" Padding="16,5" Margin="10,0,0,0" BorderThickness="0"/>
+                <Button Grid.Column="5" Content="Очистити" Command="{Binding ClearFiltersCommand}" Background="Transparent" Foreground="#333333" FontSize="16" FontWeight="DemiBold" Padding="16,5" Margin="5,0,0,0" BorderThickness="0"/>
             </Grid>
 
-            <TextBlock Grid.Row="2"
-                   Text="{Binding ErrorMessage}"
-                   Foreground="#FF5E5E"
-                   FontSize="16"
-                   HorizontalAlignment="Center"
-                   Margin="0,0,0,10"/>
+            <TextBlock Grid.Row="2" Text="{Binding ErrorMessage}" Foreground="#FF5E5E" FontSize="16" HorizontalAlignment="Center" Margin="0,0,0,10"/>
 
             <Border Grid.Row="3" Background="#C8CAFF" CornerRadius="6" Padding="20,12" Margin="0,0,0,5">
                 <Grid>
@@ -227,9 +186,40 @@
 
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Border Width="340" Background="#C4C5FF" Margin="10" Padding="15">
+                                        <Border Width="340" Background="#C4C5FF" Margin="10" Padding="15" CornerRadius="6">
                                             <StackPanel>
-                                                <TextBlock Text="{Binding TemplateName}" FontSize="20" FontWeight="DemiBold" HorizontalAlignment="Center" Margin="0,0,0,15" TextWrapping="Wrap"/>
+                                                <Grid Margin="0,0,0,15">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <TextBlock Text="{Binding TemplateName}"
+                                                               FontSize="20"
+                                                               FontWeight="DemiBold"
+                                                               HorizontalAlignment="Center"
+                                                               VerticalAlignment="Center"
+                                                               TextWrapping="Wrap"/>
+
+                                                    <Menu Grid.Column="1" Background="Transparent" VerticalAlignment="Center" HorizontalAlignment="Right">
+                                                        <MenuItem Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                  Visibility="{Binding DataContext.IsAdminMode, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BoolToVis}}"
+                                                                  Padding="5,0"
+                                                                  Background="Transparent"
+                                                                  BorderThickness="0">
+                                                            <MenuItem.Header>
+                                                                <TextBlock Text="⋮"
+                                                                           Foreground="#7A7A7A"
+                                                                           FontSize="24"
+                                                                           FontWeight="Bold"/>
+                                                            </MenuItem.Header>
+                                                            <MenuItem Header="Редагувати шаблон"
+                                                                      Command="{Binding Tag.EditScoreTemplateCommand, RelativeSource={RelativeSource AncestorType=MenuItem}}"
+                                                                      CommandParameter="{Binding}"
+                                                                      Foreground="Black" FontSize="16" FontWeight="DemiBold" MinWidth="180" Padding="10,6"/>
+                                                        </MenuItem>
+                                                    </Menu>
+                                                </Grid>
 
                                                 <ItemsControl ItemsSource="{Binding Criteria}">
                                                     <ItemsControl.ItemTemplate>
@@ -251,14 +241,14 @@
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
 
-                            <Button Content="+" 
-                                    Command="{Binding AddScoreTemplateCommand}" 
+                            <Button Content="+"
+                                    Command="{Binding AddScoreTemplateCommand}"
                                     Visibility="{Binding IsAdminMode, Converter={StaticResource BoolToVis}}"
-                                    FontSize="60" 
-                                    Foreground="#7A7A7A" 
-                                    Background="Transparent" 
-                                    BorderThickness="0" 
-                                    Margin="20,0,20,0" 
+                                    FontSize="60"
+                                    Foreground="#7A7A7A"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Margin="20,0,20,0"
                                     VerticalAlignment="Center"
                                     Cursor="Hand"/>
 

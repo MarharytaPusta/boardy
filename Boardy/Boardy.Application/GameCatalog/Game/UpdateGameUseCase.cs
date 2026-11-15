@@ -20,11 +20,13 @@ public class UpdateGameUseCase
     {
         if (string.IsNullOrWhiteSpace(request.Name))
         {
+            _logger.LogWarning("Validation failed: Game name is empty.");
             return Result.Failure("Назва гри не може бути порожньою.");
         }
 
         if (request.MinPlayers < 1 || request.MaxPlayers < request.MinPlayers)
         {
+            _logger.LogWarning("Validation failed: invalid number of players");
             return Result.Failure("Некоректно вказана кількість гравців.");
         }
 
@@ -32,6 +34,7 @@ public class UpdateGameUseCase
 
         if (game is null)
         {
+            _logger.LogWarning("Game with ID {GameId} was not found for deletion", request.GameId);
             return Result.Failure("Гру не знайдено.");
         }
 

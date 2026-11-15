@@ -23,5 +23,18 @@ namespace Boardy.Domain.Entities
         {
             _criteria.Add(criterion);
         }
+
+        public void UpdateName(string newName)
+        {
+            if (string.IsNullOrWhiteSpace(newName))
+                throw new ArgumentException("Назва шаблону не може бути порожньою.", nameof(newName));
+
+            Name = newName;
+        }
+
+        public void ClearCriteria()
+        {
+            _criteria.Clear();
+        }
     }
 }

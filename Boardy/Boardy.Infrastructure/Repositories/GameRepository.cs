@@ -69,8 +69,9 @@ public class GameRepository : IGameRepository
         _context.Games.Remove(game);
         await _context.SaveChangesAsync();
     }
-    
-    public async Task UpdateAsync(Game game) 
+
+
+    public async Task UpdateAsync(Game game)
     {
         if (_context.Entry(game).State == EntityState.Detached)
         {
@@ -79,24 +80,43 @@ public class GameRepository : IGameRepository
 
         foreach (var template in game.ScoreTemplates)
         {
-            var entry = _context.Entry(template);
+            var templateEntry = _context.Entry(template);
 
-            if (entry.State == EntityState.Modified)
+            if (templateEntry.State == EntityState.Modified)
             {
-                bool existsInDb = await _context.Set<Boardy.Domain.Entities.ScoreTemplate>()
-                                                .AsNoTracking()
-                                                .AnyAsync(t => t.Id == template.Id);
-
-                if (!existsInDb)
+                bool templateExists = await _context.Set<Boardy.Domain.Entities.ScoreTemplate>()
+                                                    .AsNoTracking()
+                                                    .AnyAsync(t => t.Id == template.Id);
+                if (!templateExists)
                 {
-                    entry.State = EntityState.Added;
+                    templateEntry.State = EntityState.Added;
+                }
+            }
 
-                    foreach (var criterion in template.Criteria)
+            foreach (var criterion in template.Criteria)
+            {
+                var criterionEntry = _context.Entry(criterion);
+                if (criterionEntry.State == EntityState.Modified || criterionEntry.State == EntityState.Detached)
+                {
+                    bool criterionExists = await _context.Set<Boardy.Domain.Entities.ScoreCriterion>()
+                                                         .AsNoTracking()
+                                                         .AnyAsync(c => c.Id == criterion.Id);
+                    if (!criterionExists)
                     {
-                        _context.Entry(criterion).State = EntityState.Added;
+                        criterionEntry.State = EntityState.Added;
                     }
                 }
             }
+        }
+
+        var orphanedCriteria = _context.ChangeTracker.Entries<Boardy.Domain.Entities.ScoreCriterion>()
+            .Where(e => e.State == EntityState.Modified &&
+                        e.Properties.Any(p => p.Metadata.IsForeignKey() && p.CurrentValue == null))
+            .ToList();
+
+        foreach (var entry in orphanedCriteria)
+        {
+            entry.State = EntityState.Deleted;
         }
 
         await _context.SaveChangesAsync();

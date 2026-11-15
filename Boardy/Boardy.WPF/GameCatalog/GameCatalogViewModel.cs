@@ -18,6 +18,8 @@ namespace Boardy.WPF.GameCatalog;
 
 public partial class ScoreTemplateDisplayModel : ObservableObject
 {
+    public Guid Id { get; set; }
+
     [ObservableProperty]
     private string _templateName = string.Empty;
 
@@ -152,7 +154,11 @@ public partial class GameCatalogViewModel : ObservableObject
 
         foreach (var template in result.Data.Templates)
         {
-            var templateModel = new ScoreTemplateDisplayModel { TemplateName = template.Name };
+            var templateModel = new ScoreTemplateDisplayModel
+            {
+                Id = template.Id,
+                TemplateName = template.Name
+            };
 
             foreach (var criterion in template.Criteria)
             {
@@ -175,7 +181,7 @@ public partial class GameCatalogViewModel : ObservableObject
 
 
     [RelayCommand]
-    private void AddScoreTemplate(GameCatalogListItem selectedGame)
+    private void AddScoreTemplate()
     {
         if (!IsAdminMode) return;
 
@@ -196,6 +202,31 @@ public partial class GameCatalogViewModel : ObservableObject
         var updateVm = App.ServiceProvider.GetRequiredService<UpdateGameViewModel>();
         _ = updateVm.InitializeAsync(selectedGame.Id);
         WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(updateVm));
+    }
+
+
+    [RelayCommand]
+    private void EditScoreTemplate(ScoreTemplateDisplayModel selectedTemplate)
+    {
+        if (!IsAdminMode || selectedTemplate == null) return;
+
+        var editTemplateVm = App.ServiceProvider.GetRequiredService<CreateScoreTemplateViewModel>();
+
+        var criteriaItems = selectedTemplate.Criteria
+            .Select(c => new CriterionItemViewModel
+            {
+                Name = c.Name,
+                IsNegative = c.IsNegative
+            });
+
+        editTemplateVm.InitializeForEditing(
+            _currentPopupGameId,
+            selectedTemplate.Id,
+            selectedTemplate.TemplateName,
+            criteriaItems
+        );
+
+        WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(editTemplateVm));
     }
 
 
