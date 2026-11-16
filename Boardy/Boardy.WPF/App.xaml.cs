@@ -117,6 +117,7 @@ namespace Boardy.WPF
             services.AddTransient<UpdateGameViewModel>();
             services.AddTransient<UpdateScoreTemplateUseCase>();
             services.AddTransient<ToggleGameStatusUseCase>();
+            services.AddTransient<DeleteMatchUseCase>();
 
             services.AddScoped<IMatchRepository, MatchRepository>();
 
