@@ -5,6 +5,7 @@ using Boardy.Application.GameCatalog.ScoreTemplate;
 using Boardy.Application.Player;
 using Boardy.Application.Scoring;
 using Boardy.Application.Shared;
+using Boardy.Application.Statistics;
 using Boardy.Domain.Authentication;
 using Boardy.Infrastructure;
 using Boardy.Infrastructure.Authentication;
@@ -15,6 +16,7 @@ using Boardy.WPF.Home;
 using Boardy.WPF.Player;
 using Boardy.WPF.Scoring;
 using Boardy.WPF.Services;
+using Boardy.WPF.Statistics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -77,6 +79,7 @@ namespace Boardy.WPF
             services.AddScoped<IPlayerRepository, PlayerRepository>();
             services.AddTransient<CreatePlayerUseCase>();
             services.AddTransient<GetAllPlayers>();
+            services.AddTransient<GetOverallRatingUseCase>();
             services.AddTransient<UpdatePlayerUseCase>();
 
             services.AddTransient<DeletePlayerUseCase>();
@@ -84,6 +87,7 @@ namespace Boardy.WPF
             services.AddTransient<CreatePlayerViewModel>();
             services.AddTransient<PlayersViewModel>();
             services.AddTransient<EditPlayerViewModel>();
+            services.AddTransient<OverallRatingViewModel>();
 
             services.AddSingleton<IUserSession, UserSession>();
 

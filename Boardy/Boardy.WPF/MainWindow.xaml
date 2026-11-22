@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:home="clr-namespace:Boardy.WPF.Home"
         xmlns:auth="clr-namespace:Boardy.WPF.Authentication"
-        xmlns:player="clr-namespace:Boardy.WPF.Player"
+         xmlns:player="clr-namespace:Boardy.WPF.Player"
+         xmlns:statistics="clr-namespace:Boardy.WPF.Statistics"
         xmlns:gameCatalog="clr-namespace:Boardy.WPF.GameCatalog"
         xmlns:scoring="clr-namespace:Boardy.WPF.Scoring"
         xmlns:catalog="clr-namespace:Boardy.WPF.GameCatalog"
@@ -27,6 +28,9 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type player:EditPlayerViewModel}">
             <player:EditPlayerView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type statistics:OverallRatingViewModel}">
+            <statistics:OverallRatingView />
         </DataTemplate>
         <DataTemplate DataType="{x:Type gameCatalog:CreateGameViewModel}">
             <gameCatalog:CreateGameView />
