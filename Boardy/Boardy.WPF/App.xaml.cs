@@ -129,6 +129,7 @@ namespace Boardy.WPF
 
             services.AddScoped<IGameStatisticsRepository, GameStatisticsRepository>();
             services.AddTransient<GetGameStatisticsUseCase>();
+            services.AddTransient<GetGamesStatisticsUseCase>();
             services.AddTransient<GameStatisticsViewModel>();
 
             services.AddScoped<IMatchRepository, MatchRepository>();

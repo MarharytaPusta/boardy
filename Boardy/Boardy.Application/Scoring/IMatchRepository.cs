@@ -11,4 +11,6 @@ public interface IMatchRepository
     Task<bool> HasMatchesByPlayerIdAsync(Guid playerId);
     Task UpdateAsync(Match match);
     Task DeleteAsync(Match match);
+
+    Task<IReadOnlyDictionary<Guid, int>> GetMatchesCountByGameAsync();
 }

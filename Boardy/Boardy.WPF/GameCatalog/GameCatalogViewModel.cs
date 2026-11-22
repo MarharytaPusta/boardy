@@ -32,6 +32,7 @@ public partial class GameCatalogViewModel : ObservableObject
 {
     private readonly GetGameCatalogUseCase _getGameCatalogUseCase;
     private readonly GetGameDetailsUseCase _getGameDetailsUseCase;
+    private readonly GetGamesStatisticsUseCase _getGamesStatisticsUseCase;
     private readonly DeleteGameUseCase _deleteGameUseCase;
     private readonly IDialogService _dialogService;
     private readonly ToggleGameStatusUseCase _toggleGameStatusUseCase;
@@ -61,6 +62,17 @@ public partial class GameCatalogViewModel : ObservableObject
 
     [ObservableProperty] private ObservableCollection<ScoreTemplateDisplayModel> _popupTemplates = new();
 
+    [ObservableProperty]
+    private string _mostPlayedGame = "Немає даних";
+
+    [ObservableProperty]
+    private string _leastPlayedGame = "Немає даних";
+
+    [ObservableProperty]
+    private int _sortIndex;
+
+    private List<GameCatalogListItem> _loadedGames = new();
+
     private Guid _currentPopupGameId;
 
     public ICommand ViewGameStatisticsCommand { get; }
@@ -70,6 +82,7 @@ public partial class GameCatalogViewModel : ObservableObject
     public GameCatalogViewModel(
         GetGameCatalogUseCase getGameCatalogUseCase,
         GetGameDetailsUseCase getGameDetailsUseCase,
+        GetGamesStatisticsUseCase getGamesStatisticsUseCase,
         ToggleGameStatusUseCase toggleGameStatusUseCase,
         DeleteGameUseCase deleteGameUseCase,
         IDialogService dialogService,
@@ -77,6 +90,7 @@ public partial class GameCatalogViewModel : ObservableObject
     {
         _getGameCatalogUseCase = getGameCatalogUseCase;
         _getGameDetailsUseCase = getGameDetailsUseCase;
+        _getGamesStatisticsUseCase = getGamesStatisticsUseCase;
         _toggleGameStatusUseCase = toggleGameStatusUseCase;
         _deleteGameUseCase = deleteGameUseCase;
         _dialogService = dialogService;
@@ -102,27 +116,47 @@ public partial class GameCatalogViewModel : ObservableObject
             playersCount = parsedPlayersCount;
         }
 
-        var result = await _getGameCatalogUseCase.ExecuteAsync(new GetGameCatalogRequest(SearchQuery, playersCount));
+        var catalogResult = await _getGameCatalogUseCase.ExecuteAsync(new GetGameCatalogRequest(SearchQuery, playersCount));
 
-        if (!result.IsSuccess || result.Data is null)
+        if (!catalogResult.IsSuccess || catalogResult.Data is null)
         {
-            ErrorMessage = result.ErrorMessage ?? "Не вдалося завантажити каталог ігор.";
+            ErrorMessage = catalogResult.ErrorMessage ?? "Не вдалося завантажити каталог ігор.";
             return;
+        }
+
+        var statsResult = await _getGamesStatisticsUseCase.ExecuteAsync(IsAdminMode);
+        IReadOnlyDictionary<Guid, int> matchesCountByGame;
+
+        if (statsResult.IsSuccess && statsResult.Data is not null)
+        {
+            MostPlayedGame = statsResult.Data.MostPlayedGame;
+            LeastPlayedGame = statsResult.Data.LeastPlayedGame;
+            matchesCountByGame = statsResult.Data.MatchesCountByGame;
+        }
+        else
+        {
+            MostPlayedGame = "Немає даних";
+            LeastPlayedGame = "Немає даних";
+            matchesCountByGame = new Dictionary<Guid, int>();
         }
 
         ErrorMessage = string.Empty;
 
         var filteredGames = IsAdminMode
-            ? result.Data
-            : result.Data.Where(g => g.Status == GameStatus.Active);
+            ? catalogResult.Data
+            : catalogResult.Data.Where(g => g.Status == GameStatus.Active);
 
-        Games = new ObservableCollection<GameCatalogListItem>(filteredGames.Select((game, index) =>
-            new GameCatalogListItem(
-                game.Id,
-                index + 1,
-                game.Name,
-                $"{game.MinPlayers}–{game.MaxPlayers}",
-                game.Status == GameStatus.Active)));
+        _loadedGames = filteredGames
+                    .Select((game, index) => new GameCatalogListItem(
+                        game.Id,
+                        index + 1,
+                        game.Name,
+                        $"{game.MinPlayers}–{game.MaxPlayers}",
+                        matchesCountByGame.GetValueOrDefault(game.Id, 0),
+                        game.Status == GameStatus.Active))
+                    .ToList();
+
+        ApplySorting();
     }
 
     [RelayCommand]
@@ -130,6 +164,7 @@ public partial class GameCatalogViewModel : ObservableObject
     {
         SearchQuery = string.Empty;
         PlayersCountText = string.Empty;
+        SortIndex = 0;
         await LoadGamesAsync();
     }
 
@@ -313,6 +348,25 @@ public partial class GameCatalogViewModel : ObservableObject
         }
     }
 
+    partial void OnSortIndexChanged(int value)
+    {
+        ApplySorting();
+    }
+
+    private void ApplySorting()
+    {
+        IEnumerable<GameCatalogListItem> sorted = SortIndex switch
+        {
+            1 => _loadedGames.OrderBy(g => g.Name),
+            2 => _loadedGames.OrderByDescending(g => g.MatchesCount).ThenBy(g => g.Name),
+            3 => _loadedGames.OrderBy(g => g.MatchesCount).ThenBy(g => g.Name),
+            _ => _loadedGames
+        };
+
+        Games = new ObservableCollection<GameCatalogListItem>(
+            sorted.Select((game, index) => game with { Number = index + 1 }));
+    }
+
 }
 
-public record GameCatalogListItem(Guid Id, int Number, string Name, string PlayersCount, bool IsActive);
+public record GameCatalogListItem(Guid Id, int Number, string Name, string PlayersCount, int MatchesCount, bool IsActive);

@@ -75,4 +75,21 @@ public class MatchRepository : IMatchRepository
         _context.Remove(match);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<IReadOnlyDictionary<Guid, int>> GetMatchesCountByGameAsync()
+    {
+        return await _context.Games
+                    .AsNoTracking()
+                    .SelectMany(
+                        game => game.ScoreTemplates,
+                        (game, template) => new { GameId = game.Id, TemplateId = template.Id })
+                    .Join(
+                        _context.Matches,
+                        gt => gt.TemplateId,
+                        match => match.ScoreTemplateId,
+                        (gt, match) => gt.GameId)
+                    .GroupBy(gameId => gameId)
+                    .ToDictionaryAsync(group => group.Key, group => group.Count());
+    }
 }
+
