@@ -2,7 +2,6 @@
 using Boardy.Application.GameCatalog.Catalog;
 using Boardy.Application.GameCatalog.Game;
 using Boardy.Application.GameCatalog.ScoreTemplate;
-using Boardy.Application.GameCatalog.Statistics;
 using Boardy.Application.Player;
 using Boardy.Application.Scoring;
 using Boardy.Application.Shared;

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Boardy.Application.GameCatalog.Statistics;
+namespace Boardy.Application.Statistics;
 
 public record GameStatisticsDto(
     Guid GameId,

@@ -1,4 +1,4 @@
-﻿using Boardy.Application.GameCatalog.Statistics;
+﻿using Boardy.Application.Statistics;
 using Boardy.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using System;

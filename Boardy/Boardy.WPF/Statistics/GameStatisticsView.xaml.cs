@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace Boardy.WPF.GameCatalog;
+namespace Boardy.WPF.Statistics;
 public partial class GameStatisticsView : UserControl
 {
     public GameStatisticsView()
