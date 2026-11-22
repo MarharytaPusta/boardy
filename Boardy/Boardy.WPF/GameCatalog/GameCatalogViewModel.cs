@@ -12,6 +12,8 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
+using Boardy.WPF.Messages;
 
 namespace Boardy.WPF.GameCatalog;
 
@@ -73,6 +75,8 @@ public partial class GameCatalogViewModel : ObservableObject
 
     private Guid _currentPopupGameId;
 
+    public ICommand ViewGameStatisticsCommand { get; }
+
     public bool IsAdminMode => _userSession.IsAdminMode;
 
     public GameCatalogViewModel(
@@ -91,7 +95,9 @@ public partial class GameCatalogViewModel : ObservableObject
         _deleteGameUseCase = deleteGameUseCase;
         _dialogService = dialogService;
         _userSession = userSession;
+        ViewGameStatisticsCommand = new AsyncRelayCommand<GameCatalogListItem>(OpenGameStatisticsAsync);
         _userSession.OnAdminStateChanged += UpdateAdminState;
+
     }
 
     [RelayCommand]
@@ -262,6 +268,16 @@ public partial class GameCatalogViewModel : ObservableObject
         );
 
         WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(editTemplateVm));
+    }
+
+
+    private static async Task OpenGameStatisticsAsync(GameCatalogListItem? selectedGame)
+    {
+        if (selectedGame is null) return;
+
+        var statisticsViewModel = App.ServiceProvider.GetRequiredService<GameStatisticsViewModel>();
+        await statisticsViewModel.LoadAsync(selectedGame.Id);
+        WeakReferenceMessenger.Default.Send(new NavigationMessage(statisticsViewModel));
     }
 
 
