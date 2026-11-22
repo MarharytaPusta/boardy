@@ -1,0 +1,134 @@
+<UserControl x:Class="Boardy.WPF.Statistics.OverallRatingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="#9597FF">
+
+    <Grid Margin="35">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <TextBlock Text="Загальний рейтинг"
+                       FontSize="42"
+                       Foreground="Black"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
+
+            <Button Content="Назад"
+                    Command="{Binding GoBackCommand}"
+                    Background="#FF5E5E"
+                    Foreground="White"
+                    FontSize="20"
+                    Padding="20,8"
+                    BorderThickness="0"
+                    HorizontalAlignment="Right"/>
+        </Grid>
+
+        <Border Grid.Row="1"
+                Background="White"
+                CornerRadius="6"
+                Margin="0,20,0,10"
+                Padding="20,8">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Сортувати за"
+                           FontSize="18"
+                           VerticalAlignment="Center"
+                           Margin="0,0,10,0"/>
+                <ComboBox Width="200"
+                          FontSize="16"
+                          SelectedIndex="{Binding SortIndex}"
+                          Background="#C8CAFF"
+                          BorderThickness="0"
+                          Padding="5">
+                    <ComboBoxItem Content="Ім'ям"/>
+                    <ComboBoxItem Content="Кількістю ігор"/>
+                    <ComboBoxItem Content="Кількістю партій"/>
+                    <ComboBoxItem Content="Кількістю перемог"/>
+                </ComboBox>
+            </StackPanel>
+        </Border>
+
+        <TextBlock Grid.Row="2"
+                   Text="{Binding ErrorMessage}"
+                   Foreground="#FF5E5E"
+                   FontSize="16"
+                   HorizontalAlignment="Center"
+                   Margin="0,0,0,10"/>
+
+        <Border Grid.Row="3"
+                Background="White"
+                CornerRadius="6"
+                Padding="20,12"
+                Margin="0,0,0,5">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="120"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="№" FontSize="18" Foreground="Black"/>
+                <TextBlock Grid.Column="1" Text="Ім'я" FontSize="18" Foreground="Black"/>
+                <TextBlock Grid.Column="2" Text="Ігри" FontSize="18" Foreground="Black"/>
+                <TextBlock Grid.Column="3" Text="Партії" FontSize="18" Foreground="Black"/>
+                <TextBlock Grid.Column="4" Text="Перемоги" FontSize="18" Foreground="Black"/>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="4">
+            <ScrollViewer VerticalScrollBarVisibility="Hidden">
+                <ItemsControl x:Name="RatingList" ItemsSource="{Binding Players}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="#C8CAFF"
+                                    CornerRadius="6"
+                                    Margin="0,5"
+                                    Padding="20,12">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="80"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="120"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Text="{Binding Number}" FontSize="20" Foreground="Black"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="20" Foreground="Black"/>
+                                    <TextBlock Grid.Column="2" Text="{Binding PlayedGamesCount}" FontSize="20" Foreground="Black"/>
+                                    <TextBlock Grid.Column="3" Text="{Binding PlayedMatchesCount}" FontSize="20" Foreground="Black"/>
+                                    <TextBlock Grid.Column="4" Text="{Binding WinsCount}" FontSize="20" Foreground="Black"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <TextBlock Text="Рейтинг поки що порожній"
+                       FontSize="22"
+                       Foreground="Black"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Top"
+                       Margin="0,30,0,0">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding HasItems, ElementName=RatingList}" Value="False">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+        </Grid>
+    </Grid>
+</UserControl>
