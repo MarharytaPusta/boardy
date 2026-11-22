@@ -1,4 +1,5 @@
-﻿using Boardy.Application.GameCatalog.Game;
+﻿using Boardy.Application.Authentication.Admin;
+using Boardy.Application.GameCatalog.Game;
 using Boardy.Application.GameCatalog.ScoreTemplate;
 using Boardy.Domain.Entities;
 using Boardy.Domain.Enums;
@@ -14,14 +15,22 @@ namespace Boardy.Application.Tests.GameCatalog.ScoreTemplate;
 public class UpdateScoreTemplateUseCaseTests
 {
     private readonly Mock<IGameRepository> _gameRepositoryMock;
+    private readonly Mock<IUserSession> _userSessionMock;
     private readonly Mock<ILogger<UpdateScoreTemplateUseCase>> _loggerMock;
     private readonly UpdateScoreTemplateUseCase _useCase;
 
     public UpdateScoreTemplateUseCaseTests()
     {
         _gameRepositoryMock = new Mock<IGameRepository>();
+        _userSessionMock = new Mock<IUserSession>();
         _loggerMock = new Mock<ILogger<UpdateScoreTemplateUseCase>>();
-        _useCase = new UpdateScoreTemplateUseCase(_gameRepositoryMock.Object, _loggerMock.Object);
+
+        _userSessionMock.Setup(s => s.IsAdminMode).Returns(true);
+
+        _useCase = new UpdateScoreTemplateUseCase(
+            _gameRepositoryMock.Object,
+            _userSessionMock.Object,
+            _loggerMock.Object);
     }
 
     [Fact]
@@ -48,6 +57,56 @@ public class UpdateScoreTemplateUseCaseTests
         Assert.Contains(updatedTemplate.Criteria, c => c.Name == "Штраф" && c.IsNegative);
 
         _gameRepositoryMock.Verify(r => r.UpdateAsync(game), Times.Once);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_NotAdminMode_ReturnsFailure()
+    {
+        _userSessionMock.Setup(s => s.IsAdminMode).Returns(false);
+
+        var request = new UpdateScoreTemplateRequest(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "Назва",
+            new List<CriterionDto> { new("Критерій", false) });
+
+        var result = await _useCase.ExecuteAsync(request);
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal("Редагувати шаблони оцінювання може лише адміністратор.", result.ErrorMessage);
+        _gameRepositoryMock.Verify(r => r.GetByIdAsync(It.IsAny<Guid>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_EmptyGameId_ReturnsFailure()
+    {
+        var request = new UpdateScoreTemplateRequest(
+            Guid.Empty,
+            Guid.NewGuid(),
+            "Назва",
+            new List<CriterionDto> { new("Критерій", false) });
+
+        var result = await _useCase.ExecuteAsync(request);
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal("Некоректний ідентифікатор гри.", result.ErrorMessage);
+        _gameRepositoryMock.Verify(r => r.GetByIdAsync(It.IsAny<Guid>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_EmptyTemplateId_ReturnsFailure()
+    {
+        var request = new UpdateScoreTemplateRequest(
+            Guid.NewGuid(),
+            Guid.Empty,
+            "Назва",
+            new List<CriterionDto> { new("Критерій", false) });
+
+        var result = await _useCase.ExecuteAsync(request);
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal("Некоректний ідентифікатор шаблону оцінювання.", result.ErrorMessage);
+        _gameRepositoryMock.Verify(r => r.GetByIdAsync(It.IsAny<Guid>()), Times.Never);
     }
 
     [Fact]
