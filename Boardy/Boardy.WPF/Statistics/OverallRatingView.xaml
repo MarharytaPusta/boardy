@@ -72,7 +72,7 @@
                     <ColumnDefinition Width="120"/>
                     <ColumnDefinition Width="120"/>
                     <ColumnDefinition Width="120"/>
-                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="45"/>
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Text="№" FontSize="18" Foreground="Black"/>
@@ -99,7 +99,7 @@
                                         <ColumnDefinition Width="120"/>
                                         <ColumnDefinition Width="120"/>
                                         <ColumnDefinition Width="120"/>
-                                        <ColumnDefinition Width="150"/>
+                                        <ColumnDefinition Width="45"/>
                                     </Grid.ColumnDefinitions>
 
                                     <TextBlock Text="{Binding Number}" FontSize="20" Foreground="Black"/>
@@ -107,17 +107,27 @@
                                     <TextBlock Grid.Column="2" Text="{Binding PlayedGamesCount}" FontSize="20" Foreground="Black"/>
                                     <TextBlock Grid.Column="3" Text="{Binding PlayedMatchesCount}" FontSize="20" Foreground="Black"/>
                                     <TextBlock Grid.Column="4" Text="{Binding WinsCount}" FontSize="20" Foreground="Black"/>
-                                    <Button Grid.Column="5"
-                                            Content="Переглянути"
-                                            Command="{Binding DataContext.NavigateToPlayerStatisticsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                            CommandParameter="{Binding}"
-                                            Background="#FF8A80"
-                                            Foreground="White"
-                                            FontSize="14"
-                                            FontWeight="DemiBold"
-                                            Padding="10,5"
-                                            BorderThickness="0"
-                                            HorizontalAlignment="Center"/>
+                                    <Menu Grid.Column="5"
+                                          Background="Transparent"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center">
+                                        <MenuItem Header="⋮"
+                                                  Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                  Foreground="White"
+                                                  FontSize="28"
+                                                  Padding="0"
+                                                  Background="Transparent"
+                                                  BorderThickness="0">
+                                            <MenuItem Header="Переглянути статистику"
+                                                      Command="{Binding Tag.NavigateToPlayerStatisticsCommand, RelativeSource={RelativeSource AncestorType=MenuItem}}"
+                                                      CommandParameter="{Binding}"
+                                                      Foreground="Black"
+                                                      FontSize="16"
+                                                      FontWeight="DemiBold"
+                                                      MinWidth="220"
+                                                      Padding="10,6"/>
+                                        </MenuItem>
+                                    </Menu>
                                 </Grid>
                             </Border>
                         </DataTemplate>
