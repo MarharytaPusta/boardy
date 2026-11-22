@@ -1,5 +1,6 @@
 using Boardy.Application.Player;
 using Boardy.WPF.Scoring;
+using Boardy.WPF.Statistics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -62,6 +63,11 @@ public partial class EditPlayerViewModel : ObservableObject
         {
             await pvm.LoadPlayersAsync();
             WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(pvm));
+        }
+        else if (_callerViewModel is OverallRatingViewModel overallRatingViewModel)
+        {
+            await overallRatingViewModel.LoadRatingAsync();
+            WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(overallRatingViewModel));
         }
         else if (_callerViewModel is SelectMatchPlayersViewModel smpvm)
         {
