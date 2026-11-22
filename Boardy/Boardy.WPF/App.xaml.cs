@@ -80,6 +80,7 @@ namespace Boardy.WPF
             services.AddTransient<CreatePlayerUseCase>();
             services.AddTransient<GetAllPlayers>();
             services.AddTransient<GetOverallRatingUseCase>();
+            services.AddTransient<GetPlayerStatisticsUseCase>();
             services.AddTransient<UpdatePlayerUseCase>();
 
             services.AddTransient<DeletePlayerUseCase>();
@@ -88,6 +89,7 @@ namespace Boardy.WPF
             services.AddTransient<PlayersViewModel>();
             services.AddTransient<EditPlayerViewModel>();
             services.AddTransient<OverallRatingViewModel>();
+            services.AddTransient<PlayerStatisticsViewModel>();
 
             services.AddSingleton<IUserSession, UserSession>();
 

@@ -70,6 +70,14 @@ public partial class OverallRatingViewModel : ObservableObject
         WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(homeViewModel));
     }
 
+    [RelayCommand]
+    private async Task NavigateToPlayerStatisticsAsync(OverallRatingListItem player)
+    {
+        var playerStatisticsViewModel = App.ServiceProvider.GetRequiredService<PlayerStatisticsViewModel>();
+        await playerStatisticsViewModel.InitializeAsync(player.PlayerId, this);
+        WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(playerStatisticsViewModel));
+    }
+
     private void ApplySorting()
     {
         IEnumerable<GetOverallRatingDto> sortedRating = SortIndex switch
@@ -88,6 +96,7 @@ public partial class OverallRatingViewModel : ObservableObject
         Players = new ObservableCollection<OverallRatingListItem>(
             sortedRating.Select((player, index) => new OverallRatingListItem(
                 index + 1,
+                player.PlayerId,
                 player.PlayerName,
                 player.PlayedGamesCount,
                 player.PlayedMatchesCount,
@@ -97,6 +106,7 @@ public partial class OverallRatingViewModel : ObservableObject
 
 public record OverallRatingListItem(
     int Number,
+    Guid PlayerId,
     string Name,
     int PlayedGamesCount,
     int PlayedMatchesCount,

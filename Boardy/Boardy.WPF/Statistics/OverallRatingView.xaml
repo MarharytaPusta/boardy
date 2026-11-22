@@ -72,6 +72,7 @@
                     <ColumnDefinition Width="120"/>
                     <ColumnDefinition Width="120"/>
                     <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="150"/>
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Text="№" FontSize="18" Foreground="Black"/>
@@ -98,6 +99,7 @@
                                         <ColumnDefinition Width="120"/>
                                         <ColumnDefinition Width="120"/>
                                         <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="150"/>
                                     </Grid.ColumnDefinitions>
 
                                     <TextBlock Text="{Binding Number}" FontSize="20" Foreground="Black"/>
@@ -105,6 +107,17 @@
                                     <TextBlock Grid.Column="2" Text="{Binding PlayedGamesCount}" FontSize="20" Foreground="Black"/>
                                     <TextBlock Grid.Column="3" Text="{Binding PlayedMatchesCount}" FontSize="20" Foreground="Black"/>
                                     <TextBlock Grid.Column="4" Text="{Binding WinsCount}" FontSize="20" Foreground="Black"/>
+                                    <Button Grid.Column="5"
+                                            Content="Переглянути"
+                                            Command="{Binding DataContext.NavigateToPlayerStatisticsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}"
+                                            Background="#FF8A80"
+                                            Foreground="White"
+                                            FontSize="14"
+                                            FontWeight="DemiBold"
+                                            Padding="10,5"
+                                            BorderThickness="0"
+                                            HorizontalAlignment="Center"/>
                                 </Grid>
                             </Border>
                         </DataTemplate>
