@@ -1,7 +1,6 @@
 ﻿using Boardy.Application.Authentication.Admin;
 using Boardy.WPF.Authentication;
 using Boardy.WPF.GameCatalog;
-using Boardy.WPF.Player;
 using Boardy.WPF.Scoring;
 using Boardy.WPF.Statistics;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -39,9 +38,9 @@ public partial class HomeViewModel : ObservableObject
     [RelayCommand]
     private async Task NavigateToPlayersAsync()
     {
-        var playersViewModel = App.ServiceProvider.GetRequiredService<PlayersViewModel>();
-        await playersViewModel.LoadPlayersAsync();
-        WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(playersViewModel));
+        var overallRatingViewModel = App.ServiceProvider.GetRequiredService<OverallRatingViewModel>();
+        await overallRatingViewModel.LoadRatingAsync();
+        WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(overallRatingViewModel));
     }
 
     [RelayCommand]
@@ -50,14 +49,6 @@ public partial class HomeViewModel : ObservableObject
         var gameCatalogViewModel = App.ServiceProvider.GetRequiredService<GameCatalogViewModel>();
         await gameCatalogViewModel.LoadGamesAsync();
         WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(gameCatalogViewModel));
-    }
-
-    [RelayCommand]
-    private async Task NavigateToOverallRatingAsync()
-    {
-        var overallRatingViewModel = App.ServiceProvider.GetRequiredService<OverallRatingViewModel>();
-        await overallRatingViewModel.LoadRatingAsync();
-        WeakReferenceMessenger.Default.Send(new Messages.NavigationMessage(overallRatingViewModel));
     }
 
     [RelayCommand]
