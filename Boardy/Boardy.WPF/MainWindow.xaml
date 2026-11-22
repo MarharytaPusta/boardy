@@ -62,6 +62,9 @@
         <DataTemplate DataType="{x:Type catalog:CreateScoreTemplateViewModel}">
             <catalog:CreateScoreTemplateView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type catalog:GameStatisticsViewModel}">
+            <catalog:GameStatisticsView />
+        </DataTemplate>
     </Window.Resources>
 
     <ContentControl Content="{Binding CurrentViewModel}" />

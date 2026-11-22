@@ -127,6 +127,12 @@
                                                       CommandParameter="{Binding}"
                                                       Visibility="{Binding Tag.IsAdminMode, RelativeSource={RelativeSource AncestorType=MenuItem}, Converter={StaticResource BoolToVis}}"
                                                       Foreground="Black" FontSize="16" FontWeight="DemiBold" MinWidth="200" Padding="10,6"/>
+                                            <MenuItem Header="Переглянути статистику"
+                                                Command="{Binding Tag.ViewGameStatisticsCommand, RelativeSource={RelativeSource AncestorType=MenuItem}}"
+                                                CommandParameter="{Binding}"
+                                                Foreground="Black" FontSize="16" FontWeight="DemiBold" MinWidth="200" Padding="10,6"/>
+
+                                        
                                         </MenuItem>
                                     </Menu>
                                 </Grid>
