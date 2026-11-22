@@ -1,6 +1,6 @@
 using Boardy.Application.GameCatalog.Game;
 using Boardy.Application.GameCatalog.ScoreTemplate;
-using Boardy.Application.Player;
+using Boardy.Application.Statistics;
 using Boardy.Domain.Entities;
 using Boardy.Domain.Enums;
 using Boardy.Domain.Shared;
@@ -12,21 +12,18 @@ public class UpdateMatchResultsUseCase
 {
     private readonly IMatchRepository _matchRepository;
     private readonly IScoreTemplateRepository _scoreTemplateRepository;
-    private readonly IPlayerRepository _playerRepository;
-    private readonly IGameRepository _gameRepository;
+    private readonly IPlayerStatisticsRecalculator _playerStatisticsRecalculator;
     private readonly ILogger<UpdateMatchResultsUseCase> _logger;
 
     public UpdateMatchResultsUseCase(
         IMatchRepository matchRepository,
         IScoreTemplateRepository scoreTemplateRepository,
-        IPlayerRepository playerRepository,
-        IGameRepository gameRepository,
+        IPlayerStatisticsRecalculator playerStatisticsRecalculator,
         ILogger<UpdateMatchResultsUseCase> logger)
     {
         _matchRepository = matchRepository;
         _scoreTemplateRepository = scoreTemplateRepository;
-        _playerRepository = playerRepository;
-        _gameRepository = gameRepository;
+        _playerStatisticsRecalculator = playerStatisticsRecalculator;
         _logger = logger;
     }
 
@@ -73,7 +70,8 @@ public class UpdateMatchResultsUseCase
         ApplyResults(match, request, criteriaById);
         await _matchRepository.UpdateAsync(match);
 
-        var statisticsResult = await RecalculateParticipantStatisticsAsync(match);
+        var statisticsResult = await _playerStatisticsRecalculator.RecalculateAsync(
+            match.Participants.Select(participant => participant.PlayerId));
         if (!statisticsResult.IsSuccess)
         {
             return statisticsResult;
@@ -108,57 +106,6 @@ public class UpdateMatchResultsUseCase
             .Select(participant => participant.Id);
 
         match.SetWinners(winnerIds);
-    }
-
-    private async Task<Result> RecalculateParticipantStatisticsAsync(Match match)
-    {
-        var playerIds = match.Participants
-            .Select(participant => participant.PlayerId)
-            .Distinct()
-            .ToList();
-        var players = (await _playerRepository.GetByIdsAsync(playerIds)).ToList();
-        if (players.Count != playerIds.Count)
-        {
-            _logger.LogWarning("Statistics recalculation failed because one or more match participants were not found.");
-            return Result.Failure("Одного або кількох гравців не знайдено.");
-        }
-
-        var completedMatches = (await _matchRepository.GetCompletedByPlayerIdsAsync(playerIds)).ToList();
-        var scoreTemplateIds = completedMatches
-            .Select(completedMatch => completedMatch.ScoreTemplateId)
-            .Distinct()
-            .ToList();
-        var gameIdsByScoreTemplateId = await _gameRepository.GetGameIdsByScoreTemplateIdsAsync(scoreTemplateIds);
-
-        var matchesWithoutGame = completedMatches
-            .Where(completedMatch => !gameIdsByScoreTemplateId.ContainsKey(completedMatch.ScoreTemplateId))
-            .ToList();
-        if (matchesWithoutGame.Count > 0)
-        {
-            _logger.LogWarning(
-                "Skipped {MatchCount} completed matches without an associated game during statistics recalculation.",
-                matchesWithoutGame.Count);
-        }
-
-        foreach (var player in players)
-        {
-            var playerMatches = completedMatches
-                .Where(completedMatch => completedMatch.Participants.Any(
-                    participant => participant.PlayerId == player.Id))
-                .ToList();
-            var playedGamesCount = playerMatches
-                .Where(completedMatch => gameIdsByScoreTemplateId.ContainsKey(completedMatch.ScoreTemplateId))
-                .Select(completedMatch => gameIdsByScoreTemplateId[completedMatch.ScoreTemplateId])
-                .Distinct()
-                .Count();
-            var winsCount = playerMatches.Count(completedMatch => completedMatch.Participants.Any(
-                participant => participant.PlayerId == player.Id && participant.IsWinner));
-
-            player.UpdateStatistics(playedGamesCount, playerMatches.Count, winsCount);
-            await _playerRepository.UpdateAsync(player);
-        }
-
-        return Result.Success();
     }
 
     private Result ValidateMatchParticipants(Match match, UpdateMatchResultsRequest request)

@@ -1,7 +1,9 @@
 ﻿using Boardy.Application.Authentication.Admin;
 using Boardy.Application.Scoring;
 using Boardy.Application.Shared;
+using Boardy.Application.Statistics;
 using Boardy.Domain.Entities;
+using Boardy.Domain.Shared;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System;
@@ -14,6 +16,7 @@ public class DeleteMatchUseCaseTests
 {
     private readonly Mock<IMatchRepository> _mockMatchRepository;
     private readonly Mock<IUserSession> _mockUserSession;
+    private readonly Mock<IPlayerStatisticsRecalculator> _mockPlayerStatisticsRecalculator;
     private readonly Mock<ILogger<DeleteMatchUseCase>> _mockLogger;
     private readonly DeleteMatchUseCase _useCase;
 
@@ -21,11 +24,16 @@ public class DeleteMatchUseCaseTests
     {
         _mockMatchRepository = new Mock<IMatchRepository>();
         _mockUserSession = new Mock<IUserSession>();
+        _mockPlayerStatisticsRecalculator = new Mock<IPlayerStatisticsRecalculator>();
         _mockLogger = new Mock<ILogger<DeleteMatchUseCase>>();
+        _mockPlayerStatisticsRecalculator
+            .Setup(recalculator => recalculator.RecalculateAsync(It.IsAny<IEnumerable<Guid>>()))
+            .ReturnsAsync(Result.Success());
 
         _useCase = new DeleteMatchUseCase(
             _mockMatchRepository.Object,
             _mockUserSession.Object,
+            _mockPlayerStatisticsRecalculator.Object,
             _mockLogger.Object);
     }
 
@@ -79,6 +87,10 @@ public class DeleteMatchUseCaseTests
         _mockUserSession.Setup(s => s.IsAdminMode).Returns(true);
         var matchId = Guid.NewGuid();
         var match = new Domain.Entities.Match(Guid.NewGuid());
+        var firstPlayerId = Guid.NewGuid();
+        var secondPlayerId = Guid.NewGuid();
+        match.AddParticipant(new MatchParticipant(firstPlayerId));
+        match.AddParticipant(new MatchParticipant(secondPlayerId));
 
         _mockMatchRepository.Setup(repo => repo.GetByIdAsync(matchId))
                             .ReturnsAsync(match);
@@ -89,5 +101,9 @@ public class DeleteMatchUseCaseTests
 
         Assert.True(result.IsSuccess);
         _mockMatchRepository.Verify(repo => repo.DeleteAsync(match), Times.Once);
+        _mockPlayerStatisticsRecalculator.Verify(
+            recalculator => recalculator.RecalculateAsync(
+                It.Is<IEnumerable<Guid>>(ids => ids.Order().SequenceEqual(new[] { firstPlayerId, secondPlayerId }.Order()))),
+            Times.Once);
     }
 }

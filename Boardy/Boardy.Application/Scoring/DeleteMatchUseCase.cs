@@ -1,4 +1,5 @@
 ﻿using Boardy.Application.Authentication.Admin;
+using Boardy.Application.Statistics;
 using Boardy.Domain.Entities;
 using Boardy.Domain.Shared;
 using Microsoft.Extensions.Logging;
@@ -16,15 +17,18 @@ public class DeleteMatchUseCase
 {
     private readonly IMatchRepository _matchRepository;
     private readonly IUserSession _userSession;
+    private readonly IPlayerStatisticsRecalculator _playerStatisticsRecalculator;
     private readonly ILogger<DeleteMatchUseCase> _logger;
 
     public DeleteMatchUseCase(
         IMatchRepository matchRepository,
         IUserSession userSession,
+        IPlayerStatisticsRecalculator playerStatisticsRecalculator,
         ILogger<DeleteMatchUseCase> logger)
     {
         _matchRepository = matchRepository;
         _userSession = userSession;
+        _playerStatisticsRecalculator = playerStatisticsRecalculator;
         _logger = logger;
     }
 
@@ -42,7 +46,17 @@ public class DeleteMatchUseCase
             return validationResult;
         }
 
-        await _matchRepository.DeleteAsync(match!);
+        var playerIds = match!.Participants
+            .Select(participant => participant.PlayerId)
+            .ToList();
+
+        await _matchRepository.DeleteAsync(match);
+
+        var statisticsResult = await _playerStatisticsRecalculator.RecalculateAsync(playerIds);
+        if (!statisticsResult.IsSuccess)
+        {
+            return statisticsResult;
+        }
 
         _logger.LogInformation("Match with ID {MatchId} was successfully deleted.", request.MatchId);
         return Result.Success();

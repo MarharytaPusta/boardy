@@ -2,6 +2,7 @@ using Boardy.Application.GameCatalog.Game;
 using Boardy.Application.GameCatalog.ScoreTemplate;
 using Boardy.Application.Player;
 using Boardy.Application.Scoring;
+using Boardy.Application.Statistics;
 using Boardy.Domain.Entities;
 using Boardy.Domain.Enums;
 using Microsoft.Extensions.Logging;
@@ -17,6 +18,7 @@ public class UpdateMatchResultsUseCaseTests
     private readonly Mock<IScoreTemplateRepository> _scoreTemplateRepositoryMock = new();
     private readonly Mock<IPlayerRepository> _playerRepositoryMock = new();
     private readonly Mock<IGameRepository> _gameRepositoryMock = new();
+    private readonly PlayerStatisticsRecalculator _playerStatisticsRecalculator;
     private readonly ScoreTemplate _scoreTemplate;
     private readonly UpdateMatchResultsUseCase _useCase;
 
@@ -28,11 +30,16 @@ public class UpdateMatchResultsUseCaseTests
             .Setup(repository => repository.GetByIdAsync(_scoreTemplate.Id))
             .ReturnsAsync(_scoreTemplate);
         var loggerMock = new Mock<ILogger<UpdateMatchResultsUseCase>>();
+        var statisticsLoggerMock = new Mock<ILogger<PlayerStatisticsRecalculator>>();
+        _playerStatisticsRecalculator = new PlayerStatisticsRecalculator(
+            _playerRepositoryMock.Object,
+            _matchRepositoryMock.Object,
+            _gameRepositoryMock.Object,
+            statisticsLoggerMock.Object);
         _useCase = new UpdateMatchResultsUseCase(
             _matchRepositoryMock.Object,
             _scoreTemplateRepositoryMock.Object,
-            _playerRepositoryMock.Object,
-            _gameRepositoryMock.Object,
+            _playerStatisticsRecalculator,
             loggerMock.Object);
     }
 
