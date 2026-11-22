@@ -32,21 +32,34 @@ public class GetPlayerStatisticsUseCaseTests
     {
         var player = new DomainPlayer("Олена");
         player.UpdateStatistics(2, 3, 2);
+        var firstGameId = Guid.NewGuid();
+        var secondGameId = Guid.NewGuid();
         var firstGameTemplateId = Guid.NewGuid();
+        var secondTemplateForFirstGameId = Guid.NewGuid();
         var secondGameTemplateId = Guid.NewGuid();
         var firstMatch = CreateCompletedMatch(firstGameTemplateId, player.Id, isPlayerWinner: true);
-        var secondMatch = CreateCompletedMatch(firstGameTemplateId, player.Id, isPlayerWinner: false);
+        var secondMatch = CreateCompletedMatch(secondTemplateForFirstGameId, player.Id, isPlayerWinner: false);
         var thirdMatch = CreateCompletedMatch(secondGameTemplateId, player.Id, isPlayerWinner: true);
+        var firstGame = new Domain.Entities.Game("Крила", string.Empty, 2, 4, GameStatus.Active);
+        var secondGame = new Domain.Entities.Game("Каркасон", string.Empty, 2, 4, GameStatus.Active);
 
         _playerRepositoryMock.Setup(repository => repository.GetByIdAsync(player.Id))
             .ReturnsAsync(player);
         _matchRepositoryMock.Setup(repository => repository.GetCompletedByPlayerIdsAsync(
                 It.Is<IEnumerable<Guid>>(ids => ids.Single() == player.Id)))
             .ReturnsAsync(new[] { firstMatch, secondMatch, thirdMatch });
-        _gameRepositoryMock.Setup(repository => repository.GetNameByScoreTemplateIdAsync(firstGameTemplateId))
-            .ReturnsAsync("Крила");
-        _gameRepositoryMock.Setup(repository => repository.GetNameByScoreTemplateIdAsync(secondGameTemplateId))
-            .ReturnsAsync("Каркасон");
+        _gameRepositoryMock.Setup(repository => repository.GetGameIdsByScoreTemplateIdsAsync(
+                It.IsAny<IEnumerable<Guid>>()))
+            .ReturnsAsync(new Dictionary<Guid, Guid>
+            {
+                [firstGameTemplateId] = firstGameId,
+                [secondTemplateForFirstGameId] = firstGameId,
+                [secondGameTemplateId] = secondGameId
+            });
+        _gameRepositoryMock.Setup(repository => repository.GetByIdAsync(firstGameId))
+            .ReturnsAsync(firstGame);
+        _gameRepositoryMock.Setup(repository => repository.GetByIdAsync(secondGameId))
+            .ReturnsAsync(secondGame);
 
         var result = await _useCase.ExecuteAsync(player.Id);
 
@@ -104,7 +117,7 @@ public class GetPlayerStatisticsUseCaseTests
         Assert.True(result.IsSuccess);
         Assert.Empty(result.Data!.Games);
         _gameRepositoryMock.Verify(
-            repository => repository.GetNameByScoreTemplateIdAsync(It.IsAny<Guid>()),
+            repository => repository.GetGameIdsByScoreTemplateIdsAsync(It.IsAny<IEnumerable<Guid>>()),
             Times.Never);
     }
 

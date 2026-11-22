@@ -51,23 +51,44 @@ public class GetPlayerStatisticsUseCase
         IEnumerable<Domain.Entities.Match> matches,
         Guid playerId)
     {
-        var gameStatistics = new List<PlayerGameStatisticsDto>();
-
-        foreach (var matchesByScoreTemplate in matches.GroupBy(match => match.ScoreTemplateId))
+        var playedMatches = matches.ToList();
+        if (playedMatches.Count == 0)
         {
-            var gameName = await _gameRepository.GetNameByScoreTemplateIdAsync(matchesByScoreTemplate.Key)
-                ?? "Невідома гра";
-            var gameMatches = matchesByScoreTemplate.ToList();
-            var winsCount = gameMatches.Count(match => match.Participants.Any(
-                participant => participant.PlayerId == playerId && participant.IsWinner));
-
-            gameStatistics.Add(new PlayerGameStatisticsDto(
-                gameName,
-                gameMatches.Count,
-                winsCount));
+            return Array.Empty<PlayerGameStatisticsDto>();
         }
 
-        return gameStatistics
+        var scoreTemplateIds = playedMatches
+            .Select(match => match.ScoreTemplateId)
+            .Distinct()
+            .ToList();
+        var gameIdsByScoreTemplateId = await _gameRepository.GetGameIdsByScoreTemplateIdsAsync(scoreTemplateIds);
+        var gameNamesById = new Dictionary<Guid, string>();
+
+        foreach (var gameId in gameIdsByScoreTemplateId.Values.Distinct())
+        {
+            var game = await _gameRepository.GetByIdAsync(gameId);
+            gameNamesById[gameId] = game?.Name
+                ?? "Невідома гра";
+        }
+
+        return playedMatches
+            .GroupBy(match => gameIdsByScoreTemplateId.TryGetValue(match.ScoreTemplateId, out var gameId)
+                ? (IsKnownGame: true, Id: gameId)
+                : (IsKnownGame: false, Id: match.ScoreTemplateId))
+            .Select(matchesByGame =>
+            {
+                var gameName = matchesByGame.Key.IsKnownGame
+                    ? gameNamesById[matchesByGame.Key.Id]
+                    : "Невідома гра";
+                var gameMatches = matchesByGame.ToList();
+                var winsCount = gameMatches.Count(match => match.Participants.Any(
+                    participant => participant.PlayerId == playerId && participant.IsWinner));
+
+                return new PlayerGameStatisticsDto(
+                    gameName,
+                    gameMatches.Count,
+                    winsCount);
+            })
             .OrderBy(item => item.GameName)
             .ToList();
     }
