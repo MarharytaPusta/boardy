@@ -89,6 +89,7 @@ public class GameStatisticsRepository : IGameStatisticsRepository
         var topResults = participantRows
             .OrderByDescending(x => x.TotalScore)
             .ThenByDescending(x => x.Date)
+            .DistinctBy(x => x.PlayerId)
             .Take(topResultsLimit)
             .Select(x => new TopScoreDto(
                 x.PlayerId,
