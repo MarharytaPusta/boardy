@@ -81,6 +81,7 @@ namespace Boardy.WPF
             services.AddTransient<GetAllPlayers>();
             services.AddTransient<GetOverallRatingUseCase>();
             services.AddTransient<GetPlayerStatisticsUseCase>();
+            services.AddTransient<IPlayerStatisticsRecalculator, PlayerStatisticsRecalculator>();
             services.AddTransient<UpdatePlayerUseCase>();
 
             services.AddTransient<DeletePlayerUseCase>();
