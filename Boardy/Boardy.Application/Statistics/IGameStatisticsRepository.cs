@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Boardy.Application.GameCatalog.Statistics;
+namespace Boardy.Application.Statistics;
 
 public interface IGameStatisticsRepository
 {

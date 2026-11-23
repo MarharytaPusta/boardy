@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Boardy.Application.GameCatalog.Statistics;
+using Boardy.Application.Statistics;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
-namespace Boardy.Application.Tests.GameCatalog.Statistics;
+namespace Boardy.Application.Tests.Statistics;
 public class GetGameStatisticsUseCaseTests
 {
     private readonly Mock<IGameStatisticsRepository> _repositoryMock;

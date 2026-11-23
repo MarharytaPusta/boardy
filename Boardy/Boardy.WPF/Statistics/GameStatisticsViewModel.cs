@@ -1,4 +1,5 @@
-﻿using Boardy.Application.GameCatalog.Statistics;
+﻿using Boardy.Application.Statistics;
+using Boardy.WPF.GameCatalog;
 using Boardy.WPF.Messages;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -11,7 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace Boardy.WPF.GameCatalog;
+namespace Boardy.WPF.Statistics;
 
 public class GameStatisticsViewModel : ObservableObject
 {
