@@ -214,5 +214,126 @@
                 </Grid>
             </Border>
         </Grid>
+        <Grid Background="#66000000" Panel.ZIndex="10" Visibility="{Binding IsSelectTemplatePopupOpen, Converter={StaticResource BoolToVis}}">
+            <Border Background="#FFFFE0" MinWidth="450" MaxWidth="900" MaxHeight="650" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="30" CornerRadius="8">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Оберіть шаблон оцінювання"
+                               FontSize="24"
+                               FontWeight="Bold"
+                               HorizontalAlignment="Center"/>
+
+                    <TextBlock Grid.Row="1"
+                               Text="{Binding PopupGameName}"
+                               FontSize="18"
+                               Foreground="#45456B"
+                               HorizontalAlignment="Center"
+                               Margin="0,5,0,20"/>
+
+                    <ListBox Grid.Row="2"
+                             ItemsSource="{Binding SelectableTemplates}"
+                             SelectedItem="{Binding SelectedTemplateForMatch}"
+                             SelectionMode="Single"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                             ScrollViewer.VerticalScrollBarVisibility="Auto"
+                             Margin="0,0,0,25">
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel HorizontalAlignment="Center" Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="Cursor" Value="Hand"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ListBoxItem">
+                                            <Border x:Name="CardBorder"
+                                                    Width="340"
+                                                    Background="#C4C5FF"
+                                                    CornerRadius="6"
+                                                    Margin="10"
+                                                    Padding="15"
+                                                    BorderBrush="Transparent"
+                                                    BorderThickness="3">
+                                                <ContentPresenter/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsSelected" Value="True">
+                                                    <Setter TargetName="CardBorder" Property="Background" Value="#E4E4FF"/>
+                                                    <Setter TargetName="CardBorder" Property="BorderBrush" Value="#FF8A80"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding TemplateName}"
+                                               FontSize="20"
+                                               FontWeight="DemiBold"
+                                               HorizontalAlignment="Center"
+                                               Margin="0,0,0,15"
+                                               TextWrapping="Wrap"/>
+                                    <ItemsControl ItemsSource="{Binding Criteria}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid Margin="0,4">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Text="{Binding Name}"
+                                                               FontSize="16"
+                                                               VerticalAlignment="Center"
+                                                               TextWrapping="Wrap"
+                                                               Margin="0,0,10,0"/>
+                                                    <TextBlock Grid.Column="1"
+                                                               Text="(штраф)"
+                                                               FontSize="14"
+                                                               Foreground="#CC3333"
+                                                               VerticalAlignment="Center"
+                                                               Visibility="{Binding IsNegative, Converter={StaticResource BoolToVis}}"/>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button Content="Почати партію"
+                                Command="{Binding ConfirmTemplateAndStartMatchCommand}"
+                                Background="#FF5E5E"
+                                Foreground="White"
+                                FontSize="18"
+                                FontWeight="DemiBold"
+                                Padding="28,10"
+                                BorderThickness="0"
+                                Margin="0,0,15,0"/>
+                        <Button Content="Скасувати"
+                                Command="{Binding ClosePopupCommand}"
+                                Background="#7A7A7A"
+                                Foreground="White"
+                                FontSize="18"
+                                Padding="28,10"
+                                BorderThickness="0"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
     </Grid>
 </UserControl>

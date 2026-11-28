@@ -21,8 +21,6 @@ public partial class SelectMatchGameViewModel : ObservableObject
     private readonly GetGameDetailsUseCase _getGameDetailsUseCase;
 
     private SelectMatchPlayersViewModel? _callerVm;
-
-
     private List<Guid> _selectedPlayerIds = new();
 
     [ObservableProperty]
@@ -36,10 +34,14 @@ public partial class SelectMatchGameViewModel : ObservableObject
 
     [ObservableProperty] private bool _isDetailsPopupOpen;
     [ObservableProperty] private bool _isTemplatesPopupOpen;
+    [ObservableProperty] private bool _isSelectTemplatePopupOpen;
     [ObservableProperty] private string _popupGameName = string.Empty;
     [ObservableProperty] private string _popupGameDescription = string.Empty;
     [ObservableProperty] private string _popupGamePlayers = string.Empty;
+
     [ObservableProperty] private ObservableCollection<ScoreTemplateDisplayModel> _popupTemplates = new();
+    [ObservableProperty] private ObservableCollection<ScoreTemplateDisplayModel> _selectableTemplates = new();
+    [ObservableProperty] private ScoreTemplateDisplayModel? _selectedTemplateForMatch;
 
     public SelectMatchGameViewModel(GetGameCatalogUseCase getGameCatalog, CreateMatchUseCase createMatchUseCase, GetGameDetailsUseCase getGameDetailsUseCase)
     {
@@ -67,13 +69,38 @@ public partial class SelectMatchGameViewModel : ObservableObject
         }
 
         Games = new ObservableCollection<SelectableGameItem>(
-            result.Data
-                .Where(game => game.ScoreTemplates.Any() && game.Status == GameStatus.Active)
-                .Select((game, index) => new SelectableGameItem(
-                    index + 1,
-                    game.Id,
-                    game.ScoreTemplates.First().Id,
-                    game.Name)));
+                    result.Data
+                        .Where(game => game.ScoreTemplates.Any() && game.Status == GameStatus.Active)
+                        .Select((game, index) =>
+                        {
+                            var templates = game.ScoreTemplates
+                                .Select(template =>
+                                {
+                                    var templateModel = new ScoreTemplateDisplayModel
+                                    {
+                                        Id = template.Id,
+                                        TemplateName = template.Name
+                                    };
+
+                                    foreach (var criterion in template.Criteria)
+                                    {
+                                        templateModel.Criteria.Add(new CriterionItemViewModel
+                                        {
+                                            Name = criterion.Name,
+                                            IsNegative = criterion.IsNegative
+                                        });
+                                    }
+
+                                    return templateModel;
+                                })
+                                .ToList();
+
+                            return new SelectableGameItem(
+                                index + 1,
+                                game.Id,
+                                game.Name,
+                                templates);
+                        }));
     }
 
     [RelayCommand]
@@ -85,7 +112,36 @@ public partial class SelectMatchGameViewModel : ObservableObject
             return;
         }
 
-        var request = new CreateMatchRequest(SelectedGame.ScoreTemplateId, _selectedPlayerIds);
+        ErrorMessage = string.Empty;
+
+        if (SelectedGame.Templates.Count == 1)
+        {
+            await CreateAndNavigateToMatchAsync(SelectedGame.Templates[0].Id);
+            return;
+        }
+
+        PopupGameName = SelectedGame.Name;
+        SelectableTemplates = new ObservableCollection<ScoreTemplateDisplayModel>(SelectedGame.Templates);
+        SelectedTemplateForMatch = SelectableTemplates.FirstOrDefault();
+        IsSelectTemplatePopupOpen = true;
+    }
+
+    [RelayCommand]
+    private async Task ConfirmTemplateAndStartMatchAsync()
+    {
+        if (SelectedTemplateForMatch == null)
+        {
+            ErrorMessage = "Оберіть шаблон підрахунку балів.";
+            return;
+        }
+
+        IsSelectTemplatePopupOpen = false;
+        await CreateAndNavigateToMatchAsync(SelectedTemplateForMatch.Id);
+    }
+
+    private async Task CreateAndNavigateToMatchAsync(Guid scoreTemplateId)
+    {
+        var request = new CreateMatchRequest(scoreTemplateId, _selectedPlayerIds);
         var result = await _createMatchUseCase.ExecuteAsync(request);
 
         if (result.IsSuccess && result.Data is Guid matchId)
@@ -142,6 +198,7 @@ public partial class SelectMatchGameViewModel : ObservableObject
     {
         IsDetailsPopupOpen = false;
         IsTemplatesPopupOpen = false;
+        IsSelectTemplatePopupOpen = false;
     }
 
 
@@ -155,4 +212,4 @@ public partial class SelectMatchGameViewModel : ObservableObject
     }
 }
 
-public record SelectableGameItem(int Number, Guid Id, Guid ScoreTemplateId, string Name);
+public record SelectableGameItem(int Number, Guid Id, string Name, IReadOnlyList<ScoreTemplateDisplayModel> Templates);
