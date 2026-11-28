@@ -3,6 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Background="#9597FF">
 
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </UserControl.Resources>
+
     <Grid Margin="35">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -103,34 +107,57 @@
                     <DataTemplate>
                         <Border Background="#C8CAFF" CornerRadius="6" Padding="20,12">
                             <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="180"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{Binding PlayerName}" FontSize="22" Foreground="Black"/>
-                                    <TextBlock Grid.Column="1" Text="{Binding TotalScoreText}"
-                                               FontSize="22" Foreground="Black" HorizontalAlignment="Right"/>
-                                    <ItemsControl Grid.Row="1" Grid.ColumnSpan="2" ItemsSource="{Binding Criteria}" Margin="0,12,0,0">
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <Grid Margin="0,3">
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="*"/>
-                                                        <ColumnDefinition Width="180"/>
-                                                    </Grid.ColumnDefinitions>
-                                                    <TextBlock Text="{Binding Name}" FontSize="16" Foreground="Black" VerticalAlignment="Center"/>
-                                                    <TextBox Grid.Column="1" Text="{Binding ScoreText, UpdateSourceTrigger=PropertyChanged}"
-                                                             IsEnabled="{Binding DataContext.CanSaveResults, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                             FontSize="18" Foreground="Black" Background="White" BorderThickness="0"
-                                                             Padding="8,2" VerticalContentAlignment="Center"/>
-                                                </Grid>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="180"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Text="{Binding PlayerName}" FontSize="22" Foreground="Black"/>
+
+                                <TextBlock Grid.Column="1"
+                                           Text="{Binding PreviousTotalScore, StringFormat='Попередній: {0}'}"
+                                           Visibility="{Binding DataContext.IsEditingCompletedMatch, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BoolToVis}}"
+                                           FontSize="16"
+                                           Foreground="#45456B"
+                                           VerticalAlignment="Center"
+                                           Margin="0,0,15,0"/>
+
+                                <TextBlock Grid.Column="2" Text="{Binding TotalScoreText}"
+                                           FontSize="22" Foreground="Black" HorizontalAlignment="Right"/>
+
+                                <ItemsControl Grid.Row="1" Grid.ColumnSpan="3" ItemsSource="{Binding Criteria}" Margin="0,12,0,0">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0,3">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="180"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <TextBlock Text="{Binding Name}" FontSize="16" Foreground="Black" VerticalAlignment="Center"/>
+
+                                                <TextBlock Grid.Column="1"
+                                                           Text="{Binding PreviousScoreText}"
+                                                           Visibility="{Binding DataContext.IsEditingCompletedMatch, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BoolToVis}}"
+                                                           FontSize="14"
+                                                           Foreground="#45456B"
+                                                           VerticalAlignment="Center"
+                                                           Margin="0,0,12,0"/>
+
+                                                <TextBox Grid.Column="2" Text="{Binding ScoreText, UpdateSourceTrigger=PropertyChanged}"
+                                                         IsEnabled="{Binding DataContext.CanSaveResults, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                         FontSize="18" Foreground="Black" Background="White" BorderThickness="0"
+                                                         Padding="8,2" VerticalContentAlignment="Center"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
                             </Grid>
                         </Border>
                     </DataTemplate>

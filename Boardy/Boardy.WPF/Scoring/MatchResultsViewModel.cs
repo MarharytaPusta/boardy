@@ -21,6 +21,19 @@ public partial class MatchResultsViewModel : ObservableObject
     private object? _callerViewModel;
     private bool _isEditingCompletedMatch;
 
+    public bool IsEditingCompletedMatch
+    {
+        get => _isEditingCompletedMatch;
+        private set
+        {
+            if (SetProperty(ref _isEditingCompletedMatch, value))
+            {
+                OnPropertyChanged(nameof(SaveButtonText));
+            }
+        }
+    }
+
+
     [ObservableProperty]
     private ObservableCollection<MatchParticipantResultItem> _participants = new();
 
@@ -63,8 +76,7 @@ public partial class MatchResultsViewModel : ObservableObject
     {
         _matchId = matchId;
         _callerViewModel = callerViewModel;
-        _isEditingCompletedMatch = false;
-        OnPropertyChanged(nameof(SaveButtonText));
+        IsEditingCompletedMatch = false;
         _ = LoadMatchResultsAsync(matchId);
     }
 
@@ -72,8 +84,7 @@ public partial class MatchResultsViewModel : ObservableObject
     {
         _matchId = matchId;
         _callerViewModel = callerViewModel;
-        _isEditingCompletedMatch = true;
-        OnPropertyChanged(nameof(SaveButtonText));
+        IsEditingCompletedMatch = true;
         _ = LoadMatchResultsAsync(matchId);
     }
 
@@ -174,6 +185,7 @@ public partial class MatchParticipantResultItem : ObservableObject
 {
     public Guid Id { get; }
     public string PlayerName { get; }
+    public int PreviousTotalScore { get; }
 
     public ObservableCollection<CriterionScoreItem> Criteria { get; } = new();
     public string TotalScoreText => CalculateTotal().ToString();
@@ -190,14 +202,20 @@ public partial class MatchParticipantResultItem : ObservableObject
     {
         Id = id;
         PlayerName = playerName;
+        PreviousTotalScore = totalScore;
         IsWinner = isWinner;
 
         var scoresByCriterion = criterionResults.ToDictionary(result => result.CriterionId, result => result.Score);
         foreach (var criterion in criteria)
         {
             var hasSavedScore = scoresByCriterion.TryGetValue(criterion.Id, out var score);
-            var item = new CriterionScoreItem(criterion.Id, criterion.Name, criterion.IsNegative,
-                hasSavedScore ? score.ToString() : string.Empty);
+            var item = new CriterionScoreItem(
+                criterion.Id,
+                criterion.Name,
+                criterion.IsNegative,
+                hasSavedScore ? score.ToString() : string.Empty,
+                hasSavedScore ? score : null);
+
             item.PropertyChanged += (_, args) =>
             {
                 if (args.PropertyName == nameof(CriterionScoreItem.ScoreText))
@@ -229,14 +247,19 @@ public partial class CriterionScoreItem : ObservableObject
     public string Name { get; }
     public bool IsNegative { get; }
 
+    public string PreviousScoreText { get; }
+    public bool HasPreviousScore { get; }
+
     [ObservableProperty]
     private string _scoreText;
 
-    public CriterionScoreItem(Guid id, string name, bool isNegative, string scoreText)
+    public CriterionScoreItem(Guid id, string name, bool isNegative, string scoreText, int? previousScore = null)
     {
         Id = id;
         Name = isNegative ? $"{name} (штраф)" : name;
         IsNegative = isNegative;
         _scoreText = scoreText;
+        HasPreviousScore = previousScore.HasValue;
+        PreviousScoreText = previousScore.HasValue ? $"Було: {previousScore.Value}" : string.Empty;
     }
 }
