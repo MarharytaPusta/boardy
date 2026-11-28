@@ -78,11 +78,12 @@
                                FontSize="24"
                                FontWeight="SemiBold"
                                Foreground="Black"
+                               TextWrapping="Wrap"
                                Margin="0,4,0,4" />
                     <TextBlock Text="{Binding TopResultsSummary}"
                                FontSize="13"
                                Foreground="#666666"
-                               TextTrimming="CharacterEllipsis" />
+                               TextWrapping="Wrap" />
                 </StackPanel>
             </Border>
         </Grid>

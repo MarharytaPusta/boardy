@@ -120,14 +120,26 @@ public class GameStatisticsViewModel : ObservableObject
         var stats = result.Data;
         GameName = stats.GameName;
         TotalPlayedMatches = stats.TotalPlayedMatches;
+        _rawPlayers = stats.Players.ToList();
 
         if (stats.TopResults.Count > 0)
         {
-            var best = stats.TopResults[0];
-            HighestScoreDisplay = $"{best.Score} ({FormatPlayerName(best.PlayerName, best.IsPlayerDeleted)})";
+            var bestScore = stats.TopResults[0].Score;
+            var recordHolders = _rawPlayers
+                .Where(p => p.BestScoreInGame == bestScore)
+                .Select(p => FormatPlayerName(p.PlayerName, p.IsPlayerDeleted))
+                .ToList();
 
-            TopResultsSummary = string.Join("   •   ", stats.TopResults.Select((r, idx) =>
-                $"{idx + 1}. {FormatPlayerName(r.PlayerName, r.IsPlayerDeleted)} — {r.Score}"));
+            if (recordHolders.Count == 0)
+            {
+                recordHolders = stats.TopResults
+                    .Where(r => r.Score == bestScore)
+                    .Select(r => FormatPlayerName(r.PlayerName, r.IsPlayerDeleted))
+                    .ToList();
+            }
+
+            HighestScoreDisplay = $"{bestScore} ({string.Join(", ", recordHolders)})";
+            TopResultsSummary = BuildTopResultsSummary(stats.TopResults);
         }
         else
         {
@@ -137,6 +149,25 @@ public class GameStatisticsViewModel : ObservableObject
 
         _rawPlayers = stats.Players.ToList();
         ApplySorting();
+    }
+
+    private static string BuildTopResultsSummary(IReadOnlyList<TopScoreDto> topResults)
+    {
+        var items = new List<string>(topResults.Count);
+        int currentPlace = 1;
+
+        for (int i = 0; i < topResults.Count; i++)
+        {
+            var current = topResults[i];
+            if (i > 0 && current.Score < topResults[i - 1].Score)
+            {
+                currentPlace = i + 1;
+            }
+
+            items.Add($"{currentPlace}. {FormatPlayerName(current.PlayerName, current.IsPlayerDeleted)} — {current.Score}");
+        }
+
+        return string.Join("   •   ", items);
     }
 
     private void ApplySorting()
