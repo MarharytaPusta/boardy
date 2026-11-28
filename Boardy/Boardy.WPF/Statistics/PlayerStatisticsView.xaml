@@ -9,6 +9,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -72,6 +73,60 @@
         <Border Grid.Row="3"
                 Background="White"
                 CornerRadius="6"
+                Padding="20,10"
+                Margin="0,0,0,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid Grid.Column="0" Margin="0,0,20,0">
+                    <TextBox x:Name="SearchBox"
+                             Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
+                             FontSize="16"
+                             Padding="10,5"
+                             VerticalContentAlignment="Center"
+                             BorderBrush="#CCCCCC"
+                             BorderThickness="1"/>
+                    <TextBlock Text="Пошук за назвою гри..."
+                               FontSize="16"
+                               Foreground="#888888"
+                               Margin="12,0,0,0"
+                               VerticalAlignment="Center"
+                               IsHitTestVisible="False">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Text, ElementName=SearchBox}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="Сортувати за"
+                               FontSize="16"
+                               Foreground="Black"
+                               VerticalAlignment="Center"
+                               Margin="0,0,12,0"/>
+                    <ComboBox ItemsSource="{Binding SortOptions}"
+                              SelectedItem="{Binding SelectedSortOption}"
+                              Width="210"
+                              Height="34"
+                              FontSize="15"
+                              VerticalContentAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="4"
+                Background="White"
+                CornerRadius="6"
                 Padding="20,12"
                 Margin="0,0,0,5">
             <Grid>
@@ -87,7 +142,7 @@
             </Grid>
         </Border>
 
-        <Grid Grid.Row="4">
+        <Grid Grid.Row="5">
             <ScrollViewer VerticalScrollBarVisibility="Hidden">
                 <ItemsControl x:Name="GamesList" ItemsSource="{Binding Games}">
                     <ItemsControl.ItemTemplate>
@@ -113,7 +168,7 @@
                 </ItemsControl>
             </ScrollViewer>
 
-            <TextBlock Text="Гравець ще не брав участі в партіях"
+            <TextBlock Text="{Binding EmptyStateMessage}"
                        FontSize="22"
                        Foreground="Black"
                        HorizontalAlignment="Center"
