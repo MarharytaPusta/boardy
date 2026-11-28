@@ -84,7 +84,7 @@ public partial class MatchResultsViewModel : ObservableObject
     {
         _matchId = matchId;
         _callerViewModel = callerViewModel;
-        IsEditingCompletedMatch = true;
+        _isEditingCompletedMatch = true;
         _ = LoadMatchResultsAsync(matchId);
     }
 
@@ -185,6 +185,7 @@ public partial class MatchParticipantResultItem : ObservableObject
 {
     public Guid Id { get; }
     public string PlayerName { get; }
+    public int TotalScore { get; }
     public int PreviousTotalScore { get; }
 
     public ObservableCollection<CriterionScoreItem> Criteria { get; } = new();
@@ -202,6 +203,7 @@ public partial class MatchParticipantResultItem : ObservableObject
     {
         Id = id;
         PlayerName = playerName;
+        TotalScore = totalScore;
         PreviousTotalScore = totalScore;
         IsWinner = isWinner;
 

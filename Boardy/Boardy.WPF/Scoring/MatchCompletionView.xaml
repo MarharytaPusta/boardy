@@ -3,35 +3,113 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Background="#9597FF">
 
-    <Grid Margin="35">
-        <Button Content="На головну"
-                Command="{Binding GoHomeCommand}"
-                Background="#FF5E5E"
-                Foreground="White"
-                FontSize="20"
-                Padding="20,8"
-                BorderThickness="0"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Top"/>
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </UserControl.Resources>
 
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+    <Grid Margin="35">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid>
             <TextBlock Text="Партію завершено"
                        FontSize="42"
                        Foreground="Black"
                        HorizontalAlignment="Center"
-                       Margin="0,0,0,30"/>
-            <TextBlock Text="{Binding WinnerTitle}"
-                       FontSize="24"
-                       Foreground="Black"
-                       HorizontalAlignment="Center"
-                       Margin="0,0,0,10"/>
-            <TextBlock Text="{Binding WinnerNames}"
-                       FontSize="36"
+                       VerticalAlignment="Center"/>
+
+            <Button Content="На головну"
+                    Command="{Binding GoHomeCommand}"
+                    Background="#FF5E5E"
+                    Foreground="White"
+                    FontSize="20"
+                    Padding="20,8"
+                    BorderThickness="0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"/>
+        </Grid>
+
+        <Border Grid.Row="1"
+                Background="#FFFFE0"
+                CornerRadius="8"
+                Padding="30,20"
+                Margin="0,30,0,25"
+                HorizontalAlignment="Center"
+                MinWidth="420"
+                MaxWidth="700">
+            <StackPanel HorizontalAlignment="Center">
+                <TextBlock Text="{Binding WinnerTitle}"
+                           FontSize="22"
+                           Foreground="#45456B"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,8"/>
+                <TextBlock Text="{Binding WinnerNames}"
+                           FontSize="36"
+                           FontWeight="DemiBold"
+                           Foreground="Black"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding WinnerScoreText}"
+                           FontSize="20"
+                           Foreground="#45456B"
+                           HorizontalAlignment="Center"
+                           Margin="0,8,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <Grid Grid.Row="2"
+              MaxWidth="700"
+              HorizontalAlignment="Stretch"
+              Visibility="{Binding HasOtherPlayers, Converter={StaticResource BoolToVis}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Інші учасники"
+                       FontSize="22"
                        FontWeight="DemiBold"
                        Foreground="Black"
-                       TextAlignment="Center"
-                       TextWrapping="Wrap"
-                       MaxWidth="700"/>
-        </StackPanel>
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,12"/>
+
+            <Border Grid.Row="1" Background="White" CornerRadius="6" Padding="20,10" Margin="0,0,0,5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="130"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="100"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Місце" FontSize="18" FontWeight="SemiBold" Foreground="Black"/>
+                    <TextBlock Grid.Column="1" Text="Гравець" FontSize="18" FontWeight="SemiBold" Foreground="Black"/>
+                    <TextBlock Grid.Column="2" Text="Бали" FontSize="18" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Right"/>
+                </Grid>
+            </Border>
+
+            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding OtherPlayers}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="#C8CAFF" CornerRadius="6" Margin="0,4" Padding="20,10">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="130"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="100"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding PlaceText}" FontSize="20" Foreground="Black"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding PlayerName}" FontSize="20" Foreground="Black" TextTrimming="CharacterEllipsis"/>
+                                    <TextBlock Grid.Column="2" Text="{Binding TotalScore}" FontSize="20" Foreground="Black" HorizontalAlignment="Right"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
     </Grid>
 </UserControl>
