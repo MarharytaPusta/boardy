@@ -159,6 +159,9 @@ namespace Boardy.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("Order")
+                        .HasColumnType("integer");
+
                     b.Property<Guid?>("ScoreTemplateId")
                         .HasColumnType("uuid");
 

@@ -44,7 +44,7 @@ public class GameRepository : IGameRepository
 
         return await query
             .Include(g => g.ScoreTemplates)
-            .ThenInclude(t => t.Criteria)
+            .ThenInclude(t => t.Criteria.OrderBy(c => c.Order))
             .ToListAsync();
     }
 
@@ -52,7 +52,7 @@ public class GameRepository : IGameRepository
     {
         return await _context.Games
             .Include(g => g.ScoreTemplates)
-            .ThenInclude(t => t.Criteria)
+            .ThenInclude(t => t.Criteria.OrderBy(c => c.Order))
             .FirstOrDefaultAsync(g => g.Id == id);
     }
 
@@ -134,4 +134,4 @@ public class GameRepository : IGameRepository
 
         await _context.SaveChangesAsync();
     }
-} 
+}

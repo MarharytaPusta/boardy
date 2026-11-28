@@ -21,6 +21,7 @@ namespace Boardy.Domain.Entities
 
         public void AddCriterion(ScoreCriterion criterion)
         {
+            criterion.SetOrder(_criteria.Count);
             _criteria.Add(criterion);
         }
 

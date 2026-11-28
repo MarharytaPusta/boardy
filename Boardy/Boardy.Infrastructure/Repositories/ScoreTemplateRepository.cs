@@ -22,8 +22,8 @@ namespace Boardy.Infrastructure.Repositories
         public async Task<Domain.Entities.ScoreTemplate?> GetByIdAsync(Guid id)
         {
             return await _context.ScoreTemplates
-                .Include(template => template.Criteria)
-                .FirstOrDefaultAsync(template => template.Id == id);
+    .Include(template => template.Criteria.OrderBy(c => c.Order))
+    .FirstOrDefaultAsync(template => template.Id == id);
         }
     }
 }
