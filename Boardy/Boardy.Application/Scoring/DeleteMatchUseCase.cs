@@ -17,18 +17,15 @@ public class DeleteMatchUseCase
 {
     private readonly IMatchRepository _matchRepository;
     private readonly IUserSession _userSession;
-    private readonly IPlayerStatisticsRecalculator _playerStatisticsRecalculator;
     private readonly ILogger<DeleteMatchUseCase> _logger;
 
     public DeleteMatchUseCase(
         IMatchRepository matchRepository,
         IUserSession userSession,
-        IPlayerStatisticsRecalculator playerStatisticsRecalculator,
         ILogger<DeleteMatchUseCase> logger)
     {
         _matchRepository = matchRepository;
         _userSession = userSession;
-        _playerStatisticsRecalculator = playerStatisticsRecalculator;
         _logger = logger;
     }
 
@@ -46,17 +43,7 @@ public class DeleteMatchUseCase
             return validationResult;
         }
 
-        var playerIds = match!.Participants
-            .Select(participant => participant.PlayerId)
-            .ToList();
-
-        await _matchRepository.DeleteAsync(match);
-
-        var statisticsResult = await _playerStatisticsRecalculator.RecalculateAsync(playerIds);
-        if (!statisticsResult.IsSuccess)
-        {
-            return statisticsResult;
-        }
+        await _matchRepository.DeleteAsync(match!);
 
         _logger.LogInformation("Match with ID {MatchId} was successfully deleted.", request.MatchId);
         return Result.Success();

@@ -16,7 +16,6 @@ public class DeleteMatchUseCaseTests
 {
     private readonly Mock<IMatchRepository> _mockMatchRepository;
     private readonly Mock<IUserSession> _mockUserSession;
-    private readonly Mock<IPlayerStatisticsRecalculator> _mockPlayerStatisticsRecalculator;
     private readonly Mock<ILogger<DeleteMatchUseCase>> _mockLogger;
     private readonly DeleteMatchUseCase _useCase;
 
@@ -24,16 +23,11 @@ public class DeleteMatchUseCaseTests
     {
         _mockMatchRepository = new Mock<IMatchRepository>();
         _mockUserSession = new Mock<IUserSession>();
-        _mockPlayerStatisticsRecalculator = new Mock<IPlayerStatisticsRecalculator>();
         _mockLogger = new Mock<ILogger<DeleteMatchUseCase>>();
-        _mockPlayerStatisticsRecalculator
-            .Setup(recalculator => recalculator.RecalculateAsync(It.IsAny<IEnumerable<Guid>>()))
-            .ReturnsAsync(Result.Success());
 
         _useCase = new DeleteMatchUseCase(
             _mockMatchRepository.Object,
             _mockUserSession.Object,
-            _mockPlayerStatisticsRecalculator.Object,
             _mockLogger.Object);
     }
 
@@ -101,9 +95,5 @@ public class DeleteMatchUseCaseTests
 
         Assert.True(result.IsSuccess);
         _mockMatchRepository.Verify(repo => repo.DeleteAsync(match), Times.Once);
-        _mockPlayerStatisticsRecalculator.Verify(
-            recalculator => recalculator.RecalculateAsync(
-                It.Is<IEnumerable<Guid>>(ids => ids.Order().SequenceEqual(new[] { firstPlayerId, secondPlayerId }.Order()))),
-            Times.Once);
     }
 }

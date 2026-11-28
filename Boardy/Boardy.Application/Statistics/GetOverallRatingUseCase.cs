@@ -6,32 +6,21 @@ namespace Boardy.Application.Statistics;
 
 public class GetOverallRatingUseCase
 {
-    private readonly IPlayerRepository _playerRepository;
+    private readonly IPlayerStatisticsRepository _playerStatisticsRepository;
     private readonly ILogger<GetOverallRatingUseCase> _logger;
 
     public GetOverallRatingUseCase(
-        IPlayerRepository playerRepository,
+        IPlayerStatisticsRepository playerStatisticsRepository,
         ILogger<GetOverallRatingUseCase> logger)
     {
-        _playerRepository = playerRepository;
+        _playerStatisticsRepository = playerStatisticsRepository;
         _logger = logger;
     }
 
-    public async Task<Result<IEnumerable<GetOverallRatingDto>>> ExecuteAsync()
+    public async Task<Result<IEnumerable<GetOverallRatingDto>>> ExecuteAsync(
+            CancellationToken cancellationToken = default)
     {
-        var players = await _playerRepository.GetAllAsync();
-        var rating = players
-            .OrderByDescending(player => player.WinsCount)
-            .ThenByDescending(player => player.PlayedMatchesCount)
-            .ThenByDescending(player => player.PlayedGamesCount)
-            .ThenBy(player => player.Name)
-            .Select(player => new GetOverallRatingDto(
-                player.Id,
-                player.Name,
-                player.PlayedGamesCount,
-                player.PlayedMatchesCount,
-                player.WinsCount))
-            .ToList();
+        var rating = await _playerStatisticsRepository.GetOverallRatingAsync(cancellationToken);
 
         _logger.LogInformation("Loaded player rating with {PlayerCount} players.", rating.Count);
         return Result<IEnumerable<GetOverallRatingDto>>.Success(rating);

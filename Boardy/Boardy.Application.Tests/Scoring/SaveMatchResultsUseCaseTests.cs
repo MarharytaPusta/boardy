@@ -19,7 +19,6 @@ public class SaveMatchResultsUseCaseTests
 {
     private readonly Mock<IMatchRepository> _matchRepositoryMock;
     private readonly Mock<IScoreTemplateRepository> _scoreTemplateRepositoryMock;
-    private readonly Mock<IPlayerStatisticsRecalculator> _playerStatisticsRecalculatorMock;
     private readonly SaveMatchResultsUseCase _useCase;
     private readonly ScoreTemplate _scoreTemplate;
 
@@ -27,19 +26,14 @@ public class SaveMatchResultsUseCaseTests
     {
         _matchRepositoryMock = new Mock<IMatchRepository>();
         _scoreTemplateRepositoryMock = new Mock<IScoreTemplateRepository>();
-        _playerStatisticsRecalculatorMock = new Mock<IPlayerStatisticsRecalculator>();
         _scoreTemplate = new ScoreTemplate("Базовий");
         _scoreTemplate.AddCriterion(new ScoreCriterion("Очки"));
         _scoreTemplateRepositoryMock.Setup(repository => repository.GetByIdAsync(_scoreTemplate.Id)).ReturnsAsync(_scoreTemplate);
         var loggerMock = new Mock<ILogger<SaveMatchResultsUseCase>>();
-        _playerStatisticsRecalculatorMock
-            .Setup(recalculator => recalculator.RecalculateAsync(It.IsAny<IEnumerable<Guid>>()))
-            .ReturnsAsync(Result.Success());
 
         _useCase = new SaveMatchResultsUseCase(
             _matchRepositoryMock.Object,
             _scoreTemplateRepositoryMock.Object,
-            _playerStatisticsRecalculatorMock.Object,
             loggerMock.Object);
     }
 
@@ -61,10 +55,6 @@ public class SaveMatchResultsUseCaseTests
         Assert.False(participants[0].IsWinner);
         Assert.True(participants[1].IsWinner);
         _matchRepositoryMock.Verify(repository => repository.UpdateAsync(match), Times.Once);
-        _playerStatisticsRecalculatorMock.Verify(
-            recalculator => recalculator.RecalculateAsync(
-                It.Is<IEnumerable<Guid>>(ids => ids.Order().SequenceEqual(match.Participants.Select(participant => participant.PlayerId).Order()))),
-            Times.Once);
     }
 
     [Fact]

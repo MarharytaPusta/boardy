@@ -12,18 +12,15 @@ public class UpdateMatchResultsUseCase
 {
     private readonly IMatchRepository _matchRepository;
     private readonly IScoreTemplateRepository _scoreTemplateRepository;
-    private readonly IPlayerStatisticsRecalculator _playerStatisticsRecalculator;
     private readonly ILogger<UpdateMatchResultsUseCase> _logger;
 
     public UpdateMatchResultsUseCase(
         IMatchRepository matchRepository,
         IScoreTemplateRepository scoreTemplateRepository,
-        IPlayerStatisticsRecalculator playerStatisticsRecalculator,
         ILogger<UpdateMatchResultsUseCase> logger)
     {
         _matchRepository = matchRepository;
         _scoreTemplateRepository = scoreTemplateRepository;
-        _playerStatisticsRecalculator = playerStatisticsRecalculator;
         _logger = logger;
     }
 
@@ -69,13 +66,6 @@ public class UpdateMatchResultsUseCase
 
         ApplyResults(match, request, criteriaById);
         await _matchRepository.UpdateAsync(match);
-
-        var statisticsResult = await _playerStatisticsRecalculator.RecalculateAsync(
-            match.Participants.Select(participant => participant.PlayerId));
-        if (!statisticsResult.IsSuccess)
-        {
-            return statisticsResult;
-        }
 
         _logger.LogInformation("Successfully updated results for match {MatchId}.", match.Id);
         return Result.Success();

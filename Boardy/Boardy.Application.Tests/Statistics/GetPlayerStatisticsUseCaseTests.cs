@@ -13,8 +13,7 @@ namespace Boardy.Application.Tests.Statistics;
 public class GetPlayerStatisticsUseCaseTests
 {
     private readonly Mock<IPlayerRepository> _playerRepositoryMock = new();
-    private readonly Mock<IMatchRepository> _matchRepositoryMock = new();
-    private readonly Mock<IGameRepository> _gameRepositoryMock = new();
+    private readonly Mock<IPlayerStatisticsRepository> _playerStatisticsRepositoryMock = new();
     private readonly GetPlayerStatisticsUseCase _useCase;
 
     public GetPlayerStatisticsUseCaseTests()
@@ -22,44 +21,26 @@ public class GetPlayerStatisticsUseCaseTests
         var loggerMock = new Mock<ILogger<GetPlayerStatisticsUseCase>>();
         _useCase = new GetPlayerStatisticsUseCase(
             _playerRepositoryMock.Object,
-            _matchRepositoryMock.Object,
-            _gameRepositoryMock.Object,
+            _playerStatisticsRepositoryMock.Object,
             loggerMock.Object);
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReturnsPlayerAndGameStatistics()
+    public async Task ExecuteAsync_ReturnsPlayerAndAggregatedGameStatistics()
     {
         var player = new DomainPlayer("Олена");
-        player.UpdateStatistics(2, 3, 2);
-        var firstGameId = Guid.NewGuid();
-        var secondGameId = Guid.NewGuid();
-        var firstGameTemplateId = Guid.NewGuid();
-        var secondTemplateForFirstGameId = Guid.NewGuid();
-        var secondGameTemplateId = Guid.NewGuid();
-        var firstMatch = CreateCompletedMatch(firstGameTemplateId, player.Id, isPlayerWinner: true);
-        var secondMatch = CreateCompletedMatch(secondTemplateForFirstGameId, player.Id, isPlayerWinner: false);
-        var thirdMatch = CreateCompletedMatch(secondGameTemplateId, player.Id, isPlayerWinner: true);
-        var firstGame = new Domain.Entities.Game("Крила", string.Empty, 2, 4, GameStatus.Active);
-        var secondGame = new Domain.Entities.Game("Каркасон", string.Empty, 2, 4, GameStatus.Active);
+        var gameStatistics = new[]
+        {
+            new PlayerGameStatisticsDto("Каркасон", PlayedMatchesCount: 1, WinsCount: 1),
+            new PlayerGameStatisticsDto("Крила", PlayedMatchesCount: 2, WinsCount: 1)
+        };
 
-        _playerRepositoryMock.Setup(repository => repository.GetByIdAsync(player.Id))
+        _playerRepositoryMock
+            .Setup(repository => repository.GetByIdAsync(player.Id))
             .ReturnsAsync(player);
-        _matchRepositoryMock.Setup(repository => repository.GetCompletedByPlayerIdsAsync(
-                It.Is<IEnumerable<Guid>>(ids => ids.Single() == player.Id)))
-            .ReturnsAsync(new[] { firstMatch, secondMatch, thirdMatch });
-        _gameRepositoryMock.Setup(repository => repository.GetGameIdsByScoreTemplateIdsAsync(
-                It.IsAny<IEnumerable<Guid>>()))
-            .ReturnsAsync(new Dictionary<Guid, Guid>
-            {
-                [firstGameTemplateId] = firstGameId,
-                [secondTemplateForFirstGameId] = firstGameId,
-                [secondGameTemplateId] = secondGameId
-            });
-        _gameRepositoryMock.Setup(repository => repository.GetByIdAsync(firstGameId))
-            .ReturnsAsync(firstGame);
-        _gameRepositoryMock.Setup(repository => repository.GetByIdAsync(secondGameId))
-            .ReturnsAsync(secondGame);
+        _playerStatisticsRepositoryMock
+            .Setup(repository => repository.GetPlayerGamesStatisticsAsync(player.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(gameStatistics);
 
         var result = await _useCase.ExecuteAsync(player.Id);
 
@@ -87,58 +68,69 @@ public class GetPlayerStatisticsUseCaseTests
     }
 
     [Fact]
+    public async Task ExecuteAsync_WhenPlayerIdIsEmpty_ReturnsFailure()
+    {
+        var result = await _useCase.ExecuteAsync(Guid.Empty);
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal("Некоректний ідентифікатор гравця.", result.ErrorMessage);
+        _playerRepositoryMock.Verify(
+            repository => repository.GetByIdAsync(It.IsAny<Guid>()),
+            Times.Never);
+    }
+
+    [Fact]
     public async Task ExecuteAsync_WhenPlayerDoesNotExist_ReturnsFailure()
     {
         var playerId = Guid.NewGuid();
-        _playerRepositoryMock.Setup(repository => repository.GetByIdAsync(playerId))
+        _playerRepositoryMock
+            .Setup(repository => repository.GetByIdAsync(playerId))
             .ReturnsAsync((DomainPlayer?)null);
 
         var result = await _useCase.ExecuteAsync(playerId);
 
         Assert.False(result.IsSuccess);
         Assert.Equal("Гравця не знайдено.", result.ErrorMessage);
-        _matchRepositoryMock.Verify(
-            repository => repository.GetCompletedByPlayerIdsAsync(It.IsAny<IEnumerable<Guid>>()),
+        _playerStatisticsRepositoryMock.Verify(
+            repository => repository.GetPlayerGamesStatisticsAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()),
             Times.Never);
     }
 
     [Fact]
-    public async Task ExecuteAsync_WithNoPlayedMatches_ReturnsEmptyGames()
+    public async Task ExecuteAsync_WhenPlayerIsDeleted_ReturnsFailure()
+    {
+        var player = new DomainPlayer("Олена");
+        player.MarkAsDeleted();
+        _playerRepositoryMock
+            .Setup(repository => repository.GetByIdAsync(player.Id))
+            .ReturnsAsync(player);
+
+        var result = await _useCase.ExecuteAsync(player.Id);
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal("Гравця не знайдено.", result.ErrorMessage);
+        _playerStatisticsRepositoryMock.Verify(
+            repository => repository.GetPlayerGamesStatisticsAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()),
+            Times.Never);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithNoPlayedMatches_ReturnsEmptyGamesAndZeroTotals()
     {
         var player = new DomainPlayer("Тарас");
-        _playerRepositoryMock.Setup(repository => repository.GetByIdAsync(player.Id))
+        _playerRepositoryMock
+            .Setup(repository => repository.GetByIdAsync(player.Id))
             .ReturnsAsync(player);
-        _matchRepositoryMock.Setup(repository => repository.GetCompletedByPlayerIdsAsync(
-                It.IsAny<IEnumerable<Guid>>()))
-            .ReturnsAsync(Array.Empty<DomainMatch>());
+        _playerStatisticsRepositoryMock
+            .Setup(repository => repository.GetPlayerGamesStatisticsAsync(player.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Array.Empty<PlayerGameStatisticsDto>());
 
         var result = await _useCase.ExecuteAsync(player.Id);
 
         Assert.True(result.IsSuccess);
-        Assert.Empty(result.Data!.Games);
-        _gameRepositoryMock.Verify(
-            repository => repository.GetGameIdsByScoreTemplateIdsAsync(It.IsAny<IEnumerable<Guid>>()),
-            Times.Never);
-    }
-
-    private static DomainMatch CreateCompletedMatch(Guid scoreTemplateId, Guid playerId, bool isPlayerWinner)
-    {
-        var match = new DomainMatch(scoreTemplateId);
-        var playerParticipant = new Domain.Entities.MatchParticipant(playerId);
-        var anotherPlayerParticipant = new Domain.Entities.MatchParticipant(Guid.NewGuid());
-        match.AddParticipant(playerParticipant);
-        match.AddParticipant(anotherPlayerParticipant);
-
-        if (isPlayerWinner)
-        {
-            match.SetWinners(new[] { playerParticipant.Id });
-        }
-        else
-        {
-            match.SetWinners(new[] { anotherPlayerParticipant.Id });
-        }
-
-        match.ChangeStatus(MatchStatus.Completed);
-        return match;
+        Assert.Equal(0, result.Data!.PlayedGamesCount);
+        Assert.Equal(0, result.Data.PlayedMatchesCount);
+        Assert.Equal(0, result.Data.WinsCount);
+        Assert.Empty(result.Data.Games);
     }
 }

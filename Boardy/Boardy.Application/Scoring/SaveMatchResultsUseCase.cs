@@ -15,17 +15,14 @@ public class SaveMatchResultsUseCase
     private readonly IMatchRepository _matchRepository;
     private readonly ILogger<SaveMatchResultsUseCase> _logger;
     private readonly IScoreTemplateRepository _scoreTemplateRepository;
-    private readonly IPlayerStatisticsRecalculator _playerStatisticsRecalculator;
 
     public SaveMatchResultsUseCase(
         IMatchRepository matchRepository,
         IScoreTemplateRepository scoreTemplateRepository,
-        IPlayerStatisticsRecalculator playerStatisticsRecalculator,
         ILogger<SaveMatchResultsUseCase> logger)
     {
         _matchRepository = matchRepository;
         _scoreTemplateRepository = scoreTemplateRepository;
-        _playerStatisticsRecalculator = playerStatisticsRecalculator;
         _logger = logger;
     }
 
@@ -87,13 +84,6 @@ public class SaveMatchResultsUseCase
         match.ChangeStatus(MatchStatus.Completed);
 
         await _matchRepository.UpdateAsync(match);
-
-        var statisticsResult = await _playerStatisticsRecalculator.RecalculateAsync(
-            match.Participants.Select(participant => participant.PlayerId));
-        if (!statisticsResult.IsSuccess)
-        {
-            return statisticsResult;
-        }
 
         _logger.LogInformation("Successfully saved results for match {MatchId}.", match.Id);
 

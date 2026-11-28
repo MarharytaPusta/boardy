@@ -81,7 +81,6 @@ namespace Boardy.WPF
             services.AddTransient<GetAllPlayers>();
             services.AddTransient<GetOverallRatingUseCase>();
             services.AddTransient<GetPlayerStatisticsUseCase>();
-            services.AddTransient<IPlayerStatisticsRecalculator, PlayerStatisticsRecalculator>();
             services.AddTransient<UpdatePlayerUseCase>();
 
             services.AddTransient<DeletePlayerUseCase>();
@@ -132,6 +131,7 @@ namespace Boardy.WPF
             services.AddTransient<GameStatisticsViewModel>();
 
             services.AddScoped<IMatchRepository, MatchRepository>();
+            services.AddScoped<IPlayerStatisticsRepository, PlayerStatisticsRepository>();
 
             ServiceProvider = services.BuildServiceProvider();
 

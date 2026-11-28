@@ -16,9 +16,6 @@ public class UpdateMatchResultsUseCaseTests
 {
     private readonly Mock<IMatchRepository> _matchRepositoryMock = new();
     private readonly Mock<IScoreTemplateRepository> _scoreTemplateRepositoryMock = new();
-    private readonly Mock<IPlayerRepository> _playerRepositoryMock = new();
-    private readonly Mock<IGameRepository> _gameRepositoryMock = new();
-    private readonly PlayerStatisticsRecalculator _playerStatisticsRecalculator;
     private readonly ScoreTemplate _scoreTemplate;
     private readonly UpdateMatchResultsUseCase _useCase;
 
@@ -30,43 +27,22 @@ public class UpdateMatchResultsUseCaseTests
             .Setup(repository => repository.GetByIdAsync(_scoreTemplate.Id))
             .ReturnsAsync(_scoreTemplate);
         var loggerMock = new Mock<ILogger<UpdateMatchResultsUseCase>>();
-        var statisticsLoggerMock = new Mock<ILogger<PlayerStatisticsRecalculator>>();
-        _playerStatisticsRecalculator = new PlayerStatisticsRecalculator(
-            _playerRepositoryMock.Object,
-            _matchRepositoryMock.Object,
-            _gameRepositoryMock.Object,
-            statisticsLoggerMock.Object);
         _useCase = new UpdateMatchResultsUseCase(
             _matchRepositoryMock.Object,
             _scoreTemplateRepositoryMock.Object,
-            _playerStatisticsRecalculator,
             loggerMock.Object);
     }
 
     [Fact]
-    public async Task ExecuteAsync_WithValidResults_UpdatesWinnersAndParticipantStatistics()
+    public async Task ExecuteAsync_WithValidResults_UpdatesScoresAndWinners()
     {
         var firstPlayer = new DomainPlayer("Маргарита");
         var secondPlayer = new DomainPlayer("Максим");
         var match = CreateCompletedMatch(firstPlayer.Id, secondPlayer.Id, firstPlayer.Id);
         var participants = match.Participants.ToList();
         var request = CreateRequest(match, 10, 20);
-        var gameId = Guid.NewGuid();
 
         _matchRepositoryMock.Setup(repository => repository.GetByIdAsync(match.Id)).ReturnsAsync(match);
-        _matchRepositoryMock
-            .Setup(repository => repository.GetCompletedByPlayerIdsAsync(It.IsAny<IEnumerable<Guid>>()))
-            .ReturnsAsync(new List<DomainMatch> { match });
-        _playerRepositoryMock
-            .Setup(repository => repository.GetByIdsAsync(It.IsAny<IEnumerable<Guid>>()))
-            .ReturnsAsync(new List<DomainPlayer> { firstPlayer, secondPlayer });
-        IReadOnlyDictionary<Guid, Guid> gameIdsByScoreTemplate = new Dictionary<Guid, Guid>
-        {
-            [_scoreTemplate.Id] = gameId
-        };
-        _gameRepositoryMock
-            .Setup(repository => repository.GetGameIdsByScoreTemplateIdsAsync(It.IsAny<IEnumerable<Guid>>()))
-            .ReturnsAsync(gameIdsByScoreTemplate);
 
         var result = await _useCase.ExecuteAsync(request);
 
@@ -75,15 +51,7 @@ public class UpdateMatchResultsUseCaseTests
         Assert.Equal(20, participants[1].TotalScore);
         Assert.False(participants[0].IsWinner);
         Assert.True(participants[1].IsWinner);
-        Assert.Equal(1, firstPlayer.PlayedGamesCount);
-        Assert.Equal(1, firstPlayer.PlayedMatchesCount);
-        Assert.Equal(0, firstPlayer.WinsCount);
-        Assert.Equal(1, secondPlayer.PlayedGamesCount);
-        Assert.Equal(1, secondPlayer.PlayedMatchesCount);
-        Assert.Equal(1, secondPlayer.WinsCount);
         _matchRepositoryMock.Verify(repository => repository.UpdateAsync(match), Times.Once);
-        _playerRepositoryMock.Verify(repository => repository.UpdateAsync(firstPlayer), Times.Once);
-        _playerRepositoryMock.Verify(repository => repository.UpdateAsync(secondPlayer), Times.Once);
     }
 
     [Fact]
@@ -100,41 +68,6 @@ public class UpdateMatchResultsUseCaseTests
         Assert.False(result.IsSuccess);
         Assert.Equal("Редагувати можна лише завершену партію.", result.ErrorMessage);
         _matchRepositoryMock.Verify(repository => repository.UpdateAsync(It.IsAny<DomainMatch>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task ExecuteAsync_WhenPreviousMatchHasNoAssociatedGame_UpdatesResultsAndAvailableStatistics()
-    {
-        var firstPlayer = new DomainPlayer("Маргарита");
-        var secondPlayer = new DomainPlayer("Максим");
-        var match = CreateCompletedMatch(firstPlayer.Id, secondPlayer.Id, firstPlayer.Id);
-        var previousMatchWithoutGame = new DomainMatch(Guid.NewGuid());
-        previousMatchWithoutGame.AddParticipant(new MatchParticipant(firstPlayer.Id));
-        previousMatchWithoutGame.AddParticipant(new MatchParticipant(secondPlayer.Id));
-        previousMatchWithoutGame.SetWinners(new[] { previousMatchWithoutGame.Participants.Last().Id });
-        previousMatchWithoutGame.ChangeStatus(MatchStatus.Completed);
-        var gameId = Guid.NewGuid();
-
-        _matchRepositoryMock.Setup(repository => repository.GetByIdAsync(match.Id)).ReturnsAsync(match);
-        _matchRepositoryMock
-            .Setup(repository => repository.GetCompletedByPlayerIdsAsync(It.IsAny<IEnumerable<Guid>>()))
-            .ReturnsAsync(new List<DomainMatch> { match, previousMatchWithoutGame });
-        _playerRepositoryMock
-            .Setup(repository => repository.GetByIdsAsync(It.IsAny<IEnumerable<Guid>>()))
-            .ReturnsAsync(new List<DomainPlayer> { firstPlayer, secondPlayer });
-        _gameRepositoryMock
-            .Setup(repository => repository.GetGameIdsByScoreTemplateIdsAsync(It.IsAny<IEnumerable<Guid>>()))
-            .ReturnsAsync(new Dictionary<Guid, Guid> { [_scoreTemplate.Id] = gameId });
-
-        var result = await _useCase.ExecuteAsync(CreateRequest(match, 20, 10));
-
-        Assert.True(result.IsSuccess);
-        Assert.Equal(1, firstPlayer.PlayedGamesCount);
-        Assert.Equal(2, firstPlayer.PlayedMatchesCount);
-        Assert.Equal(1, firstPlayer.WinsCount);
-        Assert.Equal(1, secondPlayer.PlayedGamesCount);
-        Assert.Equal(2, secondPlayer.PlayedMatchesCount);
-        Assert.Equal(1, secondPlayer.WinsCount);
     }
 
     [Fact]

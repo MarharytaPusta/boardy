@@ -132,15 +132,6 @@ namespace Boardy.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("PlayedGamesCount")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("PlayedMatchesCount")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("WinsCount")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
                     b.ToTable("Players");
